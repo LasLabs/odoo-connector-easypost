@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    © 2016-TODAY LasLabs Inc.
+    @license AGPL-3 or later (http://www.gnu.org/licenses/agpl.html).
+-->
+
+<odoo>
+
+    <menuitem id="menu_easypost_root"
+              parent="connector.menu_connector_root"
+              name="EasyPost"
+              sequence="10"
+              groups="connector.group_connector_manager" />
+    
+    <menuitem id="menu_easypost_backend"
+              name="Backends"
+              parent="menu_easypost_root"
+              action="action_easypost_backend" />
+    
+</odoo>
