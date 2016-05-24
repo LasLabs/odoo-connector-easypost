@@ -25,33 +25,18 @@ def to_ord(field):
     return modifier
 
 
-def to_float(field):
+def eval_false(field):
     """ A modifier intended to be used on the ``direct`` mappings.
-    Convert SQLAlchemy Decimal types to float
+    Convert "false" String to None
     Example::
-        direct = [(to_float('source'), 'target')]
+        direct = [(eval_false('source'), 'target')]
     :param field: name of the source field in the record
     """
     def modifier(self, record, to_attr):
-        value = record.get(field)
-        if not value:
-            return False
-        return float(value)
-    return modifier
-
-
-def to_int(field):
-    """ A modifier intended to be used on the ``direct`` mappings.
-    Convert SQLAlchemy Decimal types to integer
-    Example::
-        direct = [(to_int('source'), 'target')]
-    :param field: name of the source field in the record
-    """
-    def modifier(self, record, to_attr):
-        value = record.get(field)
-        if not value:
-            return False
-        return int(value)
+        value = getattr(record, field, None)
+        if str(value).lower() == 'false':
+            return None
+        return value
     return modifier
 
 

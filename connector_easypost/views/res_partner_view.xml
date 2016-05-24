@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    @copyright (C) 2016-TODAY LasLabs, Inc. [https://laslabs.com]
+    @author Dave Lasley <dave@laslabs.com>
+    @license AGPL-3
+-->
+
+<odoo>
+
+    <record id="view_res_partner_form" model="ir.ui.view">
+        <field name="name">view.res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_easypost_synchronize" type="object" string="Validate" />
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

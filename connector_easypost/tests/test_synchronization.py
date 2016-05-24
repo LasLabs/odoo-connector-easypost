@@ -12,14 +12,14 @@
 #
 #
 # class TestBaseEasypost(SetUpEasypostBase):
-# 
+#
 #     def test_import_backend(self):
 #         """ Synchronize initial metadata """
 #         with mock_api(easypost_base_responses):
 #             import_batch(
 #                 self.session, 'easypost.medical.pharmacy', self.backend_id
 #             )
-# 
+#
 #         store_model = self.env['easypost.medical.pharmacy']
 #         stores = store_model.search([('backend_id', '=', self.backend_id)])
 #         self.assertEqual(len(stores), 2)

@@ -61,7 +61,7 @@ class EasypostCRUDAdapter(CRUDAdapter):
         self.easypost = easypost
         self.easypost.api_key = backend.api_key
 
-    def __get_ep_model(self):
+    def _get_ep_model(self):
         """ Get the correct model object by name from Easypost lib
         :rtype: :class:`sqlalchemy.schema.Table`
         """
@@ -74,7 +74,7 @@ class EasypostCRUDAdapter(CRUDAdapter):
         :type _id: int
         :return: EasyPost record for model
         """
-        return self.__get_ep_model().retrieve(_id)
+        return self._get_ep_model().retrieve(_id)
 
     def create(self, data):
         """ Wrapper to create a record on the external system
@@ -82,4 +82,4 @@ class EasypostCRUDAdapter(CRUDAdapter):
         :type data: dict
         :rtype: :class:`sqlalchemy.ext.declarative.Declarative`
         """
-        return self.__get_ep_model().create(data)
+        return self._get_ep_model().create(**data)

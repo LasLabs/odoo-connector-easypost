@@ -23,7 +23,7 @@ def get_environment(session, model_name, backend_id):
 class EasypostBinding(models.AbstractModel):
     """ Abstract Model for the Bindigs.
     All the models used as bindings between Easypost and Odoo
-    (``easypost.res.partner``, ``easypost.product.product``, ...) should
+    (``easypost.easypost.address``, ``easypost.easypost.address``, ...) should
     ``_inherit`` it.
     """
     _name = 'easypost.binding'

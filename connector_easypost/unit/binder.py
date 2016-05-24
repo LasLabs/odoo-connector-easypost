@@ -16,12 +16,13 @@ class EasypostBinder(Binder):
 class EasypostModelBinder(EasypostBinder):
     """ Bindings are done directly on the binding model.
     Binding models are models called ``easypost.{normal_model}``,
-    like ``easypost.res.partner`` or ``easypost.product.product``.
+    like ``easypost.easypost.address`` or ``easypost.easypost.address``.
     They are ``_inherits`` of the normal models and contains
     the Easypost ID, the ID of the Easypost Backend and the additional
     fields belonging to the Easypost instance.
     """
     _model_name = [
+        'easypost.easypost.address',
     ]
 
     def to_odoo(self, external_id, unwrap=True, browse=False):
@@ -100,7 +101,7 @@ class EasypostModelBinder(EasypostBinder):
 
     def unwrap_binding(self, binding_id, browse=False):
         """ For a binding record, gives the normal record.
-        Example: when called with a ``easypost.product.product`` id,
+        Example: when called with a ``easypost.easypost.address`` id,
         it will return the corresponding ``product.product`` id.
         :param browse: when True, returns a browse_record instance
                        rather than an ID
@@ -116,7 +117,7 @@ class EasypostModelBinder(EasypostBinder):
 
     def unwrap_model(self):
         """ For a binding model, gives the name of the normal model.
-        Example: when called on a binder for ``easypost.product.product``,
+        Example: when called on a binder for ``easypost.easypost.address``,
         it will return ``product.product``.
         This binder assumes that the normal model lays in ``odoo_id`` since
         this is the field we use in the ``_inherits`` bindings.

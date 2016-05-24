@@ -46,6 +46,13 @@ class EasypostBackend(models.Model):
     active = fields.Boolean(
         default=True,
     )
+    default_lang_id = fields.Many2one(
+        comodel_name='res.lang',
+        string='Default Language',
+        help="If a default language is selected, the records "
+             "will be imported in the translation of this language.\n"
+             "Note that this is not actually implemented.",
+    )
 
     @api.multi
     @api.constrains('is_default', 'company_id')

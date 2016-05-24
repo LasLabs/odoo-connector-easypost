@@ -321,7 +321,7 @@ class AddCheckpoint(ConnectorUnit):
     """ Add a connector.checkpoint on the underlying model
     (not the easypost.* but the _inherits'ed model) """
 
-    _model_name = ['easypost.product.product',
+    _model_name = ['easypost.easypost.address',
                    'easypost.product.category',
                    ]
 

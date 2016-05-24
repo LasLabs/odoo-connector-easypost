@@ -70,8 +70,8 @@ class EasypostBaseExporter(Exporter):
         record = self.backend_adapter.read(self.easypost_id,
                                            attributes=['updated_at'])
         if not record['updated_at']:
-            # In many cases it can be empty, in doubt, import it
-            return False
+            # If empty, the record is immutable. Return not changed
+            return True
         sync_date = openerp.fields.Datetime.from_string(sync)
         easypost_date = record['updated_at']
         return sync_date < easypost_date
@@ -228,7 +228,7 @@ class EasypostExporter(EasypostBaseExporter):
         rel_binder = self.binder_for(binding_model)
         # wrap is typically True if the relation is for instance a
         # 'product.product' record but the binding model is
-        # 'easypost.product.product'
+        # 'easypost.easypost.address'
         wrap = relation._model._name != binding_model
 
         if wrap and hasattr(relation, binding_field):
@@ -242,7 +242,7 @@ class EasypostExporter(EasypostBaseExporter):
             # we are working with a unwrapped record (e.g.
             # product.category) and the binding does not exist yet.
             # Example: I created a product.product and its binding
-            # easypost.product.product and we are exporting it, but we need to
+            # easypost.easypost.address and we are exporting it, but we need to
             # create the binding for the product.category on which it
             # depends.
             else:

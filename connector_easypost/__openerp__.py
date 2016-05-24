@@ -22,6 +22,8 @@
     'data': [
         'views/easypost_backend_view.xml',
         'views/connector_menu.xml',
+        'views/res_partner_view.xml',
+        'wizards/easypost_address_view.xml',
     ],
     'installable': True,
     'application': False,

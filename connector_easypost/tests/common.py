@@ -11,13 +11,16 @@ import mock
 from contextlib import contextmanager
 import openerp.tests.common as common
 from openerp.addons.connector.session import ConnectorSession
-from openerp.addons.connector_easypost.unit.import_synchronizer import (
-    import_batch,
-)
-from openerp.addons.connector_easypost.unit.backend_adapter import (
-    call_to_key,
-)
-from .data_base import easypost_base_responses
+# from openerp.addons.connector_easypost.unit.import_synchronizer import (
+#     import_batch,
+# )
+# from openerp.addons.connector_easypost.unit.backend_adapter import (
+#     call_to_key,
+# )
+# from .data_base import easypost_base_responses
+
+
+backend_adapter = 'openerp.addons.connector_easypost.unit.backend_adapter'
 
 
 class TestResponder(object):
@@ -39,7 +42,6 @@ class TestResponder(object):
         """
         self._responses = responses
         self._calls = []
-        self.call_to_key = key_func or call_to_key
 
     def __call__(self, method, arguments):
         self._calls.append((method, arguments))
@@ -102,44 +104,13 @@ class ChainMap(dict):
 
 
 @contextmanager
-def mock_api(responses, key_func=None):
-    """
-    The responses argument is a dict with the methods and arguments as keys
-    and the responses as values. It can also be a list of such dicts.
-    When it is a list, the key is searched in the firsts dicts first.
-    :param responses: responses returned by Easypost
-    :type responses: dict
-    """
-    if isinstance(responses, (list, tuple)):
-        responses = ChainMap(*responses)
-    get_easypost_response = TestResponder(responses, key_func=key_func)
-    with mock.patch('easypost.Easypost') as API:
-        api_mock = mock.MagicMock(name='easypost.Easypost')
+def mock_api():
+    """ """
+    with mock.patch('%s.easypost' % backend_adapter) as API:
+        api_mock = mock.MagicMock(name='easypost')
         API.return_value = api_mock
         api_mock.__enter__.return_value = api_mock
-        api_mock.call.side_effect = get_easypost_response
-        yield get_easypost_response._calls
-
-
-class MockResponseImage(object):
-    def __init__(self, resp_data, code=200, msg='OK'):
-        self.resp_data = resp_data
-        self.code = code
-        self.msg = msg
-        self.headers = {'content-type': 'image/jpeg'}
-
-    def read(self):
-        return self.resp_data
-
-    def getcode(self):
-        return self.code
-
-
-@contextmanager
-def mock_urlopen_image():
-    with mock.patch('urllib2.urlopen') as urlopen:
-        urlopen.return_value = MockResponseImage('')
-        yield
+        yield API
 
 
 class EasypostHelper(object):
@@ -161,7 +132,7 @@ class EasypostHelper(object):
 class SetUpEasypostBase(common.TransactionCase):
     """ Base class - Test the imports from a Easypost Mock.
     The data returned by Easypost are those created for the
-    demo version of Easypost on a standard 1.7 version.
+    demo version of Easypost on a standard 2 version.
     """
 
     def setUp(self):
@@ -170,14 +141,13 @@ class SetUpEasypostBase(common.TransactionCase):
         self.session = ConnectorSession(
             self.env.cr, self.env.uid, context=self.env.context
         )
-        # warehouse = self.env.ref('stock.warehouse0')
         self.backend = self.backend_model.create({
             'name': 'Test Easypost',
             'version': '2',
             'api_key': 'cueqNZUb3ldeWTNX7MU3Mel8UXtaAMUi',
         })
         self.backend_id = self.backend.id
-        # payment method needed to import a sale order
+        # payment method needed to import a purchase order
         workflow = self.env.ref(
             'sale_automatic_workflow.manual_validation'
         )
@@ -202,7 +172,3 @@ class SetUpEasypostSynchronized(SetUpEasypostBase):
 
     def setUp(self):
         super(SetUpEasypostSynchronized, self).setUp()
-        with mock_api(easypost_base_responses):
-            import_batch(
-                self.session, 'easypost.medical.pharmacy', self.backend_id
-            )
