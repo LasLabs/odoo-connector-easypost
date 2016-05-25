@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    @copyright (C) 2016-TODAY LasLabs, Inc. [https://laslabs.com]
+    @author Dave Lasley <dave@laslabs.com>
+    @license AGPL-3
+-->
+
+<odoo>
+
+    <record id="easypost_address_view_form" model="ir.ui.view">
+        <field name="name">easypost.address.view.form</field>
+        <field name="model">easypost.address</field>
+        <field name="arch" type="xml">
+            <form string="Address Verification">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="company_id" />
+                            <field name="phone" />
+                            <field name="email" />
+                            <field name="partner_id" />
+                            <field name="mode" />
+                        </group>
+                        <group>
+                            <field name="street" />
+                            <field name="street2" />
+                            <field name="city" />
+                            <field name="zip" />
+                            <field name="state_id" />
+                            <field name="country_id" />
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_validate"
+                            type="object"
+                            string="Validate"
+                            class="oe_highlight"/>
+                    or
+                    <button special="cancel"
+                            string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_easypost_address" model="ir.actions.act_window">
+        <field name="name">EasyPost Address</field>
+        <field name="res_model">easypost.address</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="easypost_address_view_form"/>
+    </record>
+
+</odoo>
