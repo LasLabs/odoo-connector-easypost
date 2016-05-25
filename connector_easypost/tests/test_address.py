@@ -2,34 +2,39 @@
 # © 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import openerp.tests.common as common
-from openerp.addons.connector.session import ConnectorSession
-from .common import mock_api
+from .common import mock_api, SetUpEasypostBase
 # from .data_base import easypost_base_responses
 # from ..unit.import_synchronizer import import_record
-from ..unit.export_synchronizer import export_record
+# from ..unit.export_synchronizer import export_record
 
 
-backend_adapter = 'openerp.addons.connector_easypost.unit.backend_adapter'
+model = 'openerp.addons.connector_easypost.models.address'
 
 
-class TestAddress(common.TransactionCase):
+class TestAddress(SetUpEasypostBase):
 
     def setUp(self):
         super(TestAddress, self).setUp()
-        self.backend_model = self.env['easypost.backend']
-        self.session = ConnectorSession(self.env.cr, self.env.uid,
-                                        context=self.env.context)
-        self.backend = self.backend_model.create({
-            'name': 'Test Easypost',
-            'version': '2',
-            'api_key': 'cueqNZUb3ldeWTNX7MU3Mel8UXtaAMUi',
-        })
         self.EasypostAddress = self.env['easypost.easypost.address']
         self.Address = self.env['easypost.address']
         self.address_id = self.Address.create({
             'partner_id': self.env.user.partner_id.id,
         })
+        self.call_args = dict(
+            city=False,
+            name=u'Administrator',
+            zip=False,
+            street1=False,
+            street2=False,
+            id=False,
+            phone=False,
+            state=False,
+            mode=False,
+            verify=['delivery'],
+            country=u'US',
+            company=u'YourCompany',
+            email=u'admin@yourcompany.example.com',
+        )
 
     def new_record(self):
         return self.EasypostAddress.create({
@@ -38,17 +43,24 @@ class TestAddress(common.TransactionCase):
         })
 
     def test_get_by_partner(self):
+        """ Test correct address is returned for partner via model method """
         rec_id = self.Address._get_by_partner(self.env.user.partner_id)
         self.assertEqual(
             self.address_id, rec_id,
         )
 
-    mock.patch('%s.easypost' % backend_adapter)
-    def test_api_workflow_on_create(self, mk):
-        """ This tests the main create/export/import cycle
-        @TODO: Split these tests up
-        """
-        # with mock_api() as mk:
-        rec_id = self.new_record()
-        export_record(self.session, self.EasypostAddress._name, rec_id.id)
-        mk.Address.verify.assert_called_once_with()
+    def test_api_create_triggers_export(self):
+        """ Test export of external resource on creation """
+        with mock_api() as mk:
+            self.new_record()
+            mk.Address.create.assert_called_once_with(**self.call_args)
+
+    def test_api_export_triggers_import(self):
+        """ Test data is immediately imported w/ update provided by export """
+        with mock_api() as mk:
+            expect = '123 Street Street'
+            mk.Address.create().street1 = expect
+            rec_id = self.new_record()
+            self.assertEqual(
+                expect, rec_id.street,
+            )

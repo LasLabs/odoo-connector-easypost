@@ -3,21 +3,20 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import mock
-from .common import mock_api
-import openerp.tests.common as common
+from .common import mock_api, SetUpEasypostBase
 
 
 model_path = 'openerp.addons.connector_easypost.models.res_partner'
 
 
-class TestResPartner(common.TransactionCase):
+class TestResPartner(SetUpEasypostBase):
 
     def setUp(self):
         super(TestResPartner, self).setUp()
         self.ResPartner = self.env['res.partner']
 
     def new_record(self, update_vals=None):
-        vals = {
+        self.vals = {
             'name': 'Test Partner',
             'street': '123 Street',
             'street2': 'St 2',
@@ -29,8 +28,8 @@ class TestResPartner(common.TransactionCase):
             'zip': '89119',
         }
         if update_vals:
-            vals.update(update_vals)
-        return self.ResPartner.create(vals)
+            self.vals.update(update_vals)
+        return self.ResPartner.create(self.vals)
 
     def test_action_easypost_synchronize_ensure_one(self):
         with self.assertRaises(ValueError):
@@ -92,7 +91,6 @@ class TestResPartner(common.TransactionCase):
             with mock.patch.object(rec_id, 'env') as env_mk:
                 mk = env_mk['easypost.easypost.address']
                 res = rec_id._easypost_synchronize()
-
                 mk._get_by_partner.assert_called_once_with(rec_id[0])
                 mk._get_by_partner().odoo_id.\
                     _sync_from_partner.assert_called_once_with()
@@ -102,8 +100,23 @@ class TestResPartner(common.TransactionCase):
 
     def test_easypost_synchronize_auto(self):
         rec_id = self.new_record()
+        with mock_api() as api:
+            with mock.patch.object(rec_id.env['easypost.easypost.address'],
+                                   '_get_by_partner'
+                                   ):
+                rec_id._easypost_synchronize(True)
+                api.Address.create().state_id = self.vals['state_id']
+                self.assertEqual(
+                    self.vals['state_id'], rec_id.state_id.id,
+                )
+
+    def test_easypost_synchronize_auto_company_id(self):
+        rec_id = self.new_record()
         with mock_api():
-            with mock.patch.object(rec_id, 'env'):
-                with mock.patch.object(rec_id, 'write') as mk:
-                    rec_id._easypost_synchronize(True)
-                    mk.assert_called_once_with()
+            with mock.patch.object(rec_id.env['easypost.easypost.address'],
+                                   '_get_by_partner'
+                                   ):
+                rec_id._easypost_synchronize(True)
+                self.assertEqual(
+                    self.env.ref('base.main_company'), rec_id.company_id,
+                )

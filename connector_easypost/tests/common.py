@@ -107,9 +107,6 @@ class ChainMap(dict):
 def mock_api():
     """ """
     with mock.patch('%s.easypost' % backend_adapter) as API:
-        api_mock = mock.MagicMock(name='easypost')
-        API.return_value = api_mock
-        api_mock.__enter__.return_value = api_mock
         yield API
 
 
@@ -148,21 +145,21 @@ class SetUpEasypostBase(common.TransactionCase):
         })
         self.backend_id = self.backend.id
         # payment method needed to import a purchase order
-        workflow = self.env.ref(
-            'sale_automatic_workflow.manual_validation'
-        )
-        journal = self.env.ref('account.check_journal')
-        self.payment_term = self.env.ref(
-            'account.account_payment_term_advance'
-        )
-        self.env['payment.method'].create({
-            'name': 'checkmo',
-            'workflow_process_id': workflow.id,
-            'import_rule': 'always',
-            'days_before_cancel': 0,
-            'payment_term_id': self.payment_term.id,
-            'journal_id': journal.id
-        })
+        # workflow = self.env.ref(
+        #     'sale_automatic_workflow.manual_validation'
+        # )
+        # journal = self.env.ref('account.check_journal')
+        # self.payment_term = self.env.ref(
+        #     'account.account_payment_term_advance'
+        # )
+        # self.env['payment.method'].create({
+        #     'name': 'checkmo',
+        #     'workflow_process_id': workflow.id,
+        #     'import_rule': 'always',
+        #     'days_before_cancel': 0,
+        #     'payment_term_id': self.payment_term.id,
+        #     'journal_id': journal.id
+        # })
 
     def get_easypost_helper(self, model_name):
         return EasypostHelper(self.cr, self.registry, model_name)

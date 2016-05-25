@@ -24,13 +24,6 @@ from ..connector import get_environment, add_checkpoint
 _logger = logging.getLogger(__name__)
 
 
-def int_or_str(val):
-    try:
-        return int(val)
-    except:
-        return str(val)
-
-
 class EasypostImporter(Importer):
     """ Base importer for Easypost """
 
@@ -267,53 +260,6 @@ class DelayedBatchImporter(BatchImporter):
 class SimpleRecordImporter(EasypostImporter):
     """ Import one Easypost Store """
     _model_name = []
-
-
-@easypost
-class TranslationImporter(Importer):
-    """ Import translations for a record.
-    Usually called from importers, in ``_after_import``.
-    For instance from the products and products' categories importers.
-    """
-
-    _model_name = []
-
-    def _get_easypost_data(self, storeview_id=None):
-        """ Return the raw Easypost data for ``self.easypost_id`` """
-        return self.backend_adapter.read(self.easypost_id, storeview_id)
-
-    def run(self, easypost_id, binding_id, mapper_class=None):
-        self.easypost_id = easypost_id
-        storeviews = self.env['easypost.storeview'].search(
-            [('backend_id', '=', self.backend_record.id)]
-        )
-        default_lang = self.backend_record.default_lang_id
-        lang_storeviews = [sv for sv in storeviews
-                           if sv.lang_id and sv.lang_id != default_lang]
-        if not lang_storeviews:
-            return
-
-        # find the translatable fields of the model
-        fields = self.model.fields_get()
-        translatable_fields = [field for field, attrs in fields.iteritems()
-                               if attrs.get('translate')]
-
-        if mapper_class is None:
-            mapper = self.mapper
-        else:
-            mapper = self.unit_for(mapper_class)
-
-        binding = self.model.browse(binding_id)
-        for storeview in lang_storeviews:
-            lang_record = self._get_easypost_data(storeview.easypost_id)
-            map_record = mapper.map_record(lang_record)
-            record = map_record.values()
-
-            data = dict((field, value) for field, value in record.iteritems()
-                        if field in translatable_fields)
-
-            binding.with_context(connector_no_export=True,
-                                 lang=storeview.lang_id.code).write(data)
 
 
 @easypost

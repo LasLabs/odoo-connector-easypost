@@ -190,7 +190,7 @@ class EasypostAddressExportMapper(ExportMapper):
 
     @mapping
     def verify(self, record):
-        return {'verify': ["delivery"]}
+        return {'verify': ['delivery']}
 
     @mapping
     @changed_by('company_id')

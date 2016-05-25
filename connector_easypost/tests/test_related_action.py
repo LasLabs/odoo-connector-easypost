@@ -9,7 +9,7 @@ from openerp.addons.connector.queue.job import (Job,
                                                 OpenERPJobStorage,
                                                 )
 from openerp.addons.connector.session import ConnectorSession
-# from .common import mock_api
+from .common import mock_api
 # from .data_base import easypost_base_responses
 # from ..unit.import_synchronizer import import_batch, import_record
 from ..unit.export_synchronizer import export_record
@@ -33,24 +33,27 @@ class TestRelatedActionStorage(common.TransactionCase):
 
     def test_unwrap_binding(self):
         """ Open a related action opening an unwrapped binding """
-        address_id = self.env['easypost.address'].create({
-            'partner_id': self.env.user.partner_id.id,
-        })
-        easypost_address = self.EasypostAddress.create({
-            'odoo_id': address_id.id,
-            'backend_id': self.backend.id
-        })
-        stored = self._create_job(export_record, 'easypost.easypost.address',
-                                  easypost_address.id)
-        expected = {
-            'name': mock.ANY,
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_id': address_id.id,
-            'res_model': 'easypost.address',
-        }
-        self.assertEquals(stored.open_related_action(), expected)
+        with mock_api():
+            address_id = self.env['easypost.address'].create({
+                'partner_id': self.env.user.partner_id.id,
+            })
+            easypost_address = self.EasypostAddress.create({
+                'odoo_id': address_id.id,
+                'backend_id': self.backend.id
+            })
+            stored = self._create_job(
+                export_record, 'easypost.easypost.address',
+                easypost_address.id,
+            )
+            expected = {
+                'name': mock.ANY,
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_id': address_id.id,
+                'res_model': 'easypost.address',
+            }
+            self.assertEquals(stored.open_related_action(), expected)
 
     def _create_job(self, func, *args):
         job = Job(func=func, args=args)
