@@ -240,7 +240,7 @@ class DirectBatchImporter(BatchImporter):
         import_record(self.session,
                       self.model._name,
                       self.backend_record.id,
-                      int_or_str(record_id))
+                      record_id)
 
 
 class DelayedBatchImporter(BatchImporter):
@@ -252,7 +252,7 @@ class DelayedBatchImporter(BatchImporter):
         import_record.delay(self.session,
                             self.model._name,
                             self.backend_record.id,
-                            int_or_str(record_id),
+                            record_id,
                             **kwargs)
 
 
