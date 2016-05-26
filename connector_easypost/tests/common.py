@@ -14,44 +14,10 @@ from openerp.addons.connector.session import ConnectorSession
 # from openerp.addons.connector_easypost.unit.import_synchronizer import (
 #     import_batch,
 # )
-# from openerp.addons.connector_easypost.unit.backend_adapter import (
-#     call_to_key,
-# )
 # from .data_base import easypost_base_responses
 
 
 backend_adapter = 'openerp.addons.connector_easypost.unit.backend_adapter'
-
-
-class TestResponder(object):
-    """ Used to simulate the calls to Easypost.
-    For a call (request) to Easypost, returns a stored
-    response.
-    """
-
-    def __init__(self, responses, key_func=None):
-        """
-        The responses are stored in dict instances.
-        The keys are normalized using the ``call_to_key``
-        function which transform the request calls in a
-        hashable form.
-        :param responses: responses returned by Easypost
-        :param call_to_key: function to build the key
-            from the method and arguments
-        :type responses: dict
-        """
-        self._responses = responses
-        self._calls = []
-
-    def __call__(self, method, arguments):
-        self._calls.append((method, arguments))
-        key = self.call_to_key(method, arguments)
-        assert key in self._responses, (
-            "%s not found in easypost responses" % str(key))
-        if hasattr(self._responses[key], '__call__'):
-            return self._responses[key]()
-        else:
-            return self._responses[key]
 
 
 @contextmanager
@@ -81,28 +47,6 @@ def mock_job_delay_to_direct(job_path):
         yield patched_job
 
 
-class ChainMap(dict):
-
-    def __init__(self, *maps):
-        self._maps = maps
-
-    def __getitem__(self, key):
-        for mapping in self._maps:
-            try:
-                return mapping[key]
-            except KeyError:
-                pass
-        raise KeyError(key)
-
-    def __contains__(self, key):
-        try:
-            self[key]
-        except KeyError:
-            return False
-        else:
-            return True
-
-
 @contextmanager
 def mock_api():
     """ """
@@ -116,15 +60,6 @@ class EasypostHelper(object):
         self.cr = cr
         self.model = registry(model_name)
 
-    def get_next_id(self):
-        self.cr.execute("SELECT max(easypost_id::int) FROM %s " %
-                        self.model._table)
-        result = self.cr.fetchone()
-        if result:
-            return int(result[0] or 0) + 1
-        else:
-            return 1
-
 
 class SetUpEasypostBase(common.TransactionCase):
     """ Base class - Test the imports from a Easypost Mock.
@@ -136,7 +71,7 @@ class SetUpEasypostBase(common.TransactionCase):
         super(SetUpEasypostBase, self).setUp()
         self.backend_model = self.env['easypost.backend']
         self.session = ConnectorSession(
-            self.env.cr, self.env.uid, context=self.env.context
+            self.env.cr, self.env.uid, context=self.env.context,
         )
         self.backend = self.backend_model.create({
             'name': 'Test Easypost',

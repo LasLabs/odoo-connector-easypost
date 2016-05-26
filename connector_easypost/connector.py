@@ -2,7 +2,7 @@
 # © 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from openerp import models, fields
+from openerp import models, fields, api
 from openerp.addons.connector.connector import ConnectorEnvironment
 from openerp.addons.connector.checkpoint import checkpoint
 
@@ -35,15 +35,31 @@ class EasypostBinding(models.AbstractModel):
         comodel_name='easypost.backend',
         string='Easypost Backend',
         required=True,
+        readonly=True,
         ondelete='restrict',
+        default=lambda s: s._default_backend_id(),
     )
-    # fields.Char because 0 is a valid Easypost ID
     easypost_id = fields.Char(string='ID on Easypost')
+
+    mode = fields.Char(
+        help='EasyPost Mode',
+    )
+    created_at = fields.Date('Created At (on EasyPost)')
+    updated_at = fields.Date('Updated At (on EasyPost)')
 
     _sql_constraints = [
         ('easypost_uniq', 'unique(backend_id, easypost_id)',
          'A binding already exists with the same Easypost ID.'),
     ]
+
+    @api.model
+    def _default_backend_id(self):
+        return self.env['easypost.backend'].search([
+            ('is_default', '=', True),
+            ('active', '=', True),
+        ],
+            limit=1,
+        )
 
 
 def add_checkpoint(session, model_name, record_id, backend_id):

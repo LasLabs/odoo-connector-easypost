@@ -6,3 +6,4 @@ from . import easypost_backend
 from . import res_company
 from . import res_partner
 from . import address
+from . import stock_delivery_pack
