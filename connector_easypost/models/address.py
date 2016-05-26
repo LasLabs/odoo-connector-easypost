@@ -13,7 +13,6 @@ from openerp.addons.connector.unit.mapper import (mapping,
 from ..unit.backend_adapter import EasypostCRUDAdapter
 from ..unit.mapper import (EasypostImportMapper,
                            )
-# from ..connector import get_environment
 from ..backend import easypost
 from ..unit.import_synchronizer import (DelayedBatchImporter,
                                         EasypostImporter,
@@ -164,13 +163,6 @@ class EasypostAddressImporter(EasypostImporter):
         checkpoint = self.unit_for(EasypostAddressAddCheckpoint)
         checkpoint.run(binding.id)
         return binding
-
-    #
-    # def _after_import(self, partner_binding):
-    #     """ Import the addresses """
-    #     book = self.unit_for(EasypostAddressEasypostAddressBook,
-    #                          model='easypost.easypost.address')
-    #     book.import_addresses(self.easypost_id, partner_binding.id)
 
 
 @easypost
