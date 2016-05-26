@@ -40,6 +40,12 @@ class EasypostBinding(models.AbstractModel):
     # fields.Char because 0 is a valid Easypost ID
     easypost_id = fields.Char(string='ID on Easypost')
 
+    mode = fields.Char(
+        help='EasyPost Mode',
+    )
+    created_at = fields.Date('Created At (on EasyPost)')
+    updated_at = fields.Date('Updated At (on EasyPost)')
+
     _sql_constraints = [
         ('easypost_uniq', 'unique(backend_id, easypost_id)',
          'A binding already exists with the same Easypost ID.'),

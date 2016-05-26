@@ -49,11 +49,6 @@ class EasypostEasypostAddress(models.TransientModel):
         store=True,
         readonly=True,
     )
-    mode = fields.Char(
-        help='EasyPost Mode',
-    )
-    created_at = fields.Date('Created At (on Easypost)')
-    updated_at = fields.Date('Updated At (on Easypost)')
 
     _sql_constraints = [
         ('odoo_uniq', 'unique(backend_id, odoo_id)',
@@ -146,10 +141,6 @@ class EasypostAddressImportMapper(EasypostImportMapper):
             limit=1,
         )
         return {'country_id': country_id.id}
-
-    @mapping
-    def easypost_id(self, record):
-        return {'easypost_id': record.id}
 
 
 @easypost
