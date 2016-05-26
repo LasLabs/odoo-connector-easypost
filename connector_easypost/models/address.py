@@ -4,21 +4,17 @@
 
 import logging
 from openerp import models, fields, api
-from openerp.addons.connector.connector import ConnectorUnit
 from openerp.addons.connector.unit.mapper import (mapping,
                                                   changed_by,
                                                   only_create,
-                                                  ExportMapper,
                                                   )
 from ..unit.backend_adapter import EasypostCRUDAdapter
 from ..unit.mapper import (EasypostImportMapper,
+                           EasypostExportMapper,
                            )
 from ..backend import easypost
-from ..unit.import_synchronizer import (DelayedBatchImporter,
-                                        EasypostImporter,
-                                        )
+from ..unit.import_synchronizer import (EasypostImporter)
 from ..unit.export_synchronizer import (EasypostExporter)
-from ..connector import add_checkpoint
 from ..unit.mapper import eval_false
 
 
@@ -42,12 +38,6 @@ class EasypostEasypostAddress(models.TransientModel):
         string='EasypostAddress',
         required=True,
         ondelete='cascade',
-    )
-    backend_id = fields.Many2one(
-        comodel_name='easypost.backend',
-        string='Easypost Backend',
-        store=True,
-        readonly=True,
     )
 
     _sql_constraints = [
@@ -92,22 +82,6 @@ class EasypostAddressAdapter(EasypostCRUDAdapter):
 
 
 @easypost
-class EasypostAddressBatchImporter(DelayedBatchImporter):
-    """ Import the Easypost EasypostAddresss.
-    For every patient in the list, a delayed job is created.
-    """
-    _model_name = ['easypost.easypost.address']
-
-    def run(self, filters=None):
-        """ Run the synchronization """
-        if filters is None:
-            filters = {}
-        record_ids = self.backend_adapter.search(**filters)
-        for record_id in record_ids:
-            self._import_record(record_id)
-
-
-@easypost
 class EasypostAddressImportMapper(EasypostImportMapper):
     _model_name = 'easypost.easypost.address'
 
@@ -146,18 +120,11 @@ class EasypostAddressImportMapper(EasypostImportMapper):
 @easypost
 class EasypostAddressImporter(EasypostImporter):
     _model_name = ['easypost.easypost.address']
-
     _base_mapper = EasypostAddressImportMapper
-
-    def _create(self, data):
-        binding = super(EasypostAddressImporter, self)._create(data)
-        checkpoint = self.unit_for(EasypostAddressAddCheckpoint)
-        checkpoint.run(binding.id)
-        return binding
 
 
 @easypost
-class EasypostAddressExportMapper(ExportMapper):
+class EasypostAddressExportMapper(EasypostExportMapper):
     _model_name = 'easypost.easypost.address'
 
     direct = [
@@ -194,10 +161,6 @@ class EasypostAddressExportMapper(ExportMapper):
             country = record.company_id.country_id.code
         return {'country': country}
 
-    @mapping
-    def id(self, record):
-        return {'id': record.easypost_id}
-
 
 @easypost
 class EasypostAddressExporter(EasypostExporter):
@@ -212,15 +175,3 @@ class EasypostAddressExporter(EasypostExporter):
         _logger.debug('Writing to %s with %s',
                       self.binding_record, update_vals)
         binding.write(update_vals)
-
-
-@easypost
-class EasypostAddressAddCheckpoint(ConnectorUnit):
-    """ Add a connector.checkpoint on the easypost.easypost.address record """
-    _model_name = ['easypost.easypost.address', ]
-
-    def run(self, binding_id):
-        add_checkpoint(self.session,
-                       self.model._name,
-                       binding_id,
-                       self.backend_record.id)

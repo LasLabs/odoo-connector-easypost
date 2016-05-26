@@ -64,8 +64,8 @@ def immediate_export_all_bindings(session, model_name, record_id, vals):
                       fields=fields)
 
 
-@on_record_write(model_names=['easypost.easypost.address'])
-@on_record_create(model_names=['easypost.easypost.address'])
+@on_record_write(model_names=['easypost.stock.delivery.pack'])
+@on_record_create(model_names=['easypost.stock.delivery.pack'])
 def delay_export(session, model_name, record_id, vals):
     """ Delay a job which export a binding record.
     (A binding record being a ``easypost.easypost.address``,

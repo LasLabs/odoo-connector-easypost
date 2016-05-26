@@ -2,10 +2,10 @@
 # © 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from openerp.addons.connector.unit.mapper import (# mapping,
+from openerp.addons.connector.unit.mapper import (mapping,
                                                   # changed_by,
                                                   ImportMapper,
-                                                  # ExportMapper,
+                                                  ExportMapper,
                                                   )
 
 
@@ -33,3 +33,10 @@ class EasypostImportMapper(ImportMapper):
     @mapping
     def easypost_id(self, record):
         return {'easypost_id': record.id}
+
+
+class EasypostExportMapper(ExportMapper):
+
+    @mapping
+    def id(self, record):
+        return {'id': record.easypost_id}

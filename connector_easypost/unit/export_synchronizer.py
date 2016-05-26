@@ -67,8 +67,7 @@ class EasypostBaseExporter(Exporter):
         sync = self.binding_record.sync_date
         if not sync:
             return True
-        record = self.backend_adapter.read(self.easypost_id,
-                                           attributes=['updated_at'])
+        record = self.backend_adapter.read(self.easypost_id)
         if not record['updated_at']:
             # If empty, the record is immutable. Return not changed
             return True
@@ -332,7 +331,8 @@ class EasypostExporter(EasypostBaseExporter):
         assert self.easypost_id
         # special check on data before export
         self._validate_update_data(data)
-        self.backend_adapter.write(self.easypost_id, data)
+        # data['id'] = self.easypost_id
+        self.backend_adapter.create(data)
 
     def _run(self, fields=None):
         """ Flow of the synchronization, implemented in inherited classes """

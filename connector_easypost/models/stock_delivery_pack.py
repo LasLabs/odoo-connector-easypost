@@ -3,30 +3,25 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
-from openerp import models, fields, api
-from openerp.addons.connector.connector import ConnectorUnit
+from openerp import models, fields
 from openerp.addons.connector.unit.mapper import (mapping,
                                                   changed_by,
                                                   only_create,
-                                                  ExportMapper,
                                                   )
 from ..unit.backend_adapter import EasypostCRUDAdapter
 from ..unit.mapper import (EasypostImportMapper,
+                           EasypostExportMapper,
                            )
-# from ..connector import get_environment
 from ..backend import easypost
-from ..unit.import_synchronizer import (DelayedBatchImporter,
-                                        EasypostImporter,
-                                        )
+from ..unit.import_synchronizer import (EasypostImporter)
 from ..unit.export_synchronizer import (EasypostExporter)
-from ..connector import add_checkpoint
 from ..unit.mapper import eval_false
 
 
 _logger = logging.getLogger(__name__)
 
 
-class EasypostStockDeliveryPack(models.TransientModel):
+class EasypostStockDeliveryPack(models.Model):
     """ Binding Model for the Easypost StockDeliveryPack
 
         TransientModel so that records are eventually deleted due to immutable
@@ -44,12 +39,6 @@ class EasypostStockDeliveryPack(models.TransientModel):
         required=True,
         ondelete='cascade',
     )
-    backend_id = fields.Many2one(
-        comodel_name='easypost.backend',
-        string='Easypost Backend',
-        store=True,
-        readonly=True,
-    )
 
     _sql_constraints = [
         ('odoo_uniq', 'unique(backend_id, odoo_id)',
@@ -57,7 +46,7 @@ class EasypostStockDeliveryPack(models.TransientModel):
     ]
 
 
-class StockDeliveryPack(models.TransientModel):
+class StockDeliveryPack(models.Model):
     """ Adds the ``one2many`` relation to the Easypost bindings
     (``easypost_bind_ids``)
     """
@@ -82,22 +71,6 @@ class StockDeliveryPackAdapter(EasypostCRUDAdapter):
         :return: EasyPost record for model
         """
         return self._get_ep_model().verify(id=_id)
-
-
-@easypost
-class StockDeliveryPackBatchImporter(DelayedBatchImporter):
-    """ Import the Easypost StockDeliveryPacks.
-    For every patient in the list, a delayed job is created.
-    """
-    _model_name = ['easypost.stock.delivery.pack']
-
-    def run(self, filters=None):
-        """ Run the synchronization """
-        if filters is None:
-            filters = {}
-        record_ids = self.backend_adapter.search(**filters)
-        for record_id in record_ids:
-            self._import_record(record_id)
 
 
 @easypost
@@ -135,25 +108,25 @@ class StockDeliveryPackImportMapper(EasypostImportMapper):
     @mapping
     @only_create
     def length(self, record):
-        """ If being created from EasyPost for some reason, return in inches """
+        """ If being created from EasyPost for some reason, return in inch """
         return {'length': record.length}
 
     @mapping
     @only_create
     def width(self, record):
-        """ If being created from EasyPost for some reason, return in inches """
+        """ If being created from EasyPost for some reason, return in inch """
         return {'width': record.width}
 
     @mapping
     @only_create
     def height(self, record):
-        """ If being created from EasyPost for some reason, return in inches """
+        """ If being created from EasyPost for some reason, return in inch """
         return {'height': record.height}
 
     @mapping
     @only_create
     def weight(self, record):
-        """ If being created from EasyPost for some reason, return in inches """
+        """ If being created from EasyPost for some reason, return in inch """
         return {'weight': record.weight}
 
     @mapping
@@ -178,31 +151,28 @@ class StockDeliveryPackImportMapper(EasypostImportMapper):
 @easypost
 class StockDeliveryPackImporter(EasypostImporter):
     _model_name = ['easypost.stock.delivery.pack']
-
     _base_mapper = StockDeliveryPackImportMapper
-
-    def _create(self, data):
-        binding = super(StockDeliveryPackImporter, self)._create(data)
-        checkpoint = self.unit_for(StockDeliveryPackAddCheckpoint)
-        checkpoint.run(binding.id)
-        return binding
 
 
 @easypost
-class StockDeliveryPackExportMapper(ExportMapper):
+class StockDeliveryPackExportMapper(EasypostExportMapper):
     _model_name = 'easypost.stock.delivery.pack'
 
     def _convert_to_inches(self, uom_qty, uom_id):
         inches_id = self.env.ref('product.product_uom_inch')
         if uom_id.id != inches_id.id:
-            return uom_id._compute_qty_obj(uom_qty, inches_id)
+            return self.env['product.uom']._compute_qty_obj(
+                uom_id, uom_qty, inches_id,
+            )
         else:
             return uom_qty
 
     def _convert_to_ounces(self, uom_qty, uom_id):
         oz_id = self.env.ref('product.product_uom_oz')
         if uom_id.id != oz_id.id:
-            return uom_id._compute_qty_obj(uom_qty, oz_id)
+            return self.env['product.uom']._compute_qty_obj(
+                uom_id, uom_qty, oz_id,
+            )
         else:
             return uom_qty
 
@@ -225,7 +195,7 @@ class StockDeliveryPackExportMapper(ExportMapper):
     @mapping
     @changed_by('height', 'height_uom_id')
     def height(self, record):
-        length = self._convert_to_inches(
+        height = self._convert_to_inches(
             record.height, record.height_uom_id,
         )
         return {'height': height}
@@ -233,38 +203,13 @@ class StockDeliveryPackExportMapper(ExportMapper):
     @mapping
     @changed_by('weight', 'weight_uom_id')
     def weight(self, record):
-        length = self._convert_to_ounces(
+        weight = self._convert_to_ounces(
             record.weight, record.weight_uom_id,
         )
         return {'weight': weight}
-
-    @mapping
-    def id(self, record):
-        return {'id': record.easypost_id}
 
 
 @easypost
 class StockDeliveryPackExporter(EasypostExporter):
     _model_name = ['easypost.stock.delivery.pack']
     _base_mapper = StockDeliveryPackExportMapper
-
-    def _after_export(self):
-        binding = self.binding_record.with_context(connector_no_export=True)
-        importer = self.unit_for(StockDeliveryPackImporter)
-        map_record = importer.mapper.map_record(self.easypost_id)
-        update_vals = map_record.values()
-        _logger.debug('Writing to %s with %s',
-                      self.binding_record, update_vals)
-        binding.write(update_vals)
-
-
-@easypost
-class StockDeliveryPackAddCheckpoint(ConnectorUnit):
-    """ Add a connector.checkpoint on the easypost.stock.delivery.pack record """
-    _model_name = ['easypost.stock.delivery.pack', ]
-
-    def run(self, binding_id):
-        add_checkpoint(self.session,
-                       self.model._name,
-                       binding_id,
-                       self.backend_record.id)
