@@ -78,7 +78,7 @@ def delay_export(session, model_name, record_id, vals):
     export_record.delay(session, model_name, record_id, fields=fields)
 
 
-# @on_record_write(model_names=['easypost.address'])
+@on_record_write(model_names=['stock.delivery.pack'])
 def delay_export_all_bindings(session, model_name, record_id, vals):
     """ Delay a job which export all the bindings of a record.
     In this case, it is called on records of normal models and will delay
@@ -91,6 +91,18 @@ def delay_export_all_bindings(session, model_name, record_id, vals):
     for binding in record.easypost_bind_ids:
         export_record.delay(session, binding._model._name, binding.id,
                             fields=fields)
+
+
+@on_record_create(model_names=['easypost.shipment'])
+def delay_export_new_binding(session, model_name, record_id, vals):
+    """ Create a new binding record, then trigger delayed export
+    In this case, it is called on records of normal models to create
+    binding record, and trigger external system export
+    """
+    session.env['easypost.%s' % model_name].create({
+        'odoo_id': record_id,
+    })
+    delay_export_all_bindings(session, model_name, record_id, vals)
 
 
 def delay_unlink(session, model_name, record_id):

@@ -1,2 +1,2 @@
 connector
-laslabs-stock https://github.com/laslabs/odoo-stock.git 9.0
+laslabs-stock https://github.com/laslabs/odoo-stock.git feature/9.0/LABS-154-connector-qa

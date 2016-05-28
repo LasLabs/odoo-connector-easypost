@@ -20,12 +20,14 @@ class TestStockDeliveryPack(SetUpEasypostBase):
         self.inch_id = self.env.ref('product.product_uom_inch')
         self.oz_id = self.env.ref('product.product_uom_oz')
         self.gram_id = self.env.ref('product.product_uom_gram')
+        self.quant_pack_id = self.env['stock.quant.package'].create({})
+        self.id = 'ep_121232'
         self.ep_vals = {
             'length': 1.0,
             'height': 2.0,
             'width': 3.0,
             'weight': 4.0,
-            'id': 'ep_121232',
+            'id': self.id,
         }
         self.converted = {
             'length': .4,
@@ -39,7 +41,8 @@ class TestStockDeliveryPack(SetUpEasypostBase):
             'width_uom_id': self.inch_id.id,
             'weight_uom_id': self.oz_id.id,
             'name': 'TestPack',
-            'easypost_id': self.ep_vals['id'],
+            'quant_pack_id': self.quant_pack_id.id,
+            'easypost_id': self.id,
         }
         self.vals.update(self.ep_vals)
         del self.vals['id']
@@ -75,7 +78,8 @@ class TestStockDeliveryPack(SetUpEasypostBase):
                 self.ep_vals.update({'weight': 10.0})
                 rec_id.write(self.ep_vals)
                 args = mk.Parcel.create.call_args
-                expect = mock.call(id=u'ep_121232', **self.ep_vals)
+                expect = mock.call(id=self.id,
+                                   **self.ep_vals)
                 self.assertEqual(
                     expect, args,
                     'Did not call create w/ args on write. '

@@ -24,6 +24,7 @@ class EasypostModelBinder(EasypostBinder):
     _model_name = [
         'easypost.easypost.address',
         'easypost.stock.delivery.pack',
+        'easypost.easypost.shipment',
     ]
 
     def to_odoo(self, external_id, unwrap=True, browse=False):

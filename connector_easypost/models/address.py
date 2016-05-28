@@ -150,7 +150,7 @@ class EasypostAddressExportMapper(EasypostExportMapper):
     @mapping
     @changed_by('state_id')
     def state(self, record):
-        return {'state': record.state_id.name}
+        return {'state': record.state_id.code}
 
     @mapping
     @changed_by('country_id')
