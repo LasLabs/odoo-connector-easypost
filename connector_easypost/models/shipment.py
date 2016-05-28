@@ -6,6 +6,7 @@ import logging
 from openerp import models, fields
 from openerp.addons.connector.unit.mapper import (mapping,
                                                   changed_by,
+                                                  # only_create,
                                                   )
 from ..unit.backend_adapter import EasypostCRUDAdapter
 from ..unit.mapper import (EasypostImportMapper,
@@ -15,6 +16,7 @@ from ..backend import easypost
 from ..unit.import_synchronizer import (EasypostImporter)
 from ..unit.export_synchronizer import (EasypostExporter)
 from ..unit.mapper import eval_false
+from .stock_delivery_rate import StockDeliveryRateImporter
 
 
 _logger = logging.getLogger(__name__)
@@ -37,7 +39,7 @@ class EasypostEasypostShipment(models.Model):
 
     _sql_constraints = [
         ('odoo_uniq', 'unique(backend_id, odoo_id)',
-         'A Easypost binding for this patient already exists.'),
+         'A Easypost binding for this record already exists.'),
     ]
 
 
@@ -51,12 +53,12 @@ class EasypostShipment(models.Model):
     to_partner_id = fields.Many2one(
         string='To Address',
         comodel_name='res.partner',
-        related='group_id.picking_id.partner_id',
+        related='group_id.ship_partner_id',
     )
     from_partner_id = fields.Many2one(
         string='From Address',
         comodel_name='res.partner',
-        related='group_id.picking_id.location_id.partner_id',
+        related='group_id.from_partner_id',
     )
     group_id = fields.Many2one(
         string='Delivery Group',
@@ -81,14 +83,6 @@ class EasypostShipmentAdapter(EasypostCRUDAdapter):
     """ Backend Adapter for the Easypost EasypostShipment """
     _model_name = 'easypost.easypost.shipment'
 
-    def read(self, _id):
-        """ Gets record by id and returns the object
-        :param _id: Id of record to get from Db
-        :type _id: int
-        :return: EasyPost record for model
-        """
-        return self._get_ep_model().verify(id=_id)
-
 
 @easypost
 class EasypostShipmentImportMapper(EasypostImportMapper):
@@ -98,11 +92,22 @@ class EasypostShipmentImportMapper(EasypostImportMapper):
         (eval_false('mode'), 'mode'),
     ]
 
+    @mapping
+    def rates(self, record):
+        importer = self.unit_for(StockDeliveryRateImporter,
+                                 model='easypost.stock.delivery.rate')
+        for rate in record.rates:
+            importer.run(rate.id)
+
 
 @easypost
 class EasypostShipmentImporter(EasypostImporter):
     _model_name = ['easypost.easypost.shipment']
     _base_mapper = EasypostShipmentImportMapper
+
+    def _is_uptodate(self, binding):
+        """Return False to always force import """
+        return False
 
 
 @easypost
@@ -130,7 +135,8 @@ class EasypostShipmentExportMapper(EasypostExportMapper):
     @changed_by('pack_id')
     def parcel(self, record):
         binder = self.binder_for('easypost.stock.delivery.pack')
-        return {'parcel': binder.to_backend(record.pack_id)}
+        parcel = binder.to_backend(record.pack_id)
+        return {'parcel': {'id': parcel}}
 
     @mapping
     @changed_by('to_partner_id')
@@ -149,5 +155,14 @@ class EasypostShipmentExporter(EasypostExporter):
     _base_mapper = EasypostShipmentExportMapper
 
     def _export_dependencies(self):
+        _logger.debug('Exporting Dependency %r', self.binding_record.pack_id)
         self._export_dependency(self.binding_record.pack_id,
                                 'easypost.stock.delivery.pack')
+
+    def _after_export(self):
+        """ Immediate re-import """
+        importer = self.unit_for(StockDeliveryRateImporter,
+                                 model='easypost.stock.delivery.rate')
+        for rate in self.easypost_record.rates:
+            importer.easypost_record = rate
+            importer.run(rate.id)

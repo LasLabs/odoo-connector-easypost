@@ -38,6 +38,8 @@ To use this module, you need to:
 Known Issues / Roadmap
 ======================
 
+* Handle validation errors from addresses
+* Some duplicate calls to EasyPost (Address, Shipment) - seems to be just in the tests though
 
 Credits
 =======

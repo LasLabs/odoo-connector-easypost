@@ -25,6 +25,7 @@ class EasypostModelBinder(EasypostBinder):
         'easypost.easypost.address',
         'easypost.stock.delivery.pack',
         'easypost.easypost.shipment',
+        'easypost.stock.delivery.rate',
     ]
 
     def to_odoo(self, external_id, unwrap=True, browse=False):
@@ -86,6 +87,8 @@ class EasypostModelBinder(EasypostBinder):
         :param binding_id: Odoo ID to bind
         :type binding_id: int
         """
+        if hasattr(external_id, 'id'):
+            external_id = external_id.id
         # the external ID can be 0 on Easypost! Prevent False values
         # like False, None, or "", but not 0.
         assert (external_id or external_id == 0) and binding_id, (
@@ -93,13 +96,13 @@ class EasypostModelBinder(EasypostBinder):
             "got: %s, %s" % (external_id, binding_id)
         )
         # avoid to trigger the export when we modify the `easypost_id`
-        now_fmt = openerp.fields.Datetime.now()
         if not isinstance(binding_id, openerp.models.BaseModel):
             binding_id = self.model.browse(binding_id)
         binding_id.with_context(connector_no_export=True).write({
             'easypost_id': str(external_id),
-            'sync_date': now_fmt,
+            'sync_date': openerp.fields.Datetime.now(),
         })
+        return binding_id
 
     def unwrap_binding(self, binding_id, browse=False):
         """ For a binding record, gives the normal record.

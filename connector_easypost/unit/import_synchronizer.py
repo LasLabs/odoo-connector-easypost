@@ -13,6 +13,8 @@ are already bound, to update the last sync date.
 
 
 import logging
+import dateutil.parser
+import pytz
 from openerp import fields, _
 from openerp.addons.connector.queue.job import job
 from openerp.addons.connector.connector import ConnectorUnit
@@ -38,7 +40,7 @@ class EasypostImporter(Importer):
 
     def _get_easypost_data(self):
         """ Return the raw Easypost data for ``self.easypost_id`` """
-        _logger.debug('Getting CP data for %s', self.easypost_id)
+        _logger.debug('Getting EasyPost data for %s', self.easypost_id)
         return self.backend_adapter.read(self.easypost_id)
 
     def _before_import(self):
@@ -49,16 +51,17 @@ class EasypostImporter(Importer):
         """Return True if the import should be skipped because
         it is already up-to-date in Odoo"""
         assert self.easypost_record
-        if not self.easypost_record.get('updated_at'):
+        if not self.easypost_record.updated_at:
             return  # no update date on Easypost, always import it.
         if not binding:
             return  # it does not exist so it should not be skipped
         sync = binding.sync_date
         if not sync:
             return
-        from_string = fields.Datetime.from_string
-        sync_date = from_string(sync)
-        easypost_date = self.easypost_record.get('updated_at')
+        sync_date = fields.Datetime.from_string(sync)
+        sync_date = pytz.utc.localize(sync_date)
+        easypost_date = self.easypost_record.updated_at
+        easypost_date = dateutil.parser.parse(easypost_date)
         # if the last synchronization date is greater than the last
         # update in easypost, we skip the import.
         # Important: at the beginning of the exporters flows, we have to
@@ -164,6 +167,13 @@ class EasypostImporter(Importer):
             self.easypost_id)
         return
 
+    def _update_export(self, bind_record, easypost_record):
+        """ Update record using data received from export """
+        self.easypost_record = easypost_record
+        map_record = self._map_data()
+        record = self._update_data(map_record)
+        self._update(bind_record, record)
+
     def _after_import(self, binding):
         """ Hook called at the end of the import """
         return
@@ -173,7 +183,8 @@ class EasypostImporter(Importer):
         :param easypost_id: identifier of the record on Easypost
         """
         self.easypost_id = easypost_id
-        self.easypost_record = self._get_easypost_data()
+        if not self.easypost_record:
+            self.easypost_record = self._get_easypost_data()
         _logger.info('self.easypost_record - %s', self.easypost_record)
         lock_name = 'import({}, {}, {}, {})'.format(
             self.backend_record._name,
@@ -206,7 +217,6 @@ class EasypostImporter(Importer):
         else:
             record = self._create_data(map_record)
             binding = self._create(record)
-
         self.binder.bind(self.easypost_id, binding)
 
         self._after_import(binding)

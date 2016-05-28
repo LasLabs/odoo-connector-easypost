@@ -8,3 +8,4 @@ from . import res_partner
 from . import address
 from . import stock_delivery_pack
 from . import shipment
+from . import stock_delivery_rate

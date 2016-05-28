@@ -2,14 +2,12 @@
 # © 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from openerp.addons.connector.connector import Binder
 from .unit.export_synchronizer import (export_record,
                                        )
-from .unit.delete_synchronizer import export_delete_record
+# from .unit.delete_synchronizer import export_delete_record
 from openerp.addons.connector.event import (on_record_create,
                                             on_record_write,
                                             )
-from .connector import get_environment
 
 
 import logging
@@ -33,7 +31,7 @@ _logger = logging.getLogger(__name__)
 
 
 @on_record_create(model_names=['easypost.easypost.address'])
-# @on_record_write(model_names=['easypost.easypost.address'])
+@on_record_write(model_names=['easypost.easypost.address'])
 def immediate_export(session, model_name, record_id, vals):
     """ Create immediate export of a binding record.
     (A binding record being a ``easypost.easypost.address``,
@@ -46,7 +44,7 @@ def immediate_export(session, model_name, record_id, vals):
     export_record(session, model_name, record_id, fields=fields)
 
 
-# @on_record_create(model_names=['easypost.easypost.address'])
+# @on_record_create(model_names=['easypost.address'])
 @on_record_write(model_names=['easypost.address'])
 def immediate_export_all_bindings(session, model_name, record_id, vals):
     """ Create immediate export of all the bindings of a record.
@@ -64,7 +62,7 @@ def immediate_export_all_bindings(session, model_name, record_id, vals):
                       fields=fields)
 
 
-@on_record_write(model_names=['easypost.stock.delivery.pack'])
+# @on_record_write(model_names=['easypost.stock.delivery.pack'])
 @on_record_create(model_names=['easypost.stock.delivery.pack'])
 def delay_export(session, model_name, record_id, vals):
     """ Delay a job which export a binding record.
@@ -79,6 +77,7 @@ def delay_export(session, model_name, record_id, vals):
 
 
 @on_record_write(model_names=['stock.delivery.pack'])
+# @on_record_create(model_names=['stock.delivery.pack'])
 def delay_export_all_bindings(session, model_name, record_id, vals):
     """ Delay a job which export all the bindings of a record.
     In this case, it is called on records of normal models and will delay
@@ -93,25 +92,31 @@ def delay_export_all_bindings(session, model_name, record_id, vals):
                             fields=fields)
 
 
-@on_record_create(model_names=['easypost.shipment'])
-def delay_export_new_binding(session, model_name, record_id, vals):
+@on_record_create(model_names=['easypost.shipment',
+                               # 'stock.delivery.pack',
+                               ])
+def delay_create(session, model_name, record_id, vals):
     """ Create a new binding record, then trigger delayed export
     In this case, it is called on records of normal models to create
     binding record, and trigger external system export
     """
-    session.env['easypost.%s' % model_name].create({
-        'odoo_id': record_id,
-    })
+    model_obj = session.env['easypost.%s' % model_name].with_context(
+        connector_no_export=True,
+    )
+    if not len(model_obj.search([('odoo_id', '=', record_id)])):
+        model_obj.create({
+            'odoo_id': record_id,
+        })
     delay_export_all_bindings(session, model_name, record_id, vals)
 
 
-def delay_unlink(session, model_name, record_id):
-    """ Delay a job which delete a record on Easypost.
-    Called on binding records."""
-    record = session.env[model_name].browse(record_id)
-    env = get_environment(session, model_name, record.backend_id.id)
-    binder = env.get_connector_unit(Binder)
-    easypost_id = binder.to_backend(record_id, wrap=False)
-    if easypost_id:
-        export_delete_record.delay(session, model_name,
-                                   record.backend_id.id, easypost_id)
+# def delay_unlink(session, model_name, record_id):
+#     """ Delay a job which delete a record on Easypost.
+#     Called on binding records."""
+#     record = session.env[model_name].browse(record_id)
+#     env = get_environment(session, model_name, record.backend_id.id)
+#     binder = env.get_connector_unit(Binder)
+#     easypost_id = binder.to_backend(record_id, wrap=False)
+#     if easypost_id:
+#         export_delete_record.delay(session, model_name,
+#                                    record.backend_id.id, easypost_id)

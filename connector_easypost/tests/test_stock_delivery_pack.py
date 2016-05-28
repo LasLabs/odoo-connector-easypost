@@ -21,13 +21,11 @@ class TestStockDeliveryPack(SetUpEasypostBase):
         self.oz_id = self.env.ref('product.product_uom_oz')
         self.gram_id = self.env.ref('product.product_uom_gram')
         self.quant_pack_id = self.env['stock.quant.package'].create({})
-        self.id = 'ep_121232'
         self.ep_vals = {
             'length': 1.0,
             'height': 2.0,
             'width': 3.0,
             'weight': 4.0,
-            'id': self.id,
         }
         self.converted = {
             'length': .4,
@@ -42,10 +40,8 @@ class TestStockDeliveryPack(SetUpEasypostBase):
             'weight_uom_id': self.oz_id.id,
             'name': 'TestPack',
             'quant_pack_id': self.quant_pack_id.id,
-            'easypost_id': self.id,
         }
         self.vals.update(self.ep_vals)
-        del self.vals['id']
 
     def _convert_uom(self, name):
         if name == 'weight':
@@ -68,17 +64,20 @@ class TestStockDeliveryPack(SetUpEasypostBase):
         with mock_job_delay_to_direct(job):
             with mock_api() as mk:
                 self.new_record()
-                mk.Parcel.create.assert_called_once_with(**self.ep_vals)
+                mk.Parcel.create.assert_has_calls([
+                    mock.call(),
+                    mock.call(id=False, **self.ep_vals),
+                ])
 
     def test_api_write_triggers_export(self):
         """ Test export of external resource on write """
+        rec_id = self.new_record()
         with mock_job_delay_to_direct(job):
             with mock_api() as mk:
-                rec_id = self.new_record()
                 self.ep_vals.update({'weight': 10.0})
                 rec_id.write(self.ep_vals)
                 args = mk.Parcel.create.call_args
-                expect = mock.call(id=self.id,
+                expect = mock.call(id=False,
                                    **self.ep_vals)
                 self.assertEqual(
                     expect, args,
@@ -94,7 +93,10 @@ class TestStockDeliveryPack(SetUpEasypostBase):
             with mock_api() as mk:
                 self.new_record()
                 self._convert_uom(name)
-                mk.Parcel.create.assert_called_once_with(**self.ep_vals)
+                mk.Parcel.create.assert_has_calls([
+                    mock.call(),
+                    mock.call(id=False, **self.ep_vals),
+                ])
 
     def test_export_length_convert(self):
         self._uom_conversion_helper('length', self.cm_id)
