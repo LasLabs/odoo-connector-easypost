@@ -14,14 +14,17 @@ class TestResPartner(SetUpEasypostBase):
     def setUp(self):
         super(TestResPartner, self).setUp()
         self.ResPartner = self.env['res.partner']
+        self.state_id = self.env['res.country.state'].browse(1)
+        self.street = '123 Street Ave'
 
     def new_record(self, update_vals=None):
         self.vals = {
             'name': 'Test Partner',
-            'street': '123 Street',
+            'street': self.street,
             'street2': 'St 2',
             'city': 'City',
-            'state_id': 1,
+            'state_id': self.state_id.id,
+            'country_id': self.state_id.country_id.id,
             'company_id': self.env.ref('base.main_company').id,
             'phone': '12341234',
             'email': 'derp@test.com',
@@ -75,7 +78,6 @@ class TestResPartner(SetUpEasypostBase):
                 mk = env_mk['easypost.easypost.address']
                 mk._get_by_partner.return_value = False
                 res = rec_id._easypost_synchronize()
-
                 mk._get_by_partner.assert_called_once_with(rec_id[0])
                 mk.create.assert_called_once_with({
                     'partner_id': rec_id[0].id,
@@ -99,23 +101,24 @@ class TestResPartner(SetUpEasypostBase):
                 )
 
     def test_easypost_synchronize_auto(self):
-        rec_id = self.new_record()
         with mock_api() as api:
+            rec_id = self.new_record()
             with mock.patch.object(rec_id.env['easypost.easypost.address'],
                                    '_get_by_partner'
-                                   ):
+                                   ) as get_mk:
+                get_mk.return_value = False
                 rec_id._easypost_synchronize(True)
-                api.Address.create().state_id = self.vals['state_id']
                 self.assertEqual(
-                    self.vals['state_id'], rec_id.state_id.id,
+                    u"%s" % api.Address.create().street1, rec_id.street,
                 )
 
     def test_easypost_synchronize_auto_company_id(self):
-        rec_id = self.new_record()
         with mock_api():
+            rec_id = self.new_record()
             with mock.patch.object(rec_id.env['easypost.easypost.address'],
                                    '_get_by_partner'
-                                   ):
+                                   ) as get_mk:
+                get_mk.return_value = False
                 rec_id._easypost_synchronize(True)
                 self.assertEqual(
                     self.env.ref('base.main_company'), rec_id.company_id,

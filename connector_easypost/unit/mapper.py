@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from openerp.addons.connector.unit.mapper import (mapping,
-                                                  # changed_by,
+                                                  only_create,
                                                   ImportMapper,
                                                   ExportMapper,
                                                   )
@@ -33,6 +33,17 @@ class EasypostImportMapper(ImportMapper):
     @mapping
     def easypost_id(self, record):
         return {'easypost_id': record.id}
+
+    @mapping
+    @only_create
+    def odoo_id(self, record):
+        """ Attempt to bind on an existing record
+        EasyPost aggregates records upstream, this is to handle that
+        """
+        binder = self.binder_for(self._model_name)
+        odoo_id = binder.to_odoo(record.id)
+        if odoo_id:
+            return {'odoo_id': odoo_id}
 
 
 class EasypostExportMapper(ExportMapper):

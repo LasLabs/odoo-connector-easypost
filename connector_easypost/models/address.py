@@ -42,7 +42,7 @@ class EasypostEasypostAddress(models.TransientModel):
 
     _sql_constraints = [
         ('odoo_uniq', 'unique(backend_id, odoo_id)',
-         'A Easypost binding for this patient already exists.'),
+         'A Easypost binding for this record already exists.'),
     ]
 
     @api.model
@@ -72,14 +72,6 @@ class EasypostAddressAdapter(EasypostCRUDAdapter):
     """ Backend Adapter for the Easypost EasypostAddress """
     _model_name = 'easypost.easypost.address'
 
-    def read(self, _id):
-        """ Gets record by id and returns the object
-        :param _id: Id of record to get from Db
-        :type _id: int
-        :return: EasyPost record for model
-        """
-        return self._get_ep_model().verify(id=_id)
-
 
 @easypost
 class EasypostAddressImportMapper(EasypostImportMapper):
@@ -98,29 +90,37 @@ class EasypostAddressImportMapper(EasypostImportMapper):
 
     @mapping
     @only_create
-    def state_id(self, record):
-        state_id = self.env['res.country.state'].search([
-            ('name', '=', record.state),
-        ],
-            limit=1,
-        )
-        return {'state_id': state_id.id}
+    def partner_id(self, record):
+        binder = self.binder_for(self._model_name)
+        address_id = binder.to_odoo(record.id, browse=True)
+        return {'partner_id': address_id.partner_id.id}
 
     @mapping
-    @only_create
-    def country_id(self, record):
+    def country_state_id(self, record):
         country_id = self.env['res.country'].search([
             ('code', '=', record.country),
         ],
             limit=1,
         )
-        return {'country_id': country_id.id}
+        state_id = self.env['res.country.state'].search([
+            ('country_id', '=', country_id.id),
+            ('code', '=', record.state),
+        ],
+            limit=1,
+        )
+        return {'country_id': country_id.id,
+                'state_id': state_id.id,
+                }
 
 
 @easypost
 class EasypostAddressImporter(EasypostImporter):
     _model_name = ['easypost.easypost.address']
     _base_mapper = EasypostAddressImportMapper
+
+    def _is_uptodate(self, binding):
+        """Return False to always force import """
+        return False
 
 
 @easypost
@@ -143,14 +143,9 @@ class EasypostAddressExportMapper(EasypostExportMapper):
         return {'verify': ['delivery']}
 
     @mapping
-    @changed_by('company_id')
-    def company(self, record):
-        return {'company': record.company_id.name}
-
-    @mapping
     @changed_by('state_id')
     def state(self, record):
-        return {'state': record.state_id.name}
+        return {'state': record.state_id.code}
 
     @mapping
     @changed_by('country_id')
@@ -168,10 +163,6 @@ class EasypostAddressExporter(EasypostExporter):
     _base_mapper = EasypostAddressExportMapper
 
     def _after_export(self):
-        binding = self.binding_record.with_context(connector_no_export=True)
+        """ Immediate re-import """
         importer = self.unit_for(EasypostAddressImporter)
-        map_record = importer.mapper.map_record(self.easypost_id)
-        update_vals = map_record.values()
-        _logger.debug('Writing to %s with %s',
-                      self.binding_record, update_vals)
-        binding.write(update_vals)
+        importer._update_export(self.binding_record, self.easypost_record)

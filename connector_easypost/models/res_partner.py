@@ -2,7 +2,8 @@
 # © 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from openerp import models, api
+from openerp import models, api, _
+from openerp.exceptions import ValidationError
 
 
 import logging
@@ -15,7 +16,12 @@ class ResPartner(models.Model):
     @api.multi
     def action_easypost_synchronize(self):
         self.ensure_one()
-        address_id = self._easypost_synchronize()[self.id]
+        try:
+            address_id = self._easypost_synchronize()[self.id]
+        except KeyError:
+            raise ValidationError(_(
+                'An error occurred - most likely no EasyPost configured.',
+            ))
         context = self.env.context.copy()
         model_obj = self.env['ir.model.data']
         form_id = model_obj.xmlid_to_object(
@@ -67,7 +73,8 @@ class ResPartner(models.Model):
                         'partner_id': rec_id.id,
                         'backend_id': backend_id.id,
                     })
-                else:
+                elif not auto:
+                    # @TODO: remove duplicate eval of auto
                     address_id.odoo_id._sync_from_partner()
                 if auto:
                     partner_vals = {}

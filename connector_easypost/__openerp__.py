@@ -24,6 +24,7 @@
         'views/connector_menu.xml',
         'views/res_partner_view.xml',
         'wizards/easypost_address_view.xml',
+        'security/ir.model.access.csv',
     ],
     'installable': True,
     'application': False,

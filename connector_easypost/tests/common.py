@@ -18,6 +18,7 @@ from openerp.addons.connector.session import ConnectorSession
 
 
 backend_adapter = 'openerp.addons.connector_easypost.unit.backend_adapter'
+inc_id = 0
 
 
 @contextmanager
@@ -33,7 +34,7 @@ def mock_job_delay_to_direct(job_path):
                                                            job_module)
 
     def clean_args_for_func(*args, **kwargs):
-        # remove the special args reseved to .delay()
+        # remove the special args reserved to .delay()
         kwargs.pop('priority', None)
         kwargs.pop('eta', None)
         kwargs.pop('model_name', None)
@@ -48,9 +49,24 @@ def mock_job_delay_to_direct(job_path):
 
 
 @contextmanager
-def mock_api():
+def mock_api(models=None, actions=None, ret_val=False):
     """ """
+    global inc_id
+    if models is None:
+        models = ['Address', 'Parcel', 'Shipment', 'Rate']
+    if actions is None:
+        actions = ['create', 'retrieve']
     with mock.patch('%s.easypost' % backend_adapter) as API:
+        for model in models:
+            model = getattr(API, model)
+            for action in actions:
+                if action == 'create':
+                    inc_id += 1
+                action = getattr(model, action)()
+                for col in ['created_at', 'updated_at']:
+                    setattr(action, col, ret_val)
+                setattr(action, 'id', inc_id)
+                setattr(action, 'mode', '__TEST__')
         yield API
 
 

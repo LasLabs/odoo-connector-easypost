@@ -42,7 +42,7 @@ class EasypostStockDeliveryPack(models.Model):
 
     _sql_constraints = [
         ('odoo_uniq', 'unique(backend_id, odoo_id)',
-         'A Easypost binding for this patient already exists.'),
+         'A Easypost binding for this record already exists.'),
     ]
 
 
@@ -64,14 +64,6 @@ class StockDeliveryPackAdapter(EasypostCRUDAdapter):
     """ Backend Adapter for the Easypost StockDeliveryPack """
     _model_name = 'easypost.stock.delivery.pack'
 
-    def read(self, _id):
-        """ Gets record by id and returns the object
-        :param _id: Id of record to get from Db
-        :type _id: int
-        :return: EasyPost record for model
-        """
-        return self._get_ep_model().verify(id=_id)
-
 
 @easypost
 class StockDeliveryPackImportMapper(EasypostImportMapper):
@@ -80,6 +72,19 @@ class StockDeliveryPackImportMapper(EasypostImportMapper):
     direct = [
         (eval_false('mode'), 'mode'),
     ]
+
+    @mapping
+    @only_create
+    def odoo_id(self, record):
+        """ Attempt to bind on pre-existing like package """
+        parcel_id = self.env['easypost.stock.delivery.pack'].search([
+            ('easypost_id', '=', record.id),
+            ('backend_id', '=', self.backend_record.id),
+        ],
+            limit=1,
+        )
+        if parcel_id:
+            return {'odoo_id': parcel_id.odoo_id.id}
 
     @mapping
     @only_create

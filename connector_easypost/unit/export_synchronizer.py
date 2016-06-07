@@ -3,6 +3,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
+import dateutil.parser
+import pytz
 
 from contextlib import contextmanager
 
@@ -68,11 +70,12 @@ class EasypostBaseExporter(Exporter):
         if not sync:
             return True
         record = self.backend_adapter.read(self.easypost_id)
-        if not record['updated_at']:
+        if not record.updated_at:
             # If empty, the record is immutable. Return not changed
             return True
         sync_date = openerp.fields.Datetime.from_string(sync)
-        easypost_date = record['updated_at']
+        sync_date = pytz.utc.localize(sync_date)
+        easypost_date = dateutil.parser.parse(record.updated_at)
         return sync_date < easypost_date
 
     def _get_odoo_data(self):
@@ -97,7 +100,9 @@ class EasypostBaseExporter(Exporter):
 
         result = self._run(*args, **kwargs)
 
-        self.binder.bind(self.easypost_id, self.binding_id)
+        self.binding_record = self.binder.bind(
+            self.easypost_id, self.binding_id,
+        )
         # Commit so we keep the external ID when there are several
         # exports (due to dependencies) and one of them fails.
         # The commit will also release the lock acquired on the binding
@@ -320,7 +325,8 @@ class EasypostExporter(EasypostBaseExporter):
         """ Create the Easypost record """
         # special check on data before export
         self._validate_create_data(data)
-        return self.backend_adapter.create(data)
+        self.easypost_record = self.backend_adapter.create(data)
+        return self.easypost_record
 
     def _update_data(self, map_record, fields=None, **kwargs):
         """ Get the data to pass to :py:meth:`_update` """
@@ -331,8 +337,10 @@ class EasypostExporter(EasypostBaseExporter):
         assert self.easypost_id
         # special check on data before export
         self._validate_update_data(data)
-        # data['id'] = self.easypost_id
-        self.backend_adapter.create(data)
+        self.easypost_record = self.backend_adapter.update(
+            self.easypost_id, data,
+        )
+        return self.easypost_record
 
     def _run(self, fields=None):
         """ Flow of the synchronization, implemented in inherited classes """
@@ -365,8 +373,8 @@ class EasypostExporter(EasypostBaseExporter):
                 return _('Nothing to export.')
             self.easypost_id = self._create(record)
         return _(
-            'Record exported with ID %s on Easypost.'
-        ) % self.easypost_id
+            'Record exported on Easypost w/ ID %r' % self.easypost_id
+        )
 
 
 @job(default_channel='root.easypost')
