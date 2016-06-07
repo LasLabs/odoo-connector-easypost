@@ -9,3 +9,4 @@ from . import test_res_partner
 from . import test_address
 from . import test_stock_delivery_pack
 from . import test_shipment
+from . import test_stock_delivery_rate

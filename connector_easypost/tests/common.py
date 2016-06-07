@@ -77,6 +77,15 @@ class EasypostHelper(object):
         self.model = registry(model_name)
 
 
+class ObjDict(dict):
+
+    def __getattr__(self, key):
+        try:
+            return super(ObjDict, self).__getattr__(key)
+        except AttributeError:
+            return self[key]
+
+
 class SetUpEasypostBase(common.TransactionCase):
     """ Base class - Test the imports from a Easypost Mock.
     The data returned by Easypost are those created for the
@@ -95,28 +104,79 @@ class SetUpEasypostBase(common.TransactionCase):
             'api_key': 'cueqNZUb3ldeWTNX7MU3Mel8UXtaAMUi',
         })
         self.backend_id = self.backend.id
-        # payment method needed to import a purchase order
-        # workflow = self.env.ref(
-        #     'sale_automatic_workflow.manual_validation'
-        # )
-        # journal = self.env.ref('account.check_journal')
-        # self.payment_term = self.env.ref(
-        #     'account.account_payment_term_advance'
-        # )
-        # self.env['payment.method'].create({
-        #     'name': 'checkmo',
-        #     'workflow_process_id': workflow.id,
-        #     'import_rule': 'always',
-        #     'days_before_cancel': 0,
-        #     'payment_term_id': self.payment_term.id,
-        #     'journal_id': journal.id
-        # })
 
     def get_easypost_helper(self, model_name):
         return EasypostHelper(self.cr, self.registry, model_name)
 
 
-class SetUpEasypostSynchronized(SetUpEasypostBase):
+class EasypostDeliveryHelper(SetUpEasypostBase):
 
-    def setUp(self):
-        super(SetUpEasypostSynchronized, self).setUp()
+    def setUp(self, ship=False):
+        super(EasypostDeliveryHelper, self).setUp()
+        self.DeliveryPack = self.env['stock.delivery.pack']
+        self.cm_id = self.env.ref('product.product_uom_cm')
+        self.inch_id = self.env.ref('product.product_uom_inch')
+        self.oz_id = self.env.ref('product.product_uom_oz')
+        self.gram_id = self.env.ref('product.product_uom_gram')
+        self.ep_vals = {
+            'length': 1.0,
+            'height': 2.0,
+            'width': 3.0,
+            'weight': 4.0,
+        }
+        self.pack_vals = {
+            'length_uom_id': self.inch_id.id,
+            'height_uom_id': self.inch_id.id,
+            'width_uom_id': self.inch_id.id,
+            'weight_uom_id': self.oz_id.id,
+            'name': 'TestPack',
+        }
+        self.pack_vals.update(self.ep_vals)
+        self.pack_tpl_id = self.env['stock.delivery.pack.template'].create(
+            self.pack_vals
+        )
+        self.quant_pack_id = self.env['stock.quant.package'].create({})
+        self.pack_vals.update({
+            'pack_template_id': self.pack_tpl_id.id,
+            'quant_pack_id': self.quant_pack_id.id,
+        })
+        if ship:
+            self.pack_id = self.env['stock.delivery.pack'].create(
+                self.pack_vals
+            )
+            self.picking_id = self.env['stock.picking'].create({
+                'location_dest_id':
+                    self.env['stock.location'].search([])[0].id,
+                'location_id': self.env['stock.location'].search([])[0].id,
+                'picking_type_id':
+                    self.env['stock.picking.type'].search([])[0].id,
+            })
+            self.group_id = self.env['stock.delivery.group'].create({
+                'picking_id': self.picking_id.id,
+                'pack_id': self.pack_id.id,
+            })
+            self.rates = [
+                ObjDict(**{
+                    "carrier": "USPS",
+                    "carrier_account_id":
+                        "ca_ac8c059614f5495295d1161dfa1f0290",
+                    "created_at": "2016-06-07 03:25:48",
+                    "currency": "USD",
+                    "delivery_date": None,
+                    "delivery_date_guaranteed": None,
+                    "delivery_days": 1,
+                    "est_delivery_days": 1,
+                    "id": "rate_912d3f794ded45a9b0963d44d0cccbb7",
+                    "list_currency": "USD",
+                    "list_rate": 36.18,
+                    "mode": "test",
+                    "object": "Rate",
+                    "rate": 36.18,
+                    "retail_currency": None,
+                    "retail_rate": None,
+                    "service": "Express",
+                    "shipment_id":
+                        "shp_62e87c088fba4532b80288222771b4fc",
+                    "updated_at": "2016-06-07 03:25:48",
+                }),
+            ]
