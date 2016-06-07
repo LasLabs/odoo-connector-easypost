@@ -17,6 +17,7 @@ from ..unit.import_synchronizer import (EasypostImporter)
 from ..unit.export_synchronizer import (EasypostExporter)
 from ..unit.mapper import eval_false
 from .stock_delivery_rate import StockDeliveryRateImporter
+from .stock_delivery_label import StockDeliveryLabelImporter
 
 
 _logger = logging.getLogger(__name__)
@@ -49,6 +50,7 @@ class EasypostShipment(models.Model):
     """
     _name = 'easypost.shipment'
     _description = 'Easypost Shipment'
+    _inherits = {'stock.delivery.group': 'group_id'}
 
     to_partner_id = fields.Many2one(
         string='To Address',
@@ -64,6 +66,7 @@ class EasypostShipment(models.Model):
         string='Delivery Group',
         comodel_name='stock.delivery.group',
         required=True,
+        ondelete='cascade',
     )
     pack_id = fields.Many2one(
         string='Delivery Package',
@@ -82,6 +85,34 @@ class EasypostShipment(models.Model):
 class EasypostShipmentAdapter(EasypostCRUDAdapter):
     """ Backend Adapter for the Easypost EasypostShipment """
     _model_name = 'easypost.easypost.shipment'
+
+    def buy(self, rate_record):
+        """ Allows for purchasing of Shipments through EasyPost
+        :param rate_record: Unwrapped Odoo Rate record to purchase label for
+        """
+
+        ship_odoo_record = self.env['easypost.easypost.shipment'].search([
+            ('group_id', '=', rate_record.group_id.id),
+        ],
+            limit=1,
+        )
+        rate_record = self.env['easypost.stock.delivery.rate'].search([
+            ('odoo_id', '=', rate_record.id),
+        ],
+            limit=1,
+        )
+
+        _logger.debug('Purchasing shipment %s with rate %s',
+                      ship_odoo_record.easypost_id, rate_record.easypost_id)
+        ship_easypost_record = self.read(ship_odoo_record.easypost_id)
+        ship_easypost_record.buy(rate={'id': rate_record.easypost_id})
+
+        label_importer = self.unit_for(StockDeliveryLabelImporter,
+                                       model='easypost.stock.delivery.label')
+        label_importer.easypost_record = ship_easypost_record
+        label_importer.run(ship_easypost_record.id)
+
+        return ship_easypost_record
 
 
 @easypost

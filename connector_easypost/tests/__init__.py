@@ -10,3 +10,4 @@ from . import test_address
 from . import test_stock_delivery_pack
 from . import test_shipment
 from . import test_stock_delivery_rate
+from . import test_stock_delivery_label

@@ -12,7 +12,7 @@
     'website': 'https://laslabs.com',
     'depends': [
         'connector',
-        'stock_delivery',
+        'stock_delivery_label_new',
     ],
     "external_dependencies": {
         "python": [

@@ -16,7 +16,8 @@ To install this module, you need to:
 
 * Install Python dependencies -
   ``pip install easypost``
-* Install OCA Connector module - https://github.com/OCA/connector
+* Install OCA Connector module from https://github.com/OCA/connector
+* Install ``stock_delivery_label_new`` from https://github.com/laslabs/odoo-stock.git
 * Install Easypost Connector module
 * Restart Odoo (requirement of any new connector to set proper DB triggers)
 
@@ -50,6 +51,7 @@ Known Issues / Roadmap
 * Add a default EasyPost connection to span all companies
 * Mass address verification
 * Label import operates in Shipment context, due to needing selected rate info not within PostageLabel
+* Shipment buy workflow is a little ghetto with the intermediary wizard
 
 Credits
 =======
