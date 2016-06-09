@@ -16,7 +16,7 @@ class EasypostBinder(Binder):
 class EasypostModelBinder(EasypostBinder):
     """ Bindings are done directly on the binding model.
     Binding models are models called ``easypost.{normal_model}``,
-    like ``easypost.easypost.address`` or ``easypost.easypost.address``.
+    like ``easypost.res.partner`` or ``easypost.stock.delivery.pack``.
     They are ``_inherits`` of the normal models and contains
     the Easypost ID, the ID of the Easypost Backend and the additional
     fields belonging to the Easypost instance.
@@ -26,6 +26,7 @@ class EasypostModelBinder(EasypostBinder):
         'easypost.stock.delivery.pack',
         'easypost.easypost.shipment',
         'easypost.stock.delivery.rate',
+        'easypost.stock.delivery.label',
     ]
 
     def to_odoo(self, external_id, unwrap=True, browse=False):

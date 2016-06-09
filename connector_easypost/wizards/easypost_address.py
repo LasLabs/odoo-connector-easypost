@@ -24,25 +24,42 @@ class EasypostAddress(models.TransientModel):
         default=lambda s: s._default_partner_id(),
         readonly=True,
     )
-    name = fields.Char()
+    name = fields.Char(
+        readonly=True,
+    )
     company_id = fields.Many2one(
         string='Company',
         comodel_name='res.company',
+        readonly=True,
     )
-    street = fields.Char()
-    street2 = fields.Char()
-    city = fields.Char()
-    zip = fields.Char()
+    street = fields.Char(
+        readonly=True,
+    )
+    street2 = fields.Char(
+        readonly=True,
+    )
+    city = fields.Char(
+        readonly=True,
+    )
+    zip = fields.Char(
+        readonly=True,
+    )
     state_id = fields.Many2one(
         string='State',
         comodel_name='res.country.state',
+        readonly=True,
     )
     country_id = fields.Many2one(
         string='Country',
         comodel_name='res.country',
+        readonly=True,
     )
-    phone = fields.Char()
-    email = fields.Char()
+    phone = fields.Char(
+        readonly=True,
+    )
+    email = fields.Char(
+        readonly=True,
+    )
     mode = fields.Char(
         help='EasyPost response mode.',
         readonly=True,

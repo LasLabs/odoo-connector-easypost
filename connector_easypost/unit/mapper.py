@@ -24,6 +24,23 @@ def eval_false(field):
     return modifier
 
 
+def inner_attr(attr, field):
+    """ A modifier intended to be used on the ``direct`` mappings.
+    Looks inside of an object for the field, using attr arg
+    Example::
+        direct = [(inside_key('source', 'attr'), 'target')]
+    :param attr: name of object attribute to look inside of
+    :param field: name of the source field in the record
+    """
+    def modifier(self, record, to_attr):
+        value = None
+        record_attr = getattr(record, attr, None)
+        if record_attr is not None:
+            value = getattr(record_attr, field, None)
+        return value
+    return modifier
+
+
 class EasypostImportMapper(ImportMapper):
 
     @mapping

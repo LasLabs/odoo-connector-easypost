@@ -3,43 +3,24 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import mock
-from .common import mock_api, mock_job_delay_to_direct, SetUpEasypostBase
+from .common import mock_api, mock_job_delay_to_direct, EasypostDeliveryHelper
 
 
 model = 'openerp.addons.connector_easypost.models.address'
 job = 'openerp.addons.connector_easypost.consumer.export_record'
 
 
-class TestStockDeliveryPack(SetUpEasypostBase):
+class TestStockDeliveryPack(EasypostDeliveryHelper):
 
     def setUp(self):
         super(TestStockDeliveryPack, self).setUp()
         self.EasypostParcel = self.env['easypost.stock.delivery.pack']
-        self.DeliveryPack = self.env['stock.delivery.pack']
-        self.cm_id = self.env.ref('product.product_uom_cm')
-        self.inch_id = self.env.ref('product.product_uom_inch')
-        self.oz_id = self.env.ref('product.product_uom_oz')
-        self.gram_id = self.env.ref('product.product_uom_gram')
-        self.quant_pack_id = self.env['stock.quant.package'].create({})
-        self.ep_vals = {
-            'length': 1.0,
-            'height': 2.0,
-            'width': 3.0,
-            'weight': 4.0,
-        }
+        self.vals = self.pack_vals
         self.converted = {
             'length': .4,
             'width': 1.19,
             'height': .79,
             'weight': .15,
-        }
-        self.vals = {
-            'length_uom_id': self.inch_id.id,
-            'height_uom_id': self.inch_id.id,
-            'width_uom_id': self.inch_id.id,
-            'weight_uom_id': self.oz_id.id,
-            'name': 'TestPack',
-            'quant_pack_id': self.quant_pack_id.id,
         }
         self.vals.update(self.ep_vals)
 

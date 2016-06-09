@@ -15,8 +15,9 @@ Installation
 To install this module, you need to:
 
 * Install Python dependencies -
-  ``pip install -r requirements.txt``
-* Install OCA Connector module - https://github.com/OCA/connector
+  ``pip install easypost``
+* Install OCA Connector module from https://github.com/OCA/connector
+* Install ``stock_delivery_label_new`` from https://github.com/laslabs/odoo-stock.git
 * Install Easypost Connector module
 * Restart Odoo (requirement of any new connector to set proper DB triggers)
 
@@ -26,13 +27,20 @@ Configuration
 To configure this module, you need to:
 
 * Go to ``Connectors => [EasyPost] Backends``
+* Configure one EasyPost backend per company you would like to use with
 
 Usage
 =====
 
-To use this module, you need to:
+Address Verification
+--------------------
 
-* Go to ...
+* Edit a partner in backend form view
+* Click ``Validate`` button above street address
+* Click ``Confirm`` button to validate address is correct, or ``Cancel`` to cancel
+
+Note that the address change will be made immediately after hitting ``Confirm``,
+regardless of whether you save the partner or not.
 
 
 Known Issues / Roadmap
@@ -40,6 +48,10 @@ Known Issues / Roadmap
 
 * Handle validation errors from addresses
 * Some duplicate calls to EasyPost (Address, Shipment) - seems to be just in the tests though
+* Add a default EasyPost connection to span all companies
+* Mass address verification
+* Label import operates in Shipment context, due to needing selected rate info not within PostageLabel
+* Shipment buy workflow is a little ghetto with the intermediary wizard
 
 Credits
 =======

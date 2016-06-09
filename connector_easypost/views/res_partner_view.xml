@@ -13,10 +13,8 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//sheet" position="before">
-                <header>
-                    <button name="action_easypost_synchronize" type="object" string="Validate" />
-                </header>
+            <xpath expr="//div[@class='oe_edit_only']" position="inside">
+                <button name="action_easypost_synchronize" type="object" string="Validate" />
             </xpath>
         </field>
     </record>

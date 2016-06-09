@@ -108,15 +108,3 @@ def delay_create(session, model_name, record_id, vals):
             'odoo_id': record_id,
         })
     delay_export_all_bindings(session, model_name, record_id, vals)
-
-
-# def delay_unlink(session, model_name, record_id):
-#     """ Delay a job which delete a record on Easypost.
-#     Called on binding records."""
-#     record = session.env[model_name].browse(record_id)
-#     env = get_environment(session, model_name, record.backend_id.id)
-#     binder = env.get_connector_unit(Binder)
-#     easypost_id = binder.to_backend(record_id, wrap=False)
-#     if easypost_id:
-#         export_delete_record.delay(session, model_name,
-#                                    record.backend_id.id, easypost_id)
