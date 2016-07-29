@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2016 LasLabs Inc.
+# Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 
@@ -16,17 +16,17 @@ class EasypostBinder(Binder):
 class EasypostModelBinder(EasypostBinder):
     """ Bindings are done directly on the binding model.
     Binding models are models called ``easypost.{normal_model}``,
-    like ``easypost.res.partner`` or ``easypost.stock.delivery.pack``.
+    like ``easypost.res.partner`` or ``easypost.product.packaging``.
     They are ``_inherits`` of the normal models and contains
     the Easypost ID, the ID of the Easypost Backend and the additional
     fields belonging to the Easypost instance.
     """
     _model_name = [
         'easypost.easypost.address',
-        'easypost.stock.delivery.pack',
-        'easypost.easypost.shipment',
-        'easypost.stock.delivery.rate',
-        'easypost.stock.delivery.label',
+        'easypost.product.packaging',
+        'easypost.stock.picking',
+        'easypost.stock.picking.dispatch.rate',
+        'easypost.shipping.label',
     ]
 
     def to_odoo(self, external_id, unwrap=True, browse=False):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2015 LasLabs Inc.
+# Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
@@ -21,21 +21,21 @@ from ..unit.mapper import eval_false
 _logger = logging.getLogger(__name__)
 
 
-class EasypostStockDeliveryPack(models.Model):
-    """ Binding Model for the Easypost StockDeliveryPack
+class EasypostProductPackaging(models.Model):
+    """ Binding Model for the Easypost ProductPackaging
 
         TransientModel so that records are eventually deleted due to immutable
         EasyPost objects
     """
-    _name = 'easypost.stock.delivery.pack'
+    _name = 'easypost.product.packaging'
     _inherit = 'easypost.binding'
-    _inherits = {'stock.delivery.pack': 'odoo_id'}
-    _description = 'Easypost StockDeliveryPack'
+    _inherits = {'product.packaging': 'odoo_id'}
+    _description = 'Easypost ProductPackaging'
     _easypost_model = 'Parcel'
 
     odoo_id = fields.Many2one(
-        comodel_name='stock.delivery.pack',
-        string='StockDeliveryPack',
+        comodel_name='product.packaging',
+        string='ProductPackaging',
         required=True,
         ondelete='cascade',
     )
@@ -46,28 +46,28 @@ class EasypostStockDeliveryPack(models.Model):
     ]
 
 
-class StockDeliveryPack(models.Model):
+class ProductPackaging(models.Model):
     """ Adds the ``one2many`` relation to the Easypost bindings
     (``easypost_bind_ids``)
     """
-    _inherit = 'stock.delivery.pack'
+    _inherit = 'product.packaging'
 
     easypost_bind_ids = fields.One2many(
-        comodel_name='easypost.stock.delivery.pack',
+        comodel_name='easypost.product.packaging',
         inverse_name='odoo_id',
         string='Easypost Bindings',
     )
 
 
 @easypost
-class StockDeliveryPackAdapter(EasypostCRUDAdapter):
-    """ Backend Adapter for the Easypost StockDeliveryPack """
-    _model_name = 'easypost.stock.delivery.pack'
+class ProductPackagingAdapter(EasypostCRUDAdapter):
+    """ Backend Adapter for the Easypost ProductPackaging """
+    _model_name = 'easypost.product.packaging'
 
 
 @easypost
-class StockDeliveryPackImportMapper(EasypostImportMapper):
-    _model_name = 'easypost.stock.delivery.pack'
+class ProductPackagingImportMapper(EasypostImportMapper):
+    _model_name = 'easypost.product.packaging'
 
     direct = [
         (eval_false('mode'), 'mode'),
@@ -77,7 +77,7 @@ class StockDeliveryPackImportMapper(EasypostImportMapper):
     @only_create
     def odoo_id(self, record):
         """ Attempt to bind on pre-existing like package """
-        parcel_id = self.env['easypost.stock.delivery.pack'].search([
+        parcel_id = self.env['easypost.product.packaging'].search([
             ('easypost_id', '=', record.id),
             ('backend_id', '=', self.backend_record.id),
         ],
@@ -142,26 +142,44 @@ class StockDeliveryPackImportMapper(EasypostImportMapper):
 
     @mapping
     @only_create
-    def pack_template_id(self, record):
+    def product_pack_tmpl_id(self, record):
         """ If being created from EasyPost for some reason, match template """
-        template_id = self.env['stock.delivery.pack.template'].search([
-            ('name', '=', record.predefined_package),
+        template_id = self.env['product.packaging.template'].search([
+            ('packaging_template_name', '=', record.predefined_package),
         ],
             limit=1,
         )
         if template_id:
-            return {'pack_template_id': template_id.id}
+            return {'product_pack_tmpl_id': template_id.id}
+
+    @mapping
+    @only_create
+    def rows(self, record):
+        """ If being created from EasyPost for some reason, map rows """
+        return {'rows': 1}
+
+    @mapping
+    @only_create
+    def type(self, record):
+        """ If being created from EasyPost for some reason, map type """
+        template_id = self.env['product.packaging.template'].search([
+            ('packaging_template_name', '=', record.predefined_package),
+        ],
+            limit=1,
+        )
+        if template_id:
+            return {'type': template_id.type}
 
 
 @easypost
-class StockDeliveryPackImporter(EasypostImporter):
-    _model_name = ['easypost.stock.delivery.pack']
-    _base_mapper = StockDeliveryPackImportMapper
+class ProductPackagingImporter(EasypostImporter):
+    _model_name = ['easypost.product.packaging']
+    _base_mapper = ProductPackagingImportMapper
 
 
 @easypost
-class StockDeliveryPackExportMapper(EasypostExportMapper):
-    _model_name = 'easypost.stock.delivery.pack'
+class ProductPackagingExportMapper(EasypostExportMapper):
+    _model_name = 'easypost.product.packaging'
 
     def _convert_to_inches(self, uom_qty, uom_id):
         inches_id = self.env.ref('product.product_uom_inch')
@@ -208,13 +226,23 @@ class StockDeliveryPackExportMapper(EasypostExportMapper):
     @mapping
     @changed_by('weight', 'weight_uom_id')
     def weight(self, record):
+        """ Lookup the actual picking weight as the record weight
+        only accounts for the weight of the packaging """
         weight = self._convert_to_ounces(
             record.weight, record.weight_uom_id,
         )
+        pick = self.env['stock.picking'].search([
+            ('product_packaging_id', '=', record.id)
+        ])
+        if len(pick):
+            pick = pick[0]
+            weight += self._convert_to_ounces(
+                pick.weight, pick.weight_uom_id,
+            )
         return {'weight': weight}
 
 
 @easypost
-class StockDeliveryPackExporter(EasypostExporter):
-    _model_name = ['easypost.stock.delivery.pack']
-    _base_mapper = StockDeliveryPackExportMapper
+class ProductPackagingExporter(EasypostExporter):
+    _model_name = ['easypost.product.packaging']
+    _base_mapper = ProductPackagingExportMapper

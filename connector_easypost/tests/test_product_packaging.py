@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2016 LasLabs Inc.
+# Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import mock
@@ -14,7 +14,7 @@ class TestStockDeliveryPack(EasypostDeliveryHelper):
 
     def setUp(self):
         super(TestStockDeliveryPack, self).setUp()
-        self.EasypostParcel = self.env['easypost.stock.delivery.pack']
+        self.EasypostParcel = self.env['easypost.product.packaging']
         self.vals = self.pack_vals
         self.converted = {
             'length': .4,

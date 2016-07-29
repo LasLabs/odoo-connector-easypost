@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Copyright 2016 LasLabs Inc.
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+
 from . import easypost_address
-from . import stock_delivery_new
-from . import stock_delivery_label_new
+from . import shipping_label_new

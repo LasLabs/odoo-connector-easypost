@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2016 LasLabs Inc.
+# Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import mock
@@ -10,26 +10,24 @@ model = 'openerp.addons.connector_easypost.models.shipment'
 job = 'openerp.addons.connector_easypost.consumer.export_record'
 
 
-class TestShipment(EasypostDeliveryHelper):
+class TestStockPicking(EasypostDeliveryHelper):
 
     def setUp(self):
-        super(TestShipment, self).setUp(ship=True)
-        self.DeliveryNew = self.env['stock.delivery.new']
+        super(TestStockPicking, self).setUp(ship=True)
+        self.DeliveryNew = self.env['stock.picking']
 
     def new_record(self):
-        return self.DeliveryNew.create({
-            'quant_pack_id': self.quant_pack_id.id,
-            'delivery_pack_id': self.pack_id.id,
-            'pack_operation_ids': [(4, 1)],
-        })
+        return self.DeliveryNew.create(self.ship_vals)
 
     def test_action_create_delivery_triggers_export(self):
-        """ Test external record export on action_create_delivery """
+        """ Test external record export on stock picking creation """
         with mock_job_delay_to_direct(job):
             with mock_api() as mk:
-                self.new_record().action_create_delivery()
+                mk.Shipment.create().rates = self.rates
+                self.new_record()
                 # @TODO: Kill multiple calls
                 mk.Shipment.create.assert_has_calls([
+                    mock.call(),
                     mock.call(),
                     mock.call(
                         id=False,
@@ -65,7 +63,7 @@ class TestShipment(EasypostDeliveryHelper):
         """ Test that package is exported as dependency to shipment """
         with mock_job_delay_to_direct(job):
             with mock_api() as mk:
-                self.new_record().action_create_delivery()
+                self.new_record()
                 # @TODO: Kill multiple calls
                 mk.Parcel.create.assert_has_calls([
                     mock.call(),

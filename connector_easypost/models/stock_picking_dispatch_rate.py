@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2015 LasLabs Inc.
+# Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
@@ -14,21 +14,20 @@ from ..backend import easypost
 from ..unit.import_synchronizer import (EasypostImporter)
 from ..unit.mapper import eval_false
 
-
 _logger = logging.getLogger(__name__)
 
 
-class EasypostStockDeliveryRate(models.Model):
-    """ Binding Model for the Easypost StockDeliveryRate """
-    _name = 'easypost.stock.delivery.rate'
+class EasypostStockPickingDispatchRate(models.Model):
+    """ Binding Model for the Easypost StockPickingDispatchRate """
+    _name = 'easypost.stock.picking.dispatch.rate'
     _inherit = 'easypost.binding'
-    _inherits = {'stock.delivery.rate': 'odoo_id'}
-    _description = 'Easypost StockDeliveryRate'
+    _inherits = {'stock.picking.dispatch.rate': 'odoo_id'}
+    _description = 'Easypost StockPickingDispatchRate'
     _easypost_model = 'Rate'
 
     odoo_id = fields.Many2one(
-        comodel_name='stock.delivery.rate',
-        string='StockDeliveryRate',
+        comodel_name='stock.picking.dispatch.rate',
+        string='StockPickingDispatchRate',
         required=True,
         ondelete='cascade',
     )
@@ -39,28 +38,28 @@ class EasypostStockDeliveryRate(models.Model):
     ]
 
 
-class StockDeliveryRate(models.Model):
+class StockPickingDispatchRate(models.Model):
     """ Adds the ``one2many`` relation to the Easypost bindings
     (``easypost_bind_ids``)
     """
-    _inherit = 'stock.delivery.rate'
+    _inherit = 'stock.picking.dispatch.rate'
 
     easypost_bind_ids = fields.One2many(
-        comodel_name='easypost.stock.delivery.rate',
+        comodel_name='easypost.stock.picking.dispatch.rate',
         inverse_name='odoo_id',
         string='Easypost Bindings',
     )
 
 
 @easypost
-class StockDeliveryRateAdapter(EasypostCRUDAdapter):
-    """ Backend Adapter for the Easypost StockDeliveryRate """
-    _model_name = 'easypost.stock.delivery.rate'
+class StockPickingDispatchRateAdapter(EasypostCRUDAdapter):
+    """ Backend Adapter for the Easypost StockPickingDispatchRate """
+    _model_name = 'easypost.stock.picking.dispatch.rate'
 
 
 @easypost
-class StockDeliveryRateImportMapper(EasypostImportMapper):
-    _model_name = 'easypost.stock.delivery.rate'
+class StockPickingDispatchRateImportMapper(EasypostImportMapper):
+    _model_name = 'easypost.stock.picking.dispatch.rate'
 
     direct = [
         (eval_false('mode'), 'mode'),
@@ -106,13 +105,6 @@ class StockDeliveryRateImportMapper(EasypostImportMapper):
 
     @mapping
     @only_create
-    def group_id(self, record):
-        binder = self.binder_for('easypost.easypost.shipment')
-        shipment_id = binder.to_odoo(record.shipment_id, browse=True)
-        return {'group_id': shipment_id.group_id.id}
-
-    @mapping
-    @only_create
     def service_id(self, record):
         service_obj = self.env['delivery.carrier']
         partner_obj = self.env['res.partner']
@@ -145,8 +137,18 @@ class StockDeliveryRateImportMapper(EasypostImportMapper):
             })
         return {'service_id': service_id.id}
 
+    @mapping
+    @only_create
+    def picking_id(self, record):
+        picking = self.env['stock.picking'].search([
+            ('easypost_bind_ids', '=', record.easypost_bind_ids)
+        ],
+            limit=1,
+        )
+        return {'picking_id': picking.id}
+
 
 @easypost
-class StockDeliveryRateImporter(EasypostImporter):
-    _model_name = ['easypost.stock.delivery.rate']
-    _base_mapper = StockDeliveryRateImportMapper
+class StockPickingDispatchRateImporter(EasypostImporter):
+    _model_name = ['easypost.stock.picking.dispatch.rate']
+    _base_mapper = StockPickingDispatchRateImportMapper

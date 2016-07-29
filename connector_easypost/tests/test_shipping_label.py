@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2016 LasLabs Inc.
+# Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import mock
@@ -8,26 +8,21 @@ from .common import mock_api, EasypostDeliveryHelper, mock_job_delay_to_direct
 
 module = 'openerp.addons.connector_easypost'
 job = '%s.consumer.export_record' % module
-requests = '%s.models.stock_delivery_label.requests' % module
+requests = '%s.models.shipping_label.requests' % module
+rate = 'easypost.stock.picking.dispatch.rate'
 
 
-class TestStockDeliveryLabel(EasypostDeliveryHelper):
+class TestShippingLabel(EasypostDeliveryHelper):
 
     def setUp(self):
-        super(TestStockDeliveryLabel, self).setUp(ship=True)
-        self.DeliveryNew = self.env['stock.delivery.new']
-        self.ShipmentBuy = self.env['stock.delivery.label.new']
+        super(TestShippingLabel, self).setUp(ship=True)
+        self.ShipmentBuy = self.env['shipping.label.new']
 
     def new_rate(self, mk):
-        self.delivery_id = self.DeliveryNew.create({
-            'quant_pack_id': self.quant_pack_id.id,
-            'delivery_pack_id': self.pack_id.id,
-            'pack_operation_ids': [(4, 1)],
-        })
         self.rates[0]['shipment_id'] = mk.Shipment.create().id
         mk.Shipment.create().rates = self.rates
-        self.delivery_id.action_create_delivery()
-        self.ep_rate_id = self.env['easypost.stock.delivery.rate'].search([
+        self.delivery_id = self.env['stock.picking'].create(self.ship_vals)
+        self.ep_rate_id = self.env[rate].search([
             ('easypost_id', '=', self.rates[0]['id']),
         ],
             limit=1,
@@ -37,7 +32,6 @@ class TestStockDeliveryLabel(EasypostDeliveryHelper):
     def new_record(self, mk):
         rate_id = self.new_rate(mk)
         return self.ShipmentBuy.create({
-            'group_id': rate_id.group_id.id,
             'rate_id': rate_id.id,
         })
 

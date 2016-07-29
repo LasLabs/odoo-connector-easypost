@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2016 LasLabs Inc.
+# Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from .unit.export_synchronizer import (export_record,
@@ -44,7 +44,6 @@ def immediate_export(session, model_name, record_id, vals):
     export_record(session, model_name, record_id, fields=fields)
 
 
-# @on_record_create(model_names=['easypost.address'])
 @on_record_write(model_names=['easypost.address'])
 def immediate_export_all_bindings(session, model_name, record_id, vals):
     """ Create immediate export of all the bindings of a record.
@@ -62,8 +61,7 @@ def immediate_export_all_bindings(session, model_name, record_id, vals):
                       fields=fields)
 
 
-# @on_record_write(model_names=['easypost.stock.delivery.pack'])
-@on_record_create(model_names=['easypost.stock.delivery.pack'])
+@on_record_create(model_names=['easypost.product.packaging'])
 def delay_export(session, model_name, record_id, vals):
     """ Delay a job which export a binding record.
     (A binding record being a ``easypost.easypost.address``,
@@ -76,8 +74,7 @@ def delay_export(session, model_name, record_id, vals):
     export_record.delay(session, model_name, record_id, fields=fields)
 
 
-@on_record_write(model_names=['stock.delivery.pack'])
-# @on_record_create(model_names=['stock.delivery.pack'])
+@on_record_write(model_names=['product.packaging', 'stock.picking'])
 def delay_export_all_bindings(session, model_name, record_id, vals):
     """ Delay a job which export all the bindings of a record.
     In this case, it is called on records of normal models and will delay
@@ -92,9 +89,7 @@ def delay_export_all_bindings(session, model_name, record_id, vals):
                             fields=fields)
 
 
-@on_record_create(model_names=['easypost.shipment',
-                               # 'stock.delivery.pack',
-                               ])
+@on_record_create(model_names=['stock.picking'])
 def delay_create(session, model_name, record_id, vals):
     """ Create a new binding record, then trigger delayed export
     In this case, it is called on records of normal models to create

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2015 LasLabs Inc.
+# Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
@@ -18,17 +18,17 @@ from ..unit.mapper import inner_attr
 _logger = logging.getLogger(__name__)
 
 
-class EasypostStockDeliveryLabel(models.Model):
-    """ Binding Model for the Easypost StockDeliveryLabel """
-    _name = 'easypost.stock.delivery.label'
+class EasypostShippingLabel(models.Model):
+    """ Binding Model for the Easypost ShippingLabel """
+    _name = 'easypost.shipping.label'
     _inherit = 'easypost.binding'
-    _inherits = {'stock.delivery.label': 'odoo_id'}
-    _description = 'Easypost StockDeliveryLabel'
+    _inherits = {'shipping.label': 'odoo_id'}
+    _description = 'Easypost ShippingLabel'
     _easypost_model = 'Shipment'
 
     odoo_id = fields.Many2one(
-        comodel_name='stock.delivery.label',
-        string='StockDeliveryLabel',
+        comodel_name='shipping.label',
+        string='ShippingLabel',
         required=True,
         ondelete='cascade',
     )
@@ -39,46 +39,47 @@ class EasypostStockDeliveryLabel(models.Model):
     ]
 
 
-class StockDeliveryLabel(models.Model):
+class ShippingLabel(models.Model):
     """ Adds the ``one2many`` relation to the Easypost bindings
     (``easypost_bind_ids``)
     """
-    _inherit = 'stock.delivery.label'
+    _inherit = 'shipping.label'
 
     easypost_bind_ids = fields.One2many(
-        comodel_name='easypost.stock.delivery.label',
+        comodel_name='easypost.shipping.label',
         inverse_name='odoo_id',
         string='Easypost Bindings',
+    )
+    rate_id = fields.Many2one(
+        string='Rate',
+        comodel_name='stock.picking.dispatch.rate',
     )
 
 
 @easypost
-class StockDeliveryLabelAdapter(EasypostCRUDAdapter):
-    """ Backend Adapter for the Easypost StockDeliveryLabel """
-    _model_name = 'easypost.stock.delivery.label'
+class ShippingLabelAdapter(EasypostCRUDAdapter):
+    """ Backend Adapter for the Easypost ShippingLabel """
+    _model_name = 'easypost.shipping.label'
 
 
 @easypost
-class StockDeliveryLabelImportMapper(ImportMapper):
-    _model_name = 'easypost.stock.delivery.label'
+class ShippingLabelImportMapper(ImportMapper):
+    _model_name = 'easypost.shipping.label'
 
     direct = [
-        (inner_attr('postage_label', 'created_at'), 'created_at'),
-        (inner_attr('postage_label', 'updated_at'), 'updated_at'),
         (inner_attr('postage_label', 'id'), 'easypost_id'),
-        (inner_attr('postage_label', 'label_date'), 'date_generated'),
     ]
 
     @mapping
     @only_create
-    def img_label(self, record):
+    def datas(self, record):
         label = requests.get(record.postage_label.label_url)
-        return {'img_label': label.content.encode('base64')}
+        return {'datas': label.content.encode('base64')}
 
     @mapping
     @only_create
     def rate_id(self, record):
-        binder = self.binder_for('easypost.stock.delivery.rate')
+        binder = self.binder_for('easypost.stock.picking.dispatch.rate')
         rate_id = binder.to_odoo(record.selected_rate.id)
         return {'rate_id': rate_id}
 
@@ -86,8 +87,12 @@ class StockDeliveryLabelImportMapper(ImportMapper):
     def backend_id(self, record):
         return {'backend_id': self.backend_record.id}
 
+    @mapping
+    def name(self, record):
+        return {'name': record.postage_label.label_url.split('/')[-1]}
+
 
 @easypost
-class StockDeliveryLabelImporter(EasypostImporter):
-    _model_name = ['easypost.stock.delivery.label']
-    _base_mapper = StockDeliveryLabelImportMapper
+class ShippingLabelImporter(EasypostImporter):
+    _model_name = ['easypost.shipping.label']
+    _base_mapper = ShippingLabelImportMapper
