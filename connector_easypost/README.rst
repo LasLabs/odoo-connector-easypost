@@ -53,6 +53,15 @@ Known Issues / Roadmap
 * Label import operates in Shipment context, due to needing selected rate info not within PostageLabel
 * Shipment buy workflow is a little ghetto with the intermediary wizard
 
+Bug Tracker
+===========
+
+Bugs are tracked on `GitHub Issues
+<https://github.com/laslabs/odoo-connector-easypost/issues>`_. In case of trouble, please
+check there if your issue has already been reported. If you spotted it first,
+please help us smash it by providing a detailed and welcomed feedback.
+
+
 Credits
 =======
 

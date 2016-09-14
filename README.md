@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/laslabs/odoo-connector-easypost.svg?branch=9.0)](https://travis-ci.org/laslabs/odoo-connector-easypost?branch=9.0)
-[![Coverage Status](https://coveralls.io/repos/laslabs/odoo-connector-easypost/badge.png?branch=9.0)](https://coveralls.io/r/laslabs/odoo-connector-easypost?branch=9.0)
+[![Coveralls Status](https://coveralls.io/repos/laslabs/odoo-connector-easypost/badge.png?branch=9.0)](https://coveralls.io/r/laslabs/odoo-connector-easypost?branch=9.0)
+[![Codecov Status](https://codecov.io/gh/laslabs/odoo-connector-easypost/branch/9.0/graph/badge.svg)](https://codecov.io/gh/laslabs/odoo-connector-easypost)
 
 Odoo EasyPost Connector
 =======================
@@ -40,4 +41,4 @@ Maintainer
 
 This module is maintained by [LasLabs Inc.](https://laslabs.com)
 
-* https://repo.laslabs.com/projects/ODOO/repos/connector-easypost
+* https://github.com/laslabs/odoo-connector-carepoint/
