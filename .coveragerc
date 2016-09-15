@@ -3,7 +3,7 @@
 
 [report]
 include =
-    */laslabs/odoo-connector-carepoint/*
+    */laslabs/odoo-connector-easypost/*
 
 omit =
     */tests/*
