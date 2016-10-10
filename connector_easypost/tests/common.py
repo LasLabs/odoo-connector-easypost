@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2016 LasLabs Inc.
+# Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 """
@@ -11,14 +11,12 @@ import mock
 from contextlib import contextmanager
 import openerp.tests.common as common
 from openerp.addons.connector.session import ConnectorSession
-# from openerp.addons.connector_easypost.unit.import_synchronizer import (
-#     import_batch,
-# )
-# from .data_base import easypost_base_responses
 
 
 backend_adapter = 'openerp.addons.connector_easypost.unit.backend_adapter'
 inc_id = 0
+asustek_partner_id = 'res_partner_1'
+your_company_id = 'main_company'
 
 
 @contextmanager
@@ -50,7 +48,7 @@ def mock_job_delay_to_direct(job_path):
 
 @contextmanager
 def mock_api(models=None, actions=None, ret_val=False):
-    """ """
+    """ Mock the Easypost API """
     global inc_id
     if models is None:
         models = ['Address', 'Parcel', 'Shipment', 'Rate']
@@ -113,7 +111,7 @@ class EasypostDeliveryHelper(SetUpEasypostBase):
 
     def setUp(self, ship=False):
         super(EasypostDeliveryHelper, self).setUp()
-        self.DeliveryPack = self.env['stock.delivery.pack']
+        self.DeliveryPack = self.env['product.packaging']
         self.cm_id = self.env.ref('product.product_uom_cm')
         self.inch_id = self.env.ref('product.product_uom_inch')
         self.oz_id = self.env.ref('product.product_uom_oz')
@@ -129,32 +127,39 @@ class EasypostDeliveryHelper(SetUpEasypostBase):
             'height_uom_id': self.inch_id.id,
             'width_uom_id': self.inch_id.id,
             'weight_uom_id': self.oz_id.id,
-            'name': 'TestPack',
+            'type': 'box',
+            'packaging_template_name': 'TestPackTpl',
         }
         self.pack_vals.update(self.ep_vals)
-        self.pack_tpl_id = self.env['stock.delivery.pack.template'].create(
+        self.pack_tpl_id = self.env['product.packaging.template'].create(
             self.pack_vals
         )
-        self.quant_pack_id = self.env['stock.quant.package'].create({})
+        self.quant_pack_id = self.env['stock.quant.package'].create({
+            'product_pack_tmpl_id': self.pack_tpl_id.id,
+        })
         self.pack_vals.update({
-            'pack_template_id': self.pack_tpl_id.id,
-            'quant_pack_id': self.quant_pack_id.id,
+            'product_pack_tmpl_id': self.pack_tpl_id.id,
+            'name': 'TestPack',
+            'rows': 1,
         })
         if ship:
-            self.pack_id = self.env['stock.delivery.pack'].create(
+            self.pack_id = self.env['product.packaging'].create(
                 self.pack_vals
             )
-            self.picking_id = self.env['stock.picking'].create({
-                'location_dest_id':
-                    self.env['stock.location'].search([])[0].id,
-                'location_id': self.env['stock.location'].search([])[0].id,
+            company = self.env.ref('base.%s' % your_company_id)
+            self.ship_vals = {
+                'product_packaging_id': self.pack_id.id,
+                'partner_id': self.env.ref('base.%s' % asustek_partner_id).id,
+                'location_dest_id': self.env['stock.location'].search([
+                    ])[0].id,
+                'location_id': self.env['stock.location'].search([
+                    ('company_id', '=', company.id),
+                    ('name', '=', 'Stock')
+                ])[0].id,
                 'picking_type_id':
                     self.env['stock.picking.type'].search([])[0].id,
-            })
-            self.group_id = self.env['stock.delivery.group'].create({
-                'picking_id': self.picking_id.id,
-                'pack_id': self.pack_id.id,
-            })
+            }
+            self.picking_id = self.env['stock.picking'].create(self.ship_vals)
             self.rates = [
                 ObjDict(**{
                     "carrier": "USPS",

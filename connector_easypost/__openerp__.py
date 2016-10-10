@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2016 LasLabs Inc.
+# Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 {
@@ -11,8 +11,11 @@
     'license': 'AGPL-3',
     'website': 'https://laslabs.com',
     'depends': [
+        'stock',
         'connector',
-        'stock_delivery_label_new',
+        'stock_picking_rate',
+        'stock_picking_package_info',
+        'base_delivery_carrier_label',
     ],
     "external_dependencies": {
         "python": [
@@ -23,6 +26,7 @@
         'views/easypost_backend_view.xml',
         'views/connector_menu.xml',
         'views/res_partner_view.xml',
+        'views/stock_picking_package_view.xml',
         'wizards/easypost_address_view.xml',
         'security/ir.model.access.csv',
     ],
