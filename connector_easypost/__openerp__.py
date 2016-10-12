@@ -14,7 +14,7 @@
         'stock',
         'connector',
         'stock_picking_rate',
-        'stock_picking_package_info',
+        'stock_package_info',
         'base_delivery_carrier_label',
     ],
     "external_dependencies": {
@@ -26,7 +26,7 @@
         'views/easypost_backend_view.xml',
         'views/connector_menu.xml',
         'views/res_partner_view.xml',
-        'views/stock_picking_package_view.xml',
+        'views/stock_picking_label_view.xml',
         'wizards/easypost_address_view.xml',
         'security/ir.model.access.csv',
     ],

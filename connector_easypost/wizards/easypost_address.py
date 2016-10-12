@@ -91,22 +91,7 @@ class EasypostAddress(models.TransientModel):
                 vals[key] = val.id if hasattr(val, 'id') else val
             rec_id.write(vals)
 
-    # @api.multi
-    # @api.onchange(*SYNC_ATTRS)
-    # def _onchange_sync_attrs(self):
-    #     for rec_id in self:
-    #         for attr in rec_id.SYNC_ATTRS:
-    #             setattr(rec_id, attr, getattr(rec_id, attr))
-
     @api.multi
     def action_validate(self):
         for rec_id in self:
             rec_id.partner_id._easypost_synchronize(auto=True)
-
-    # @api.model
-    # def _get_by_partner(self, partner_id):
-    #     return self.search([
-    #         ('partner_id', '=', partner_id.id),
-    #     ],
-    #         limit=1,
-    #     )

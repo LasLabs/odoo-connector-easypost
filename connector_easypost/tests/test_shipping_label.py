@@ -9,31 +9,25 @@ from .common import mock_api, EasypostDeliveryHelper, mock_job_delay_to_direct
 module = 'openerp.addons.connector_easypost'
 job = '%s.consumer.export_record' % module
 requests = '%s.models.shipping_label.requests' % module
-rate = 'easypost.stock.picking.dispatch.rate'
+rate = 'easypost.stock.picking.rate'
 
 
 class TestShippingLabel(EasypostDeliveryHelper):
 
     def setUp(self):
         super(TestShippingLabel, self).setUp(ship=True)
-        self.ShipmentBuy = self.env['shipping.label.new']
+        self.ShipmentBuy = self.env['shipping.label']
 
     def new_rate(self, mk):
         self.rates[0]['shipment_id'] = mk.Shipment.create().id
         mk.Shipment.create().rates = self.rates
-        self.delivery_id = self.env['stock.picking'].create(self.ship_vals)
+        self.delivery_id = self.create_picking()
         self.ep_rate_id = self.env[rate].search([
             ('easypost_id', '=', self.rates[0]['id']),
         ],
             limit=1,
         )
         return self.ep_rate_id.odoo_id
-
-    def new_record(self, mk):
-        rate_id = self.new_rate(mk)
-        return self.ShipmentBuy.create({
-            'rate_id': rate_id.id,
-        })
 
     @mock.patch(requests)
     def do_test(self, req_mk):
@@ -43,7 +37,8 @@ class TestShippingLabel(EasypostDeliveryHelper):
                 for i in ['label_date', 'updated_at', 'created_at']:
                     setattr(mk.Shipment.retrieve().postage_label, i, date)
                 req_mk.get().content = 'Test'
-                self.new_record(mk)
+                rate_id = self.new_rate(mk)
+                rate_id.buy()
                 return mk, req_mk
 
     @mock.patch(requests)

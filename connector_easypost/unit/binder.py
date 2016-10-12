@@ -23,9 +23,9 @@ class EasypostModelBinder(EasypostBinder):
     """
     _model_name = [
         'easypost.easypost.address',
-        'easypost.product.packaging',
+        'easypost.stock.quant.package',
         'easypost.stock.picking',
-        'easypost.stock.picking.dispatch.rate',
+        'easypost.stock.picking.rate',
         'easypost.shipping.label',
     ]
 

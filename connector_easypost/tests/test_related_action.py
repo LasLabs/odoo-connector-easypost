@@ -4,30 +4,18 @@
 
 import mock
 
-import openerp.tests.common as common
 from openerp.addons.connector.queue.job import (Job,
                                                 OpenERPJobStorage,
                                                 )
-from openerp.addons.connector.session import ConnectorSession
-from .common import mock_api
-# from .data_base import easypost_base_responses
-# from ..unit.import_synchronizer import import_batch, import_record
+from .common import mock_api, SetUpEasypostBase
 from ..unit.export_synchronizer import export_record
 
 
-class TestRelatedActionStorage(common.TransactionCase):
+class TestRelatedActionStorage(SetUpEasypostBase):
     """ Test related actions on stored jobs """
 
     def setUp(self):
         super(TestRelatedActionStorage, self).setUp()
-        self.backend_model = self.env['easypost.backend']
-        self.session = ConnectorSession(self.env.cr, self.env.uid,
-                                        context=self.env.context)
-        self.backend = self.backend_model.create({
-            'name': 'Test Easypost',
-            'version': '2',
-            'api_key': 'cueqNZUb3ldeWTNX7MU3Mel8UXtaAMUi',
-        })
         self.EasypostAddress = self.env['easypost.easypost.address']
         self.QueueJob = self.env['queue.job']
 

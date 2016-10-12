@@ -69,3 +69,26 @@ class TestAddress(SetUpEasypostBase):
             self.assertEqual(
                 u"%s" % mk.Address.create().street1, rec_id.street,
             )
+
+    def test_default_partner_id(self):
+        """ Test partner defaults to active partner ID """
+        addr = self.Address.with_context(active_id=self.partner_id.id)
+        partner = addr._default_partner_id()
+        self.assertEquals(self.partner_id.id, partner)
+
+    def test_sync_from_partner(self):
+        """ Test address sync from partner correctly """
+        test_street = '123 Test Drive'
+        self.partner_id.write({'street': test_street})
+        self.address_id._sync_from_partner()
+        self.assertEquals(self.address_id.street, test_street)
+
+    def test_action_validate(self):
+        """ Test action_validate calls sync correctly """
+        with mock_api():
+            rec_id = self.address_id
+            with mock.patch.object(rec_id.partner_id,
+                                   '_easypost_synchronize'
+                                   ) as get_mk:
+                rec_id.action_validate()
+                get_mk.assert_called_once_with(auto=True)

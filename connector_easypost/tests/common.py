@@ -96,12 +96,23 @@ class SetUpEasypostBase(common.TransactionCase):
         self.session = ConnectorSession(
             self.env.cr, self.env.uid, context=self.env.context,
         )
-        self.backend = self.backend_model.create({
-            'name': 'Test Easypost',
-            'version': '2',
-            'api_key': 'cueqNZUb3ldeWTNX7MU3Mel8UXtaAMUi',
-        })
+        self.backend = self.get_easypost_backend()
         self.backend_id = self.backend.id
+
+    def get_easypost_backend(self):
+        domain = [
+            ('company_id', '=', self.env.ref('base.main_company').id),
+            ('is_default', '=', True),
+        ]
+        backends = self.backend_model.search(domain)
+        if len(backends) > 0:
+            return backends[0]
+        else:
+            return self.backend_model.create({
+                'name': 'Test Easypost',
+                'version': '2',
+                'api_key': 'cueqNZUb3ldeWTNX7MU3Mel8UXtaAMUi',
+            })
 
     def get_easypost_helper(self, model_name):
         return EasypostHelper(self.cr, self.registry, model_name)
@@ -111,7 +122,7 @@ class EasypostDeliveryHelper(SetUpEasypostBase):
 
     def setUp(self, ship=False):
         super(EasypostDeliveryHelper, self).setUp()
-        self.DeliveryPack = self.env['product.packaging']
+        self.pack_cnt = 0
         self.cm_id = self.env.ref('product.product_uom_cm')
         self.inch_id = self.env.ref('product.product_uom_inch')
         self.oz_id = self.env.ref('product.product_uom_oz')
@@ -127,28 +138,15 @@ class EasypostDeliveryHelper(SetUpEasypostBase):
             'height_uom_id': self.inch_id.id,
             'width_uom_id': self.inch_id.id,
             'weight_uom_id': self.oz_id.id,
-            'type': 'box',
+            'package_type': 'box',
             'packaging_template_name': 'TestPackTpl',
         }
         self.pack_vals.update(self.ep_vals)
-        self.pack_tpl_id = self.env['product.packaging.template'].create(
-            self.pack_vals
-        )
-        self.quant_pack_id = self.env['stock.quant.package'].create({
-            'product_pack_tmpl_id': self.pack_tpl_id.id,
-        })
-        self.pack_vals.update({
-            'product_pack_tmpl_id': self.pack_tpl_id.id,
-            'name': 'TestPack',
-            'rows': 1,
-        })
         if ship:
-            self.pack_id = self.env['product.packaging'].create(
-                self.pack_vals
-            )
             company = self.env.ref('base.%s' % your_company_id)
+            product = self.env.ref('product.product_product_6')
+            self.pack_tpl_id = self.create_product_packaging_template()
             self.ship_vals = {
-                'product_packaging_id': self.pack_id.id,
                 'partner_id': self.env.ref('base.%s' % asustek_partner_id).id,
                 'location_dest_id': self.env['stock.location'].search([
                     ])[0].id,
@@ -158,8 +156,14 @@ class EasypostDeliveryHelper(SetUpEasypostBase):
                 ])[0].id,
                 'picking_type_id':
                     self.env['stock.picking.type'].search([])[0].id,
+                'move_lines': [[0, False, {
+                    'name': product.name,
+                    'product_id': product.id,
+                    'product_uom': product.uom_id.id,
+                    'product_uom_qty': '1',
+                    'state': 'draft'
+                }]]
             }
-            self.picking_id = self.env['stock.picking'].create(self.ship_vals)
             self.rates = [
                 ObjDict(**{
                     "carrier": "USPS",
@@ -185,3 +189,24 @@ class EasypostDeliveryHelper(SetUpEasypostBase):
                     "updated_at": "2016-06-07 03:25:48",
                 }),
             ]
+
+    def create_picking(self):
+        picking = self.env['stock.picking'].create(self.ship_vals)
+        picking.action_confirm()
+        picking.force_assign()
+        for item in picking.pack_operation_product_ids:
+            item.qty_done = 1.0
+        picking.put_in_pack()
+        for item in picking.pack_operation_ids.result_package_id:
+            item.product_pack_tmpl_id = self.pack_tpl_id.id
+        return picking
+
+    def create_product_packaging_template(self):
+        self.pack_vals['packaging_template_name'] = '%s_%s' % (
+            self.pack_vals['packaging_template_name'],
+            self.pack_cnt
+        )
+        self.pack_cnt += 1
+        return self.env['product.packaging.template'].create(
+            self.pack_vals
+        )
