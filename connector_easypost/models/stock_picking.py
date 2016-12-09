@@ -14,8 +14,7 @@ from ..unit.mapper import (EasypostImportMapper,
 from ..backend import easypost
 from ..unit.import_synchronizer import (EasypostImporter)
 from ..unit.export_synchronizer import (EasypostExporter)
-from ..unit.mapper import eval_false
-from .stock_picking_dispatch_rate import StockPickingDispatchRateImporter
+from .stock_picking_rate import StockPickingRateImporter
 from .shipping_label import ShippingLabelImporter
 
 
@@ -49,14 +48,15 @@ class StockPicking(models.Model):
     """
     _inherit = 'stock.picking'
 
-    product_packaging_id = fields.Many2one(
-        string='Delivery Packaging',
-        comodel_name='product.packaging',
-    )
     easypost_bind_ids = fields.One2many(
         comodel_name='easypost.stock.picking',
         inverse_name='odoo_id',
         string='Easypost Bindings',
+    )
+    shipping_label_ids = fields.One2many(
+        comodel_name='shipping.label',
+        string='Shipping Labels',
+        inverse_name='picking_id'
     )
 
 
@@ -75,7 +75,7 @@ class EasypostStockPickingAdapter(EasypostCRUDAdapter):
         ],
             limit=1,
         )
-        rate_record = self.env['easypost.stock.picking.dispatch.rate'].search([
+        rate_record = self.env['easypost.stock.picking.rate'].search([
             ('odoo_id', '=', rate_record.easypost_bind_ids.odoo_id.id),
         ],
             limit=1,
@@ -97,17 +97,6 @@ class EasypostStockPickingAdapter(EasypostCRUDAdapter):
 class EasypostStockPickingImportMapper(EasypostImportMapper):
     _model_name = 'easypost.stock.picking'
 
-    direct = [
-        (eval_false('mode'), 'mode'),
-    ]
-
-    @mapping
-    def rates(self, record):
-        importer = self.unit_for(StockPickingDispatchRateImporter,
-                                 model='easypost.stock.picking.dispatch.rate')
-        for rate in record.rates:
-            importer.run(rate.id)
-
 
 @easypost
 class EasypostStockPickingImporter(EasypostImporter):
@@ -128,7 +117,7 @@ class EasypostStockPickingExportMapper(EasypostExportMapper):
         vals = {
             'name': partner_id.name,
             'street1': partner_id.street,
-            'street2': partner_id.street2,
+            'street2': partner_id.street2 or '',
             'email': partner_id.email,
             'phone': partner_id.phone,
             'city': partner_id.city,
@@ -141,10 +130,12 @@ class EasypostStockPickingExportMapper(EasypostExportMapper):
         return vals
 
     @mapping
-    @changed_by('product_packaging_id')
+    @changed_by('package_ids')
     def parcel(self, record):
-        binder = self.binder_for('easypost.product.packaging')
-        parcel = binder.to_backend(record.product_packaging_id)
+        parcel = {}
+        if len(record.package_ids):
+            binder = self.binder_for('easypost.stock.quant.package')
+            parcel = binder.to_backend(record.package_ids)
         return {'parcel': {'id': parcel}}
 
     @mapping
@@ -169,16 +160,10 @@ class EasypostStockPickingExporter(EasypostExporter):
     _model_name = ['easypost.stock.picking']
     _base_mapper = EasypostStockPickingExportMapper
 
-    def _export_dependencies(self):
-        _logger.debug('Exporting Dependency %r',
-                      self.binding_record.product_packaging_id)
-        self._export_dependency(self.binding_record.product_packaging_id,
-                                'easypost.product.packaging')
-
     def _after_export(self):
         """ Immediate re-import """
-        importer = self.unit_for(StockPickingDispatchRateImporter,
-                                 model='easypost.stock.picking.dispatch.rate')
+        importer = self.unit_for(StockPickingRateImporter,
+                                 model='easypost.stock.picking.rate')
         for rate in self.easypost_record.rates:
             rate['easypost_bind_ids'] = self.binding_record.id
             importer.easypost_record = rate

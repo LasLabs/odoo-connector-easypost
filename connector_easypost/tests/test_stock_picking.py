@@ -14,12 +14,11 @@ class TestStockPicking(EasypostDeliveryHelper):
 
     def setUp(self):
         super(TestStockPicking, self).setUp(ship=True)
-        self.DeliveryNew = self.env['stock.picking']
 
     def new_record(self):
-        return self.DeliveryNew.create(self.ship_vals)
+        return self.create_picking()
 
-    def test_action_create_delivery_triggers_export(self):
+    def test_action_create_picking_triggers_export(self):
         """ Test external record export on stock picking creation """
         with mock_job_delay_to_direct(job):
             with mock_api() as mk:
@@ -38,7 +37,7 @@ class TestStockPicking(EasypostDeliveryHelper):
                             'zip': u'106',
                             'city': u'Taipei',
                             'street1': u'31 Hong Kong street',
-                            'street2': False,
+                            'street2': '',
                             'country': u'TW',
                             'company': u'YourCompany',
                             'email': u'asusteK@yourcompany.example.com',
@@ -50,22 +49,11 @@ class TestStockPicking(EasypostDeliveryHelper):
                             'zip': u'18540',
                             'city': u'Scranton',
                             'street1': u'1725 Slough Ave.',
-                            'street2': False,
+                            'street2': '',
                             'country': u'US',
                             'company': u'YourCompany',
                             'email': u'info@yourcompany.example.com',
                         },
                         parcel={'id': u"%s" % mk.Parcel.create().id},
                     )
-                ])
-
-    def test_shipment_export_triggers_package_export(self):
-        """ Test that package is exported as dependency to shipment """
-        with mock_job_delay_to_direct(job):
-            with mock_api() as mk:
-                self.new_record()
-                # @TODO: Kill multiple calls
-                mk.Parcel.create.assert_has_calls([
-                    mock.call(),
-                    mock.call(id=False, **self.ep_vals)
                 ])

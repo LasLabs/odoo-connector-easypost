@@ -50,9 +50,13 @@ class ShippingLabel(models.Model):
         inverse_name='odoo_id',
         string='Easypost Bindings',
     )
+    picking_id = fields.Many2one(
+        string='Picking',
+        comodel_name='stock.picking',
+    )
     rate_id = fields.Many2one(
         string='Rate',
-        comodel_name='stock.picking.dispatch.rate',
+        comodel_name='stock.picking.rate',
     )
 
 
@@ -78,8 +82,17 @@ class ShippingLabelImportMapper(ImportMapper):
 
     @mapping
     @only_create
+    def picking_id(self, record):
+        binder = self.binder_for('easypost.stock.picking.rate')
+        rate = self.env['stock.picking.rate'].browse(
+            binder.to_odoo(record.selected_rate.id)
+        )
+        return {'picking_id': rate.picking_id.id}
+
+    @mapping
+    @only_create
     def rate_id(self, record):
-        binder = self.binder_for('easypost.stock.picking.dispatch.rate')
+        binder = self.binder_for('easypost.stock.picking.rate')
         rate_id = binder.to_odoo(record.selected_rate.id)
         return {'rate_id': rate_id}
 

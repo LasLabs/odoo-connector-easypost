@@ -4,12 +4,15 @@
 
 import logging
 
-import easypost
-
 from openerp.addons.connector.unit.backend_adapter import CRUDAdapter
 
 
 _logger = logging.getLogger(__name__)
+
+try:
+    import easypost
+except ImportError:
+    _logger.warning('Could not import module dependency `easypost`')
 
 
 class EasypostCRUDAdapter(CRUDAdapter):
