@@ -18,7 +18,7 @@ To install this module, you need to:
   ``pip install easypost``
 * Install OCA Connector module from https://github.com/OCA/connector
 * Since we are not using OCA/stock-logistics-workflow/9.0, you must clone
-``stock-logistics-workflow`` from https://github.com/laslabs/stock-logistics-workflow.git
+  ``stock-logistics-workflow`` from https://github.com/laslabs/stock-logistics-workflow.git
   and checkout the ``feature/9.0/LABS-187-migrate-connectoreasypost-to-oca`` branch.
   You will be able to use OCA stock-logistics-workflow once the following MRs are merged to 9.0:
   https://github.com/OCA/stock-logistics-workflow/pull/247

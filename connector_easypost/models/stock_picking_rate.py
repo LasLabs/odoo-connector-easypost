@@ -17,17 +17,17 @@ from ..unit.mapper import eval_false
 _logger = logging.getLogger(__name__)
 
 
-class EasypostStockPickingDispatchRate(models.Model):
-    """ Binding Model for the Easypost StockPickingDispatchRate """
-    _name = 'easypost.stock.picking.dispatch.rate'
+class EasypostStockPickingRate(models.Model):
+    """ Binding Model for the Easypost StockPickingRate """
+    _name = 'easypost.stock.picking.rate'
     _inherit = 'easypost.binding'
-    _inherits = {'stock.picking.dispatch.rate': 'odoo_id'}
-    _description = 'Easypost StockPickingDispatchRate'
+    _inherits = {'stock.picking.rate': 'odoo_id'}
+    _description = 'Easypost StockPickingRate'
     _easypost_model = 'Rate'
 
     odoo_id = fields.Many2one(
-        comodel_name='stock.picking.dispatch.rate',
-        string='StockPickingDispatchRate',
+        comodel_name='stock.picking.rate',
+        string='StockPickingRate',
         required=True,
         ondelete='cascade',
     )
@@ -38,28 +38,28 @@ class EasypostStockPickingDispatchRate(models.Model):
     ]
 
 
-class StockPickingDispatchRate(models.Model):
+class StockPickingRate(models.Model):
     """ Adds the ``one2many`` relation to the Easypost bindings
     (``easypost_bind_ids``)
     """
-    _inherit = 'stock.picking.dispatch.rate'
+    _inherit = 'stock.picking.rate'
 
     easypost_bind_ids = fields.One2many(
-        comodel_name='easypost.stock.picking.dispatch.rate',
+        comodel_name='easypost.stock.picking.rate',
         inverse_name='odoo_id',
         string='Easypost Bindings',
     )
 
 
 @easypost
-class StockPickingDispatchRateAdapter(EasypostCRUDAdapter):
-    """ Backend Adapter for the Easypost StockPickingDispatchRate """
-    _model_name = 'easypost.stock.picking.dispatch.rate'
+class StockPickingRateAdapter(EasypostCRUDAdapter):
+    """ Backend Adapter for the Easypost StockPickingRate """
+    _model_name = 'easypost.stock.picking.rate'
 
 
 @easypost
-class StockPickingDispatchRateImportMapper(EasypostImportMapper):
-    _model_name = 'easypost.stock.picking.dispatch.rate'
+class StockPickingRateImportMapper(EasypostImportMapper):
+    _model_name = 'easypost.stock.picking.rate'
 
     direct = [
         (eval_false('mode'), 'mode'),
@@ -149,6 +149,6 @@ class StockPickingDispatchRateImportMapper(EasypostImportMapper):
 
 
 @easypost
-class StockPickingDispatchRateImporter(EasypostImporter):
-    _model_name = ['easypost.stock.picking.dispatch.rate']
-    _base_mapper = StockPickingDispatchRateImportMapper
+class StockPickingRateImporter(EasypostImporter):
+    _model_name = ['easypost.stock.picking.rate']
+    _base_mapper = StockPickingRateImportMapper

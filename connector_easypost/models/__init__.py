@@ -7,6 +7,6 @@ from . import res_company
 from . import res_partner
 from . import address
 from . import delivery_carrier
-from . import product_packaging
+from . import stock_quant_package
 from . import stock_picking
-from . import stock_picking_dispatch_rate
+from . import stock_picking_rate

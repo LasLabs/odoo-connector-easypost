@@ -10,26 +10,26 @@ model = 'openerp.addons.connector_easypost.models.address'
 job = 'openerp.addons.connector_easypost.consumer.export_record'
 
 
-class TestStockDeliveryPack(EasypostDeliveryHelper):
+class TestStockQuantPackage(EasypostDeliveryHelper):
 
     def setUp(self):
-        super(TestStockDeliveryPack, self).setUp()
-        self.EasypostParcel = self.env['easypost.product.packaging']
-        self.vals = self.pack_vals
+        super(TestStockQuantPackage, self).setUp()
+        self.Parcel = self.env['stock.quant.package']
         self.converted = {
             'length': .4,
             'width': 1.19,
             'height': .79,
             'weight': .15,
         }
-        self.vals.update(self.ep_vals)
+        self.pack_tpl_id = self.create_product_packaging_template()
+        self.vals = {'product_pack_tmpl_id': self.pack_tpl_id.id}
 
     def _convert_uom(self, name):
         if name == 'weight':
             uom_id = self.oz_id.id
         else:
             uom_id = self.inch_id.id
-        self.vals.update({
+        self.pack_vals.update({
             '%s_uom_id' % name: uom_id,
             name: self.converted[name],
         })
@@ -38,7 +38,7 @@ class TestStockDeliveryPack(EasypostDeliveryHelper):
         })
 
     def new_record(self):
-        return self.EasypostParcel.create(self.vals)
+        return self.Parcel.create(self.vals)
 
     def test_api_create_triggers_export(self):
         """ Test export of external resource on creation """
@@ -47,31 +47,28 @@ class TestStockDeliveryPack(EasypostDeliveryHelper):
                 self.new_record()
                 mk.Parcel.create.assert_has_calls([
                     mock.call(),
-                    mock.call(id=False, **self.ep_vals),
+                    mock.call(id=False,
+                              **self.ep_vals),
                 ])
 
     def test_api_write_triggers_export(self):
         """ Test export of external resource on write """
-        rec_id = self.new_record()
         with mock_job_delay_to_direct(job):
             with mock_api() as mk:
-                self.ep_vals.update({'weight': 10.0})
-                rec_id.write(self.ep_vals)
+                self.new_record()
                 args = mk.Parcel.create.call_args
                 expect = mock.call(id=False,
                                    **self.ep_vals)
                 self.assertEqual(
                     expect, args,
-                    'Did not call create w/ args on write. '
-                    'Expect %s, Got %s' % (
-                        expect, args,
-                    )
                 )
 
     def _uom_conversion_helper(self, name, uom_id):
-        self.vals['%s_uom_id' % name] = uom_id.id
+        self.pack_vals['%s_uom_id' % name] = uom_id.id
         with mock_job_delay_to_direct(job):
             with mock_api() as mk:
+                pack = self.create_product_packaging_template()
+                self.vals['product_pack_tmpl_id'] = pack.id
                 self.new_record()
                 self._convert_uom(name)
                 mk.Parcel.create.assert_has_calls([
