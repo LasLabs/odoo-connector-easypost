@@ -24,7 +24,6 @@ def immediate_export(session, model_name, record_id, vals):
     (A binding record being a ``easypost.easypost.address``,
     ``easypost.easypost.address``, ...)
     """
-    _logger.debug('Trigger immediate export on %s, %s', model_name, record_id)
     if session.context.get('connector_no_export'):
         return
     fields = vals.keys()
@@ -37,8 +36,6 @@ def immediate_export_all_bindings(session, model_name, record_id, vals):
     In this case, it is called on records of normal models and will delay
     the export for all the bindings.
     """
-    _logger.debug('Trigger immediate binding export on %s, %s',
-                  model_name, record_id)
     if session.context.get('connector_no_export'):
         return
     record = session.env[model_name].browse(record_id)
@@ -54,7 +51,6 @@ def delay_export(session, model_name, record_id, vals):
     (A binding record being a ``easypost.stock.quant.package``,
     ``easypost.easypost.address``, ...)
     """
-    _logger.debug('Trigger delayed export on %s, %s', model_name, record_id)
     if session.context.get('connector_no_export'):
         return
     fields = vals.keys()
@@ -73,17 +69,13 @@ def export_package_change(session, model_name, record_id, vals):
         _logger.debug('Not exporting %s because of missing dependencies',
                       model_name)
         return
-    _logger.debug('Trigger delayed export on %s, %s', model_name, record_id)
     record = session.env[model_name].browse(record_id)
     fields = vals.keys()
-    _logger.debug('Write %s with %s', model_name, vals)
     for binding in record.easypost_bind_ids:
         export_record.delay(session, binding._model._name, binding.id,
                             fields=fields)
     if record.picking_ids:
         picking = record.picking_ids[0]
-        _logger.debug('Trigger delayed export on stock.picking, %s',
-                      picking.id)
         pick_vals = picking._fields.keys()
         for binding in picking.easypost_bind_ids:
             export_record.delay(session, binding._model._name, binding.id,

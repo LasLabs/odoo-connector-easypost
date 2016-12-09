@@ -79,19 +79,19 @@ class StockQuantPackageExportMapper(EasypostExportMapper):
     _model_name = 'easypost.stock.quant.package'
 
     def _convert_to_inches(self, uom_qty, uom_id):
-        inches_id = self.env.ref('product.product_uom_inch')
-        if uom_id.id != inches_id.id:
+        inches = self.env.ref('product.product_uom_inch')
+        if uom_id.id != inches.id:
             return self.env['product.uom']._compute_qty_obj(
-                uom_id, uom_qty, inches_id,
+                uom_id, uom_qty, inches,
             )
         else:
             return uom_qty
 
     def _convert_to_ounces(self, uom_qty, uom_id):
-        oz_id = self.env.ref('product.product_uom_oz')
-        if uom_id.id != oz_id.id:
+        oz = self.env.ref('product.product_uom_oz')
+        if uom_id.id != oz.id:
             return self.env['product.uom']._compute_qty_obj(
-                uom_id, uom_qty, oz_id,
+                uom_id, uom_qty, oz,
             )
         else:
             return uom_qty
