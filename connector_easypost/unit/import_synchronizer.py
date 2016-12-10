@@ -314,6 +314,15 @@ class AddCheckpoint(ConnectorUnit):
                        self.backend_record.id)
 
 
+def _get_env_return_importer(env, model_name, backend_id):
+    """ Create the session from the given environment and return an
+    `EasypostImporter` instance """
+    session = ConnectorSession(env.cr, env, context=env.context)
+    env = get_environment(session, model_name, backend_id)
+    importer = env.get_connector_unit(EasypostImporter)
+    return importer
+
+
 @job(default_channel='root.easypost')
 def import_batch(session, model_name, backend_id, filters=None):
     """ Prepare a batch import of records from Easypost """
@@ -335,9 +344,7 @@ def import_record(session, model_name, backend_id, easypost_id, force=False):
 @job(default_channel='root.easypost')
 def easy_import_record(model_name, easypost_id, env, backend_id, force=False):
     """ Import a record from Easypost while also creating the session """
-    session = ConnectorSession(env.cr, env, context=env.context)
-    env = get_environment(session, model_name, backend_id)
-    importer = env.get_connector_unit(EasypostImporter)
+    importer = _get_env_return_importer(env, model_name, backend_id)
     _logger.debug('Importing EasyPost Record %s from %s',
                   easypost_id, model_name)
     importer.run(easypost_id, force=force)
@@ -346,9 +353,7 @@ def easy_import_record(model_name, easypost_id, env, backend_id, force=False):
 @job(default_channel='root.easypost')
 def easy_import_data(model_name, record, env, backend_id, force=False):
     """ Import a record from Easypost while also creating the session """
-    session = ConnectorSession(env.cr, env, context=env.context)
-    env = get_environment(session, model_name, backend_id)
-    importer = env.get_connector_unit(EasypostImporter)
+    importer = _get_env_return_importer(env, model_name, backend_id)
     _logger.debug('Importing EasyPost Data %s into record of type %s',
                   record, model_name)
     importer.easypost_data = record
