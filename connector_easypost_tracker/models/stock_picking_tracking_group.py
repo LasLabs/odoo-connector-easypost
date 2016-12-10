@@ -76,7 +76,7 @@ class StockPickingTrackingGroupImportMapper(EasypostImportMapper):
     @only_create
     def picking_id(self, record):
         pickings = self.env['easypost.stock.picking'].search([
-            ('easypost_id', '=', record.shipment_id)
+            ('easypost_id', '=', record.shipment_id),
         ])
         if pickings:
             return {'picking_id': pickings.odoo_id.id}

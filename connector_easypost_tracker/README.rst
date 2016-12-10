@@ -6,7 +6,8 @@
 EasyPost Connector Tracker
 ==========================
 
-This module provides EasyPost Tracking functionality.
+This module provides web hooks to allow EasyPost to update package tracking
+status in Odoo.
 
 
 Installation
@@ -31,6 +32,14 @@ Known Issues / Roadmap
 
 None
 
+Bug Tracker
+===========
+
+Bugs are tracked on `GitHub Issues
+<https://github.com/laslabs/odoo-connector-easypost/issues>`_.
+In case of trouble, please check there if your issue has already been reported.
+If you spotted it first, please help us smash it by providing a detailed and
+welcomed feedback.
 
 Credits
 =======
