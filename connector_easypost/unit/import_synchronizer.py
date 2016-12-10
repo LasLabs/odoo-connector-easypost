@@ -15,9 +15,12 @@ are already bound, to update the last sync date.
 import logging
 import dateutil.parser
 import pytz
+from hashlib import md5
 from openerp import fields, _
 from openerp.addons.connector.queue.job import job
 from openerp.addons.connector.connector import ConnectorUnit
+from openerp.addons.connector.exception import InvalidDataError
+from openerp.addons.connector.session import ConnectorSession
 from openerp.addons.connector.unit.synchronizer import Importer
 from ..backend import easypost
 from ..connector import get_environment, add_checkpoint
@@ -51,7 +54,7 @@ class EasypostImporter(Importer):
         """Return True if the import should be skipped because
         it is already up-to-date in Odoo"""
         assert self.easypost_record
-        if not self.easypost_record.updated_at:
+        if not getattr(self.easypost_record, 'updated_at', False):
             return  # no update date on Easypost, always import it.
         if not binding:
             return  # it does not exist so it should not be skipped
@@ -137,8 +140,15 @@ class EasypostImporter(Importer):
                                    unwrap=False,
                                    browse=True)
 
-    def _create_data(self, map_record, **kwargs):
-        return map_record.values(for_create=True, **kwargs)
+    def _generate_easypost_id(self):
+        """ Some objects in EasyPost have no ID. Return one based on
+        the unique data of the object
+        :return str: The MD5 Hex Digest of the record
+        """
+        obj_hash = md5()
+        for attr in self._hashable_attrs:
+            obj_hash.update(getattr(self.easypost_record, attr, '') or '')
+        return '%s_%s' % (self._id_prefix, obj_hash.hexdigest())
 
     def _create(self, data):
         """ Create the Odoo record """
@@ -178,13 +188,26 @@ class EasypostImporter(Importer):
         """ Hook called at the end of the import """
         return
 
-    def run(self, easypost_id, force=False):
+    def _create_data(self, map_record, **kwargs):
+        return map_record.values(for_create=True, **kwargs)
+
+    def run(self, easypost_id=None, force=False):
         """ Run the synchronization
         :param easypost_id: identifier of the record on Easypost
+        :returns object: The binding record we created/updated
         """
+        if not easypost_id and not self.easypost_record:
+            raise InvalidDataError('EasyPost ID must be supplied or \
+                                   easypost_record object must be filled')
         self.easypost_id = easypost_id
         if not self.easypost_record:
             self.easypost_record = self._get_easypost_data()
+        else:
+            if not easypost_id:
+                self.easypost_id = self._generate_easypost_id()
+            if not getattr(self.easypost_record, 'id', None):
+                self.easypost_record.id = self.easypost_id
+
         _logger.info('self.easypost_record - %s', self.easypost_record)
         lock_name = 'import({}, {}, {}, {})'.format(
             self.backend_record._name,
@@ -220,6 +243,7 @@ class EasypostImporter(Importer):
         self.binder.bind(self.easypost_id, binding)
 
         self._after_import(binding)
+        return binding
 
 
 class BatchImporter(Importer):
@@ -303,5 +327,29 @@ def import_record(session, model_name, backend_id, easypost_id, force=False):
     """ Import a record from Easypost """
     env = get_environment(session, model_name, backend_id)
     importer = env.get_connector_unit(EasypostImporter)
-    _logger.debug('Importing CP Record %s from %s', easypost_id, model_name)
+    _logger.debug('Importing EasyPost Record %s from %s',
+                  easypost_id, model_name)
     importer.run(easypost_id, force=force)
+
+
+@job(default_channel='root.easypost')
+def easy_import_record(model_name, easypost_id, env, backend_id, force=False):
+    """ Import a record from Easypost while also creating the session """
+    session = ConnectorSession(env.cr, env, context=env.context)
+    env = get_environment(session, model_name, backend_id)
+    importer = env.get_connector_unit(EasypostImporter)
+    _logger.debug('Importing EasyPost Record %s from %s',
+                  easypost_id, model_name)
+    importer.run(easypost_id, force=force)
+
+
+@job(default_channel='root.easypost')
+def easy_import_data(model_name, record, env, backend_id, force=False):
+    """ Import a record from Easypost while also creating the session """
+    session = ConnectorSession(env.cr, env, context=env.context)
+    env = get_environment(session, model_name, backend_id)
+    importer = env.get_connector_unit(EasypostImporter)
+    _logger.debug('Importing EasyPost Data %s into record of type %s',
+                  record, model_name)
+    importer.easypost_data = record
+    importer.run(getattr(record, 'id', None), force=force)
