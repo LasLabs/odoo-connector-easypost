@@ -16,12 +16,14 @@ import logging
 import dateutil.parser
 import pytz
 from hashlib import md5
+from json import loads
 from openerp import fields, _
 from openerp.addons.connector.queue.job import job
 from openerp.addons.connector.connector import ConnectorUnit
 from openerp.addons.connector.exception import InvalidDataError
 from openerp.addons.connector.session import ConnectorSession
 from openerp.addons.connector.unit.synchronizer import Importer
+from .object_dict import ObjectDict
 from ..backend import easypost
 from ..connector import get_environment, add_checkpoint
 
@@ -197,8 +199,8 @@ class EasypostImporter(Importer):
         :returns object: The binding record we created/updated
         """
         if not easypost_id and not self.easypost_record:
-            raise InvalidDataError('EasyPost ID must be supplied or \
-                                   easypost_record object must be filled')
+            raise InvalidDataError('EasyPost ID must be supplied or '
+                                   'easypost_record object must be filled')
         self.easypost_id = easypost_id
         if not self.easypost_record:
             self.easypost_record = self._get_easypost_data()
@@ -314,13 +316,10 @@ class AddCheckpoint(ConnectorUnit):
                        self.backend_record.id)
 
 
-def _get_env_return_importer(env, model_name, backend_id):
+def create_connector_session(env, model_name, backend_id):
     """ Create the session from the given environment and return an
-    `EasypostImporter` instance """
-    session = ConnectorSession(env.cr, env, context=env.context)
-    env = get_environment(session, model_name, backend_id)
-    importer = env.get_connector_unit(EasypostImporter)
-    return importer
+    `ConnectorSession` instance """
+    return ConnectorSession(env.cr, env.uid, context=env.context)
 
 
 @job(default_channel='root.easypost')
@@ -328,7 +327,7 @@ def import_batch(session, model_name, backend_id, filters=None):
     """ Prepare a batch import of records from Easypost """
     env = get_environment(session, model_name, backend_id)
     importer = env.get_connector_unit(BatchImporter)
-    importer.run(filters=filters)
+    return importer.run(filters=filters)
 
 
 @job(default_channel='root.easypost')
@@ -338,23 +337,17 @@ def import_record(session, model_name, backend_id, easypost_id, force=False):
     importer = env.get_connector_unit(EasypostImporter)
     _logger.debug('Importing EasyPost Record %s from %s',
                   easypost_id, model_name)
-    importer.run(easypost_id, force=force)
+    return importer.run(easypost_id, force=force)
 
 
 @job(default_channel='root.easypost')
-def easy_import_record(model_name, easypost_id, env, backend_id, force=False):
-    """ Import a record from Easypost while also creating the session """
-    importer = _get_env_return_importer(env, model_name, backend_id)
-    _logger.debug('Importing EasyPost Record %s from %s',
-                  easypost_id, model_name)
-    importer.run(easypost_id, force=force)
-
-
-@job(default_channel='root.easypost')
-def easy_import_data(model_name, record, env, backend_id, force=False):
-    """ Import a record from Easypost while also creating the session """
-    importer = _get_env_return_importer(env, model_name, backend_id)
-    _logger.debug('Importing EasyPost Data %s into record of type %s',
-                  record, model_name)
-    importer.easypost_data = record
-    importer.run(getattr(record, 'id', None), force=force)
+def import_data(session, model_name, backend_id, easypost_data, force=False):
+    """ Import EasyPost data directly from a JSON string """
+    env = get_environment(session, model_name, backend_id)
+    importer = env.get_connector_unit(EasypostImporter)
+    _logger.debug('Importing EasyPost Data %s from %s',
+                  easypost_data, model_name)
+    # Load the record as an object instead of a dict
+    record = loads(easypost_data, object_hook=lambda d: ObjectDict(**d))
+    importer.easypost_record = record
+    return importer.run(getattr(record, 'id', None), force=force)

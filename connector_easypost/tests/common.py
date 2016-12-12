@@ -11,6 +11,7 @@ import mock
 from contextlib import contextmanager
 import openerp.tests.common as common
 from openerp.addons.connector.session import ConnectorSession
+from ..unit.object_dict import ObjectDict
 
 
 backend_adapter = 'openerp.addons.connector_easypost.unit.backend_adapter'
@@ -73,15 +74,6 @@ class EasypostHelper(object):
     def __init__(self, cr, registry, model_name):
         self.cr = cr
         self.model = registry(model_name)
-
-
-class ObjDict(dict):
-
-    def __getattr__(self, key):
-        try:
-            return super(ObjDict, self).__getattr__(key)
-        except AttributeError:
-            return self[key]
 
 
 class SetUpEasypostBase(common.TransactionCase):
@@ -165,7 +157,7 @@ class EasypostDeliveryHelper(SetUpEasypostBase):
                 }]]
             }
             self.rates = [
-                ObjDict(**{
+                ObjectDict(**{
                     "carrier": "USPS",
                     "carrier_account_id":
                         "ca_ac8c059614f5495295d1161dfa1f0290",
