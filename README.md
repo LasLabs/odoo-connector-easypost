@@ -10,6 +10,7 @@ This project provides an EasyPost connection in Odoo, allowing for features such
  - Rate Quotes
  - Purchase Shipping Labels
  - Address Verification
+ - EasyPost WebHook Tracking Event handling
 
  
 [//]: # (addons)
@@ -18,6 +19,7 @@ Available addons
 addon | version | summary
 --- | --- | ---
 [connector_easypost](connector_easypost/) | 9.0.1.0.0 | EasyPost connector core
+[connector_easypost_tracker](connector_easypost/) | 9.0.1.0.0 | EasyPost connector tracking WebHooks module
 
 
 Unported addons
@@ -35,10 +37,11 @@ Contributors
 ------------
 
 * Dave Lasley <dave@laslabs.com>
+* Ted Salmon <tsalmon@laslabs.com>
 
 Maintainer
 ----------
 
 This module is maintained by [LasLabs Inc.](https://laslabs.com)
 
-* https://github.com/laslabs/odoo-connector-carepoint/
+* https://github.com/laslabs/odoo-connector-easypost/

@@ -9,5 +9,7 @@ from openerp.addons.connector_easypost.unit.binder import EasypostModelBinder
 @easypost
 class EasypostTrackerModelBinder(EasypostModelBinder):
     _model_name = [
+        'easypost.stock.picking.tracking.event',
         'easypost.stock.picking.tracking.group',
+        'easypost.stock.picking.tracking.location',
     ]
