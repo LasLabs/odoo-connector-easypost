@@ -39,6 +39,11 @@ To configure this module, you need to:
 Usage
 =====
 
+Predefined Packages
+===================
+* Predefined packages will automatically be added to Packaging templates upon
+ module install
+
 Address Verification
 --------------------
 
@@ -51,7 +56,8 @@ regardless of whether you save the partner or not.
 
 Rate Purchases
 ---------------
-* Assign a ``Delivery Packaging`` to the Stock Picking and verify the weight
+* Put products into a package
+* Assign a packaging template to that package
 * Click the ``Additional Info`` tab under a Stock Picking to view the Rates.
 * Click the green check button to purchase the rate.
 
@@ -67,8 +73,7 @@ Known Issues / Roadmap
 * Add a default EasyPost connection to span all companies
 * Mass address verification
 * Label import operates in Shipment context, due to needing selected rate info not within PostageLabel
-* Shipment buy workflow is a little ghetto with the intermediary wizard
-* Logic to get package weight currently queries the parent stock.picking for this data
+
 
 Bug Tracker
 ===========
