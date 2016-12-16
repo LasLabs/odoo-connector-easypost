@@ -2,6 +2,7 @@
 # Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+
 class ObjectDict(object):
     """ This class allows you to create objects with
     attributes and values direct from a `dict`. Useful
