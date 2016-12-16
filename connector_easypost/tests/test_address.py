@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import mock
+from ..unit.object_dict import ObjectDict
 from .common import mock_api, SetUpEasypostBase
 
 
@@ -35,6 +36,34 @@ class TestAddress(SetUpEasypostBase):
             country=u'US',
             email=False,
         )
+        self.ep_record = ObjectDict(**{
+            "city": "Las Vegas",
+            "country": "US",
+            "created_at": "2016-12-15T22:53:39Z",
+            "id": "adr_31ebaa58ce274c7084153f19441b37a3",
+            "mode": "test",
+            "name": "Test Customer",
+            "object": "Address",
+            "state": "NV",
+            "street1": "123 Test St",
+            "street2": "False",
+            "email": "",
+            "phone": "",
+            "updated_at": "2016-12-15T22:53:39Z",
+            "verifications": ObjectDict(**{
+                "delivery": ObjectDict(**{
+                    "details": {},
+                    "errors": [ObjectDict(**{
+                        "code": "E.ADDRESS.NOT_FOUND",
+                        "field": "address",
+                        "message": "Address not found",
+                        "suggestion": None
+                    })],
+                    "success": False
+                })
+            }),
+            "zip": "89123"
+        })
 
     def _new_record(self):
         return self.EasypostAddress.create({
@@ -92,3 +121,23 @@ class TestAddress(SetUpEasypostBase):
                                    ) as get_mk:
                 rec_id.action_validate()
                 get_mk.assert_called_once_with(auto=True)
+
+    def test_has_validation_errors(self):
+        """ Test the validation errors are mapped """
+        with mock_api() as mk:
+            mk.Address.create = lambda **x: self.ep_record
+            self._new_record()
+            addr = self.EasypostAddress.search([
+                ('easypost_id', '=', self.ep_record.id),
+            ])
+            self.assertEquals(addr.validation_errors, "Address not found")
+
+    def test_has_validation_status(self):
+        """ Test that the validation status is mapped """
+        with mock_api() as mk:
+            mk.Address.create = lambda **x: self.ep_record
+            self._new_record()
+            addr = self.EasypostAddress.search([
+                ('easypost_id', '=', self.ep_record.id),
+            ])
+            self.assertFalse(addr.validation_status)
