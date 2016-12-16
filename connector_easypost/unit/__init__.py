@@ -7,3 +7,4 @@ from . import binder
 from . import import_synchronizer
 from . import export_synchronizer
 from . import mapper
+from . import object_dict

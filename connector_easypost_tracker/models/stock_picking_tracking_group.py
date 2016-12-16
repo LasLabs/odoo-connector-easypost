@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
-from openerp import models, fields
+from openerp import fields, models
 from openerp.addons.connector.unit.mapper import (
     mapping,
     only_create,
@@ -12,13 +12,14 @@ from openerp.addons.connector_easypost.backend import easypost
 from openerp.addons.connector_easypost.unit.backend_adapter import (
     EasypostCRUDAdapter,
 )
-from openerp.addons.connector_easypost.unit.mapper import (
-    EasypostImportMapper,
-)
 from openerp.addons.connector_easypost.unit.import_synchronizer import (
     EasypostImporter,
 )
-from openerp.addons.connector_easypost.unit.mapper import eval_false
+from openerp.addons.connector_easypost.unit.mapper import (
+    EasypostImportMapper,
+    eval_false,
+)
+from .stock_picking_tracking_event import StockPickingTrackingEventImporter
 
 
 _logger = logging.getLogger(__name__)
@@ -86,3 +87,12 @@ class StockPickingTrackingGroupImportMapper(EasypostImportMapper):
 class StockPickingTrackingGroupImporter(EasypostImporter):
     _model_name = ['easypost.stock.picking.tracking.group']
     _base_mapper = StockPickingTrackingGroupImportMapper
+
+    def _after_import(self, record):
+        """ Immediately Import Events """
+        importer = self.unit_for(StockPickingTrackingEventImporter,
+                                 model='easypost.stock.picking.tracking.event')
+        for event in self.easypost_record.tracking_details:
+            event.group = record.odoo_id
+            importer.easypost_record = event
+            importer.run()

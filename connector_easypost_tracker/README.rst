@@ -9,6 +9,12 @@ EasyPost Connector Tracker
 This module provides web hooks to allow EasyPost to update package tracking
 status in Odoo.
 
+.. image:: static/description/screenshot_1.png?raw=true
+   :alt: Tracking Data in Picking
+
+.. image:: static/description/screenshot_2.png?raw=true
+   :alt: Tracking Events and Locations
+
 
 Installation
 ============

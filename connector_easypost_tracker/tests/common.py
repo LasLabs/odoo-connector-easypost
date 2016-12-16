@@ -5,13 +5,14 @@
 """
 Helpers usable in the tests
 """
+from openerp.addons.connector_easypost.connector import get_environment
 from openerp.addons.connector_easypost.unit.import_synchronizer import (
-    import_record,
+    EasypostImporter,
 )
+from openerp.addons.connector_easypost.unit.object_dict import ObjectDict
 from openerp.addons.connector_easypost.tests.common import (
     mock_api,
     SetUpEasypostBase,
-    ObjDict,
 )
 
 
@@ -22,13 +23,20 @@ class EasypostTrackerHelper(SetUpEasypostBase):
         self.model = 'easypost.stock.picking.tracking.group'
         self.record = self.new_record()
         rec = self.record
-        self.create_picking(rec.shipment_id)
+        self.picking = self.create_picking(rec.shipment_id)
+        self.importer = self._get_importer(self.model)
         with mock_api() as mk:
             mk.Tracker.retrieve = lambda x: rec
-            import_record(self.session, self.model, self.backend_id, rec.id)
+            self.importer.run(rec.id)
+
+    def _get_importer(self, model):
+        """ Return an EasypostImporter instance """
+        env = get_environment(self.session, model,
+                              self.backend_id)
+        return env.get_connector_unit(EasypostImporter)
 
     def new_record(self):
-        return ObjDict(**{
+        return ObjectDict(**{
             "id": "trk_c8e0edb5bb284caa934a0d3db23a148z",
             "object": "Tracker",
             "mode": "test",
@@ -42,17 +50,17 @@ class EasypostTrackerHelper(SetUpEasypostBase):
             "shipment_id": "shp_b3740406f02c463fb29b06775e0b9c6c",
             "carrier": "USPS",
             "public_url": "https://track.easypost.com/test",
-            "tracking_details": [ObjDict(**{
+            "tracking_details": [ObjectDict(**{
                 "object": "TrackingDetail",
                 "message": "Shipping Label Created",
                 "status": "pre_transit",
                 "datetime": "2015-12-31T15:58:00Z",
                 "source": "USPS",
-                "tracking_location":  ObjDict(**{
+                "tracking_location":  ObjectDict(**{
                     "object": "TrackingLocation",
                     "city": "FOUNTAIN VALLEY",
                     "state": "CA",
-                    "country": None,
+                    "country": "US",
                     "zip": "92708"
                 })
             })],
@@ -83,3 +91,4 @@ class EasypostTrackerHelper(SetUpEasypostBase):
             })
         else:
             ep_obj.write({'easypost_id': ship_id})
+        return ep_obj
