@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2016 LasLabs Inc.
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html). -->
+
+<odoo>
+
+    <data noupdate="1">
+        <!-- USPS -->
+        <record model="product.packaging.template" id="FlatRateEnvelope">
+            <field name="packaging_template_name">FlatRateEnvelope</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id=" FlatRateGiftCardEnvelope">
+            <field name="packaging_template_name"> FlatRateGiftCardEnvelope</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id=" FlatRateWindowEnvelope">
+            <field name="packaging_template_name"> FlatRateWindowEnvelope</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="SmallFlatRateEnvelope">
+            <field name="packaging_template_name">SmallFlatRateEnvelope</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="FlatRatePaddedEnvelope">
+            <field name="packaging_template_name">FlatRatePaddedEnvelope</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="FlatRateLegalEnvelope">
+            <field name="packaging_template_name">FlatRateLegalEnvelope</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="SmallFlatRateBox">
+            <field name="packaging_template_name">SmallFlatRateBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="MediumFlatRateBox">
+            <field name="packaging_template_name">MediumFlatRateBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="LargeFlatRateBox">
+            <field name="packaging_template_name">LargeFlatRateBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="LargeFlatRateBoardGameBox">
+            <field name="packaging_template_name">LargeFlatRateBoardGameBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <!-- UPS -->
+        <record model="product.packaging.template" id="UPSLetter">
+            <field name="packaging_template_name">UPSLetter</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="UPS25kgBox">
+            <field name="packaging_template_name">UPS25kgBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="UPS10kgBox">
+            <field name="packaging_template_name">UPS10kgBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="Tube">
+            <field name="packaging_template_name">Tube</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="Pak">
+            <field name="packaging_template_name">Pak</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="Pallet">
+            <field name="packaging_template_name">Pallet</field>
+            <field name="package_type">pallet</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="ExpressBox">
+            <field name="packaging_template_name">ExpressBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="SmallExpressBox">
+            <field name="packaging_template_name">SmallExpressBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="MediumExpressBox">
+            <field name="packaging_template_name">MediumExpressBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="LargeExpressBox">
+            <field name="packaging_template_name">LargeExpressBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <!-- FedEx -->
+        <record model="product.packaging.template" id="FedExEnvelope">
+            <field name="packaging_template_name">FedExEnvelope</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="FedExSmallBox">
+            <field name="packaging_template_name">FedExSmallBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="FedExMediumBox">
+            <field name="packaging_template_name">FedExMediumBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="FedExLargeBox">
+            <field name="packaging_template_name">FedExLargeBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="FedExExtraLargeBox">
+            <field name="packaging_template_name">FedExExtraLargeBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="FedExPak">
+            <field name="packaging_template_name">FedExPak</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="FedExTube">
+            <field name="packaging_template_name">FedExTube</field>
+            <field name="package_type">pack</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="FedEx10kgBox">
+            <field name="packaging_template_name">FedEx10kgBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+        <record model="product.packaging.template" id="FedEx25kgBox">
+            <field name="packaging_template_name">FedEx25kgBox</field>
+            <field name="package_type">box</field>
+            <field name="length_uom_id" ref="product.product_uom_inch" />
+            <field name="width_uom_id" ref="product.product_uom_inch" />
+            <field name="height_uom_id" ref="product.product_uom_inch" />
+            <field name="weight_uom_id" ref="product.product_uom_oz" />
+        </record>
+    </data>
+
+    <data>
+        <!-- USPS -->
+        <record model="product.packaging.template" id="FlatRateEnvelope">
+            <field name="length">12.5</field>
+            <field name="width">9.5</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id=" FlatRateGiftCardEnvelope">
+            <field name="length"> 10</field>
+            <field name="width">7</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id=" FlatRateWindowEnvelope">
+            <field name="length"> 10</field>
+            <field name="width">5</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="SmallFlatRateEnvelope">
+            <field name="length">10</field>
+            <field name="width">6</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="FlatRatePaddedEnvelope">
+            <field name="length">12.5</field>
+            <field name="width">9.5</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="FlatRateLegalEnvelope">
+            <field name="length">15</field>
+            <field name="width">9.5</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="SmallFlatRateBox">
+            <field name="length">1.7</field>
+            <field name="width">5.4</field>
+            <field name="height">1.7</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="MediumFlatRateBox">
+            <field name="length">11.25</field>
+            <field name="width">8.7</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="LargeFlatRateBox">
+            <field name="length">6</field>
+            <field name="width">12.25</field>
+            <field name="height">6</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="LargeFlatRateBoardGameBox">
+            <field name="length">3</field>
+            <field name="width">11.7</field>
+            <field name="height">3</field>
+            <field name="weight">0.1</field>
+        </record>
+        <!-- UPS -->
+        <record model="product.packaging.template" id="UPSLetter">
+            <field name="length">9.5</field>
+            <field name="width">13</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="UPS25kgBox">
+            <field name="length">14</field>
+            <field name="width">17.37</field>
+            <field name="height">14</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="UPS10kgBox">
+            <field name="length">10.75</field>
+            <field name="width">13.25</field>
+            <field name="height">10.75</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="Tube">
+            <field name="length">6</field>
+            <field name="width">6</field>
+            <field name="height">6</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="Pak">
+            <field name="length">16</field>
+            <field name="width">12.75</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="Pallet">
+            <field name="length">40</field>
+            <field name="width">48</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="ExpressBox">
+            <field name="length">18</field>
+            <field name="width">3.75</field>
+            <field name="height">18</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="SmallExpressBox">
+            <field name="length">2</field>
+            <field name="width">11</field>
+            <field name="height">2</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="MediumExpressBox">
+            <field name="length">3</field>
+            <field name="width">11</field>
+            <field name="height">3</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="LargeExpressBox">
+            <field name="length">3</field>
+            <field name="width">13</field>
+            <field name="height">3</field>
+            <field name="weight">0.1</field>
+        </record>
+        <!-- FedEx -->
+        <record model="product.packaging.template" id="FedExEnvelope">
+            <field name="length">9.252</field>
+            <field name="width">13.189</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="FedExSmallBox">
+            <field name="length">1.5</field>
+            <field name="width">10.9</field>
+            <field name="height">1.5</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="FedExMediumBox">
+            <field name="length">2.38</field>
+            <field name="width">11.5</field>
+            <field name="height">2.38</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="FedExLargeBox">
+            <field name="length">3</field>
+            <field name="width">12.38</field>
+            <field name="height">3</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="FedExExtraLargeBox">
+            <field name="length">6</field>
+            <field name="width">14.13</field>
+            <field name="height">6</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="FedExPak">
+            <field name="length">12</field>
+            <field name="width">15.5</field>
+            <field name="height">0</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="FedExTube">
+            <field name="length">6</field>
+            <field name="width">6</field>
+            <field name="height">6</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="FedEx10kgBox">
+            <field name="length">10.19</field>
+            <field name="width">12.94</field>
+            <field name="height">10.19</field>
+            <field name="weight">0.1</field>
+        </record>
+        <record model="product.packaging.template" id="FedEx25kgBox">
+            <field name="length">13.19</field>
+            <field name="width">16.56</field>
+            <field name="height">13.19</field>
+            <field name="weight">0.1</field>
+        </record>
+    </data>
+
+</odoo>

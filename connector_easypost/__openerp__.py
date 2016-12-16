@@ -23,6 +23,7 @@
         ],
     },
     'data': [
+        'data/product_packaging_template.xml',
         'views/easypost_backend_view.xml',
         'views/connector_menu.xml',
         'views/res_partner_view.xml',
