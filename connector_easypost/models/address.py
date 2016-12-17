@@ -112,6 +112,17 @@ class EasypostAddressImportMapper(EasypostImportMapper):
                 'state_id': state_id.id,
                 }
 
+    @mapping
+    def validation_errors(self, record):
+        messages = []
+        for e in record.verifications.delivery.errors:
+            messages.append(e.message)
+        return {'validation_errors': ', '.join(messages)}
+
+    @mapping
+    def validation_status(self, record):
+        return {'validation_status': record.verifications.delivery.success}
+
 
 @easypost
 class EasypostAddressImporter(EasypostImporter):

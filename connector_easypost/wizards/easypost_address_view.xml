@@ -29,6 +29,11 @@
                             <field name="state_id" />
                             <field name="country_id" />
                         </group>
+                        <group attrs="{'invisible':
+                                        [('validation_status', '=', True)]}">
+                            <field name="validation_errors" />
+                            <field name="validation_status" invisible="1" />
+                        </group>
                     </group>
                 </sheet>
                 <footer>
@@ -36,8 +41,13 @@
                             type="object"
                             string="Validate"
                             class="oe_highlight"
+                            attrs="{'invisible':
+                                 [('validation_status', '=', False)]}"
                             />
-                    or
+                    <span attrs="{'invisible':
+                                 [('validation_status', '=', False)]}">
+                        or
+                    </span>
                     <button special="cancel"
                             string="Cancel"
                             />

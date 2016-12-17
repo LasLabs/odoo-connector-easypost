@@ -64,6 +64,14 @@ class EasypostAddress(models.TransientModel):
         help='EasyPost response mode.',
         readonly=True,
     )
+    validation_errors = fields.Char(
+        help='EasyPost Validation Error Message(s)',
+        readonly=True,
+    )
+    validation_status = fields.Boolean(
+        help='EasyPost Validation Success',
+        readonly=True,
+    )
 
     @api.multi
     def _default_partner_id(self):
