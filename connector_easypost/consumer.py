@@ -6,7 +6,7 @@ from .connector import get_environment
 from .models.stock_picking import EasypostStockPickingAdapter
 from .unit.export_synchronizer import (export_record,
                                        )
-from openerp.addons.connector.event import (on_record_create,
+from odoo.addons.connector.event import (on_record_create,
                                             on_record_write,
                                             )
 

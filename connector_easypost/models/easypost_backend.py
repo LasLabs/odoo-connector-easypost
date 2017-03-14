@@ -4,9 +4,9 @@
 
 import logging
 from datetime import datetime
-from openerp import models, fields, api, _
-from openerp.exceptions import ValidationError
-from openerp.addons.connector.session import ConnectorSession
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+from odoo.addons.connector.session import ConnectorSession
 from ..unit.import_synchronizer import (import_batch,
                                         DirectBatchImporter,
                                         )

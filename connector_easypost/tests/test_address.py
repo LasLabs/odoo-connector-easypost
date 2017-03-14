@@ -7,7 +7,7 @@ from ..unit.object_dict import ObjectDict
 from .common import mock_api, SetUpEasypostBase
 
 
-model = 'openerp.addons.connector_easypost.models.address'
+model = 'odoo.addons.connector_easypost.models.address'
 
 
 class TestAddress(SetUpEasypostBase):

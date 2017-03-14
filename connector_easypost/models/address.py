@@ -3,8 +3,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
-from openerp import models, fields, api
-from openerp.addons.connector.unit.mapper import (mapping,
+from odoo import models, fields, api
+from odoo.addons.connector.unit.mapper import (mapping,
                                                   changed_by,
                                                   only_create,
                                                   )

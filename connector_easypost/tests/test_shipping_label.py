@@ -6,7 +6,7 @@ import mock
 from .common import mock_api, EasypostDeliveryHelper, mock_job_delay_to_direct
 
 
-module = 'openerp.addons.connector_easypost'
+module = 'odoo.addons.connector_easypost'
 job = '%s.consumer.export_record' % module
 requests = '%s.models.shipping_label.requests' % module
 rate = 'easypost.stock.picking.rate'

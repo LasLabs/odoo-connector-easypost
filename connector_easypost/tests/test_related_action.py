@@ -4,7 +4,7 @@
 
 import mock
 
-from openerp.addons.connector.queue.job import (Job,
+from odoo.addons.connector.queue.job import (Job,
                                                 OpenERPJobStorage,
                                                 )
 from .common import mock_api, SetUpEasypostBase

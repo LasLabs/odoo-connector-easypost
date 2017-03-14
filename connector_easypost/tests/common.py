@@ -9,12 +9,12 @@ Helpers usable in the tests
 import importlib
 import mock
 from contextlib import contextmanager
-import openerp.tests.common as common
-from openerp.addons.connector.session import ConnectorSession
+import odoo.tests.common as common
+from odoo.addons.connector.session import ConnectorSession
 from ..unit.object_dict import ObjectDict
 
 
-backend_adapter = 'openerp.addons.connector_easypost.unit.backend_adapter'
+backend_adapter = 'odoo.addons.connector_easypost.unit.backend_adapter'
 inc_id = 0
 asustek_partner_id = 'res_partner_1'
 your_company_id = 'main_company'
@@ -24,7 +24,7 @@ your_company_id = 'main_company'
 def mock_job_delay_to_direct(job_path):
     """ Replace the .delay() of a job by a direct call
     job_path is the python path, such as::
-      openerp.addons.easypost.stock_picking.export_picking_done
+      odoo.addons.easypost.stock_picking.export_picking_done
     """
     job_module, job_name = job_path.rsplit('.', 1)
     module = importlib.import_module(job_module)

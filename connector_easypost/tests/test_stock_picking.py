@@ -6,8 +6,8 @@ import mock
 from .common import mock_api, mock_job_delay_to_direct, EasypostDeliveryHelper
 
 
-model = 'openerp.addons.connector_easypost.models.shipment'
-job = 'openerp.addons.connector_easypost.consumer.export_record'
+model = 'odoo.addons.connector_easypost.models.shipment'
+job = 'odoo.addons.connector_easypost.consumer.export_record'
 
 
 class TestStockPicking(EasypostDeliveryHelper):
