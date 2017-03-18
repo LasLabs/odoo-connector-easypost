@@ -107,6 +107,33 @@ class StockPickingRateImportMapper(EasypostImportMapper):
     @only_create
     def service_id(self, record):
         service_obj = self.env['delivery.carrier']
+        service_id = service_obj.search([
+            ('name', '=', record.service),
+            ('delivery_type', '=', 'auto'),
+        ],
+            limit=1,
+        )
+        if not service_id:
+            service_id = service_obj.create({
+                'name': record.service,
+                'display_name': self._camel_to_title(record.service),
+                'delivery_type': 'auto',
+            })
+        return {'service_id': service_id.id}
+
+    @mapping
+    @only_create
+    def picking_id(self, record):
+        picking = self.env['stock.picking'].search([
+            ('easypost_bind_ids', '=', record.easypost_bind_ids)
+        ],
+            limit=1,
+        )
+        return {'picking_id': picking.id}
+
+    @mapping
+    @only_create
+    def partner_id(self, record):
         partner_obj = self.env['res.partner']
         partner_id = partner_obj.search([
             ('name', '=', record.carrier),
@@ -121,31 +148,7 @@ class StockPickingRateImportMapper(EasypostImportMapper):
                 'customer': False,
                 'supplier': False,
             })
-        service_id = service_obj.search([
-            ('partner_id', '=', partner_id.id),
-            ('name', '=', record.service),
-            ('delivery_type', '=', 'auto'),
-        ],
-            limit=1,
-        )
-        if not service_id:
-            service_id = service_obj.create({
-                'name': record.service,
-                'display_name': self._camel_to_title(record.service),
-                'partner_id': partner_id.id,
-                'delivery_type': 'auto',
-            })
-        return {'service_id': service_id.id}
-
-    @mapping
-    @only_create
-    def picking_id(self, record):
-        picking = self.env['stock.picking'].search([
-            ('easypost_bind_ids', '=', record.easypost_bind_ids)
-        ],
-            limit=1,
-        )
-        return {'picking_id': picking.id}
+        return {'partner_id': partner_id.id}
 
 
 @easypost

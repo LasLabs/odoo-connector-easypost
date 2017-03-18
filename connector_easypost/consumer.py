@@ -41,7 +41,7 @@ def immediate_export_all_bindings(session, model_name, record_id, vals):
     record = session.env[model_name].browse(record_id)
     fields = vals.keys()
     for binding in record.easypost_bind_ids:
-        export_record(session, binding._model._name, binding.id,
+        export_record(session, binding._name, binding.id,
                       fields=fields)
 
 
@@ -72,13 +72,13 @@ def export_package_change(session, model_name, record_id, vals):
     record = session.env[model_name].browse(record_id)
     fields = vals.keys()
     for binding in record.easypost_bind_ids:
-        export_record.delay(session, binding._model._name, binding.id,
+        export_record.delay(session, binding._name, binding.id,
                             fields=fields)
     if record.picking_ids:
         picking = record.picking_ids[0]
         pick_vals = picking._fields.keys()
         for binding in picking.easypost_bind_ids:
-            export_record.delay(session, binding._model._name, binding.id,
+            export_record.delay(session, binding._name, binding.id,
                                 fields=pick_vals)
 
 
