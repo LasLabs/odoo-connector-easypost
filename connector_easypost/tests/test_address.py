@@ -116,11 +116,15 @@ class TestAddress(SetUpEasypostBase):
         """ Test action_validate calls sync correctly """
         with mock_api():
             rec_id = self.address_id
-            with mock.patch.object(rec_id.partner_id,
-                                   '_easypost_synchronize'
-                                   ) as get_mk:
-                rec_id.action_validate()
-                get_mk.assert_called_once_with(auto=True)
+            rec_id.partner_id._patch_method(
+                '_easypost_synchronize', mock.MagicMock()
+            )
+            rec_id.action_validate()
+            obj = rec_id.partner_id._easypost_synchronize
+            # Reset the method before we assert, in case of exceptions
+            rec_id.partner_id._revert_method('_easypost_synchronize')
+            obj.assert_called_once_with(auto=True)
+
 
     def test_has_validation_errors(self):
         """ Test the validation errors are mapped """
