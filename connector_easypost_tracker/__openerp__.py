@@ -15,6 +15,6 @@
         'stock_picking_tracking',
     ],
     'data': [],
-    'installable': True,
+    'installable': False,
     'application': False,
 }

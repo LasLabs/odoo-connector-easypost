@@ -31,6 +31,6 @@
         'wizards/easypost_address_view.xml',
         'security/ir.model.access.csv',
     ],
-    'installable': True,
+    'installable': False,
     'application': False,
 }
