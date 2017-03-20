@@ -4,14 +4,16 @@
 
 import logging
 import requests
-from openerp import models, fields
-from openerp.addons.connector.unit.mapper import (mapping,
-                                                  only_create,
-                                                  ImportMapper,
-                                                  )
-from ..unit.backend_adapter import EasypostCRUDAdapter
+from odoo import models, fields
+from odoo.addons.connector.unit.mapper import (
+    mapping,
+    only_create,
+    ImportMapper,
+)
+
 from ..backend import easypost
-from ..unit.import_synchronizer import (EasypostImporter)
+from ..unit.backend_adapter import EasypostCRUDAdapter
+from ..unit.import_synchronizer import EasypostImporter
 from ..unit.mapper import inner_attr
 
 
@@ -58,6 +60,12 @@ class ShippingLabel(models.Model):
         string='Rate',
         comodel_name='stock.picking.rate',
     )
+    tracking_url = fields.Char(
+        string='Tracking URL'
+    )
+    tracking_number = fields.Char(
+        string='Tracking Number'
+    )
 
 
 @easypost
@@ -103,6 +111,20 @@ class ShippingLabelImportMapper(ImportMapper):
     @mapping
     def name(self, record):
         return {'name': record.postage_label.label_url.split('/')[-1]}
+
+    @mapping
+    def tracking_url(self, record):
+        tracking_url = ''
+        if record.tracker:
+            tracking_url = record.tracker.public_url
+        return {'tracking_url': tracking_url}
+
+    @mapping
+    def tracking_number(self, record):
+        tracking_number = ''
+        if record.tracker:
+            tracking_number = record.tracker.tracking_code
+        return {'tracking_number': tracking_number}
 
 
 @easypost

@@ -6,7 +6,7 @@ import mock
 from .common import mock_api, EasypostDeliveryHelper, mock_job_delay_to_direct
 
 
-module = 'openerp.addons.connector_easypost'
+module = 'odoo.addons.connector_easypost'
 job = '%s.consumer.export_record' % module
 requests = '%s.models.shipping_label.requests' % module
 rate = 'easypost.stock.picking.rate'
@@ -54,9 +54,10 @@ class TestShippingLabel(EasypostDeliveryHelper):
     def test_shipment_buy_reads_shipment(self, req_mk):
         """ Test that shipment purchase workflow reads external shipment """
         mk, _ = self.do_test()
-        mk.Shipment.retrieve.assert_has_any_call([
-            mock.call(u'%s' % self.rates[0]['shipment_id']),
-        ])
+        exp_call = mock.call(u'%s' % self.rates[0]['shipment_id'])
+        self.assertIn(
+            exp_call, mk.Shipment.retrieve.call_args_list
+        )
 
     @mock.patch(requests)
     def test_shipment_buy_trigger(self, req_mk):

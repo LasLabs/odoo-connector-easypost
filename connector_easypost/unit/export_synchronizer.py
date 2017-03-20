@@ -7,16 +7,17 @@ import dateutil.parser
 import pytz
 
 from contextlib import contextmanager
-
 import psycopg2
 
-import openerp
-from openerp.tools.translate import _
-from openerp.addons.connector.queue.job import job, related_action
-from openerp.addons.connector.unit.synchronizer import Exporter
-from openerp.addons.connector.exception import (IDMissingInBackend,
-                                                RetryableJobError,
-                                                )
+import odoo
+from odoo.addons.connector.queue.job import job, related_action
+from odoo.addons.connector.unit.synchronizer import Exporter
+from odoo.addons.connector.exception import (
+    IDMissingInBackend,
+    RetryableJobError,
+)
+from odoo.tools.translate import _
+
 from .import_synchronizer import import_record
 from ..connector import get_environment
 from ..related_action import unwrap_binding
@@ -73,7 +74,7 @@ class EasypostBaseExporter(Exporter):
         if not record.updated_at:
             # If empty, the record is immutable. Return not changed
             return True
-        sync_date = openerp.fields.Datetime.from_string(sync)
+        sync_date = odoo.fields.Datetime.from_string(sync)
         sync_date = pytz.utc.localize(sync_date)
         easypost_date = dateutil.parser.parse(record.updated_at)
         return sync_date < easypost_date

@@ -5,6 +5,7 @@
 from . import test_related_action
  
 from . import test_address
+from . import test_delivery_carrier
 from . import test_easypost_backend
 from . import test_res_partner
 from . import test_shipping_label

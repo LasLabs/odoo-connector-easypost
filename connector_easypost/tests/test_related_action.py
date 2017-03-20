@@ -4,9 +4,7 @@
 
 import mock
 
-from openerp.addons.connector.queue.job import (Job,
-                                                OpenERPJobStorage,
-                                                )
+from odoo.addons.connector.queue.job import Job, OdooJobStorage
 from .common import mock_api, SetUpEasypostBase
 from ..unit.export_synchronizer import export_record
 
@@ -45,7 +43,7 @@ class TestRelatedActionStorage(SetUpEasypostBase):
 
     def _create_job(self, func, *args):
         job = Job(func=func, args=args)
-        storage = OpenERPJobStorage(self.session)
+        storage = OdooJobStorage(self.session)
         storage.store(job)
         stored = self.QueueJob.search([('uuid', '=', job.uuid)])
         self.assertEqual(len(stored), 1)

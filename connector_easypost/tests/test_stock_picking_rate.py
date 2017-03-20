@@ -5,7 +5,7 @@
 from .common import mock_api, mock_job_delay_to_direct, EasypostDeliveryHelper
 
 
-job = 'openerp.addons.connector_easypost.consumer.export_record'
+job = 'odoo.addons.connector_easypost.consumer.export_record'
 rate = 'easypost.stock.picking.rate'
 
 

@@ -2,13 +2,11 @@
 # Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from odoo.addons.connector.event import on_record_create, on_record_write
+
 from .connector import get_environment
 from .models.stock_picking import EasypostStockPickingAdapter
-from .unit.export_synchronizer import (export_record,
-                                       )
-from openerp.addons.connector.event import (on_record_create,
-                                            on_record_write,
-                                            )
+from .unit.export_synchronizer import export_record
 
 
 import logging
@@ -41,7 +39,7 @@ def immediate_export_all_bindings(session, model_name, record_id, vals):
     record = session.env[model_name].browse(record_id)
     fields = vals.keys()
     for binding in record.easypost_bind_ids:
-        export_record(session, binding._model._name, binding.id,
+        export_record(session, binding._name, binding.id,
                       fields=fields)
 
 
@@ -72,13 +70,13 @@ def export_package_change(session, model_name, record_id, vals):
     record = session.env[model_name].browse(record_id)
     fields = vals.keys()
     for binding in record.easypost_bind_ids:
-        export_record.delay(session, binding._model._name, binding.id,
+        export_record.delay(session, binding._name, binding.id,
                             fields=fields)
     if record.picking_ids:
         picking = record.picking_ids[0]
         pick_vals = picking._fields.keys()
         for binding in picking.easypost_bind_ids:
-            export_record.delay(session, binding._model._name, binding.id,
+            export_record.delay(session, binding._name, binding.id,
                                 fields=pick_vals)
 
 
@@ -119,3 +117,17 @@ def immediate_buy_shipment(session, model_name, record_id, vals):
         )
         unit = env.get_connector_unit(EasypostStockPickingAdapter)
         return unit.buy(record.easypost_bind_ids)
+
+
+@on_record_write(model_names=['stock.picking.rate'])
+def immediate_cancel_shipment(session, model_name, record_id, vals):
+    """ Trigger immediate cancelation workflow for a Shipment """
+    record = session.env[model_name].browse(record_id)
+    if record.state == 'cancel':
+        env = get_environment(
+            session,
+            'easypost.stock.picking',
+            record.easypost_bind_ids.backend_id.id,
+        )
+        unit = env.get_connector_unit(EasypostStockPickingAdapter)
+        return unit.cancel(record.easypost_bind_ids)

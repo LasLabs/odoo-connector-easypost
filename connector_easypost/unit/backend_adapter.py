@@ -4,7 +4,7 @@
 
 import logging
 
-from openerp.addons.connector.unit.backend_adapter import CRUDAdapter
+from odoo.addons.connector.unit.backend_adapter import CRUDAdapter
 
 
 _logger = logging.getLogger(__name__)

@@ -3,17 +3,14 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
-from openerp import models, fields
-from openerp.addons.connector.unit.mapper import (mapping,
-                                                  changed_by,
-                                                  )
-from ..unit.backend_adapter import EasypostCRUDAdapter
-from ..unit.mapper import (EasypostImportMapper,
-                           EasypostExportMapper,
-                           )
+from odoo import models, fields
+from odoo.addons.connector.unit.mapper import changed_by, mapping
+
 from ..backend import easypost
-from ..unit.import_synchronizer import (EasypostImporter)
-from ..unit.export_synchronizer import (EasypostExporter)
+from ..unit.backend_adapter import EasypostCRUDAdapter
+from ..unit.export_synchronizer import EasypostExporter
+from ..unit.import_synchronizer import EasypostImporter
+from ..unit.mapper import EasypostExportMapper, EasypostImportMapper
 from .stock_picking_rate import StockPickingRateImporter
 from .shipping_label import ShippingLabelImporter
 
@@ -90,6 +87,39 @@ class EasypostStockPickingAdapter(EasypostCRUDAdapter):
         label_importer.easypost_record = ship_easypost_record
         label_importer.run(ship_easypost_record.id)
 
+        return ship_easypost_record
+
+    def cancel(self, rate_record):
+        """ Allows for refunding of Shipments through EasyPost
+        :param rate_record: Unwrapped Odoo Rate record to cancel
+        """
+        rate_id = rate_record.picking_id.easypost_bind_ids.id
+        ship_odoo_record = self.env['easypost.stock.picking'].search([
+            ('easypost_bind_ids', '=', rate_id),
+        ],
+            limit=1,
+        )
+        rate_record = self.env['easypost.stock.picking.rate'].search([
+            ('odoo_id', '=', rate_record.easypost_bind_ids.odoo_id.id),
+        ],
+            limit=1,
+        )
+        _logger.debug('Canceling shipment %s with rate %s',
+                      ship_odoo_record.easypost_id, rate_record.easypost_id)
+        ship_easypost_record = self.read(ship_odoo_record.easypost_id)
+        ship_easypost_record.refund(rate={'id': rate_record.easypost_id})
+        rate = rate_record.odoo_id
+        purchase_orders = self.env['purchase.order'].search([
+            ('partner_id', '=', rate.partner_id.id),
+            ('state', '=', 'purchase'),
+        ])
+        for po in purchase_orders:
+            order = po.order_line.filtered(
+                lambda r: r.price_unit == rate.rate and
+                r.name == rate.display_name
+            )
+            if order:
+                po.button_cancel()
         return ship_easypost_record
 
 
