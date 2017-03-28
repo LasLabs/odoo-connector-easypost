@@ -105,17 +105,29 @@ class StockPickingRateImportMapper(EasypostImportMapper):
     @only_create
     def service_id(self, record):
         service_obj = self.env['delivery.carrier']
+        partner_obj = self.env['res.partner']
+        partner_id = partner_obj.search([
+            ('name', '=', record.carrier),
+            ('is_carrier', '=', True),
+        ], limit=1)
+        if not partner_id:
+            partner_id = partner_obj.create({
+                'name': record.carrier,
+                'is_carrier': True,
+                'customer': False,
+                'supplier': False,
+            })
         service_id = service_obj.search([
+            ('partner_id', '=', partner_id.id),
             ('name', '=', record.service),
             ('delivery_type', '=', 'auto'),
-        ],
-            limit=1,
-        )
+        ], limit=1)
         if not service_id:
             service_id = service_obj.create({
                 'name': record.service,
                 'display_name': self._camel_to_title(record.service),
                 'delivery_type': 'auto',
+                'partner_id': partner_id.id,
             })
         return {'service_id': service_id.id}
 
@@ -128,25 +140,6 @@ class StockPickingRateImportMapper(EasypostImportMapper):
             limit=1,
         )
         return {'picking_id': picking.id}
-
-    @mapping
-    @only_create
-    def partner_id(self, record):
-        partner_obj = self.env['res.partner']
-        partner_id = partner_obj.search([
-            ('name', '=', record.carrier),
-            ('is_carrier', '=', True),
-        ],
-            limit=1,
-        )
-        if not partner_id:
-            partner_id = partner_obj.create({
-                'name': record.carrier,
-                'is_carrier': True,
-                'customer': False,
-                'supplier': False,
-            })
-        return {'partner_id': partner_id.id}
 
 
 @easypost
