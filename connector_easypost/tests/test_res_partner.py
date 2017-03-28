@@ -6,7 +6,7 @@ import mock
 from .common import mock_api, SetUpEasypostBase
 
 
-model_path = 'openerp.addons.connector_easypost.models.res_partner'
+model_path = 'odoo.addons.connector_easypost.models.res_partner'
 
 
 class TestResPartner(SetUpEasypostBase):

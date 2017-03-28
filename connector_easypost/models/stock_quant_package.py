@@ -3,17 +3,14 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
-from openerp import models, fields
-from openerp.addons.connector.unit.mapper import (mapping,
-                                                  changed_by,
-                                                  )
-from ..unit.backend_adapter import EasypostCRUDAdapter
-from ..unit.mapper import (EasypostImportMapper,
-                           EasypostExportMapper,
-                           )
+from odoo import models, fields
+from odoo.addons.connector.unit.mapper import changed_by, mapping
+
 from ..backend import easypost
-from ..unit.import_synchronizer import (EasypostImporter)
-from ..unit.export_synchronizer import (EasypostExporter)
+from ..unit.backend_adapter import EasypostCRUDAdapter
+from ..unit.export_synchronizer import EasypostExporter
+from ..unit.import_synchronizer import EasypostImporter
+from ..unit.mapper import EasypostExportMapper, EasypostImportMapper
 
 
 _logger = logging.getLogger(__name__)
@@ -78,20 +75,20 @@ class StockQuantPackageImporter(EasypostImporter):
 class StockQuantPackageExportMapper(EasypostExportMapper):
     _model_name = 'easypost.stock.quant.package'
 
-    def _convert_to_inches(self, uom_qty, uom_id):
+    def _convert_to_inches(self, uom_qty, uom):
         inches = self.env.ref('product.product_uom_inch')
-        if uom_id.id != inches.id:
-            return self.env['product.uom']._compute_qty_obj(
-                uom_id, uom_qty, inches,
+        if uom.id != inches.id:
+            return uom._compute_quantity(
+                uom_qty, inches,
             )
         else:
             return uom_qty
 
-    def _convert_to_ounces(self, uom_qty, uom_id):
+    def _convert_to_ounces(self, uom_qty, uom):
         oz = self.env.ref('product.product_uom_oz')
-        if uom_id.id != oz.id:
-            return self.env['product.uom']._compute_qty_obj(
-                uom_id, uom_qty, oz,
+        if uom.id != oz.id:
+            return uom._compute_quantity(
+                uom_qty, oz,
             )
         else:
             return uom_qty

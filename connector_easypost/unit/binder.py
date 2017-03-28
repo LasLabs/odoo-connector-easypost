@@ -3,8 +3,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 
-import openerp
-from openerp.addons.connector.connector import Binder
+import odoo
+from odoo.addons.connector.connector import Binder
 from ..backend import easypost
 
 
@@ -62,7 +62,7 @@ class EasypostModelBinder(EasypostBinder):
         :return: backend identifier of the record
         """
         record = self.model.browse()
-        if isinstance(record_id, openerp.models.BaseModel):
+        if isinstance(record_id, odoo.models.BaseModel):
             record_id.ensure_one()
             record = record_id
             record_id = record_id.id
@@ -97,11 +97,11 @@ class EasypostModelBinder(EasypostBinder):
             "got: %s, %s" % (external_id, binding_id)
         )
         # avoid to trigger the export when we modify the `easypost_id`
-        if not isinstance(binding_id, openerp.models.BaseModel):
+        if not isinstance(binding_id, odoo.models.BaseModel):
             binding_id = self.model.browse(binding_id)
         binding_id.with_context(connector_no_export=True).write({
             'easypost_id': str(external_id),
-            'sync_date': openerp.fields.Datetime.now(),
+            'sync_date': odoo.fields.Datetime.now(),
         })
         return binding_id
 
@@ -112,7 +112,7 @@ class EasypostModelBinder(EasypostBinder):
         :param browse: when True, returns a browse_record instance
                        rather than an ID
         """
-        if isinstance(binding_id, openerp.models.BaseModel):
+        if isinstance(binding_id, odoo.models.BaseModel):
             binding = binding_id
         else:
             binding = self.model.browse(binding_id)

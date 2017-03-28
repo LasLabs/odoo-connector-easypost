@@ -1,3 +1,3 @@
-connector https://github.com/OCA/connector.git 9.0
-stock-logistics-workflow https://github.com/laslabs/stock-logistics-workflow.git feature/9.0/LABS-187-migrate-connectoreasypost-to-oca
-carrier-delivery https://github.com/OCA/carrier-delivery.git 9.0
+connector https://github.com/LasLabs/connector.git migration-connector-10.0
+stock-logistics-workflow https://github.com/LasLabs/stock-logistics-workflow.git release/10.0/10.0-mig-stock_package_info
+carrier-delivery https://github.com/LasLabs/carrier-delivery.git feature/10.0/LABS-376-upgrade-connector_easypost_to_10.0

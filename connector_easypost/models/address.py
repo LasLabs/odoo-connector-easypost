@@ -3,19 +3,18 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
-from openerp import models, fields, api
-from openerp.addons.connector.unit.mapper import (mapping,
-                                                  changed_by,
-                                                  only_create,
-                                                  )
-from ..unit.backend_adapter import EasypostCRUDAdapter
-from ..unit.mapper import (EasypostImportMapper,
-                           EasypostExportMapper,
-                           )
+from odoo import models, fields, api
+from odoo.addons.connector.unit.mapper import changed_by, mapping, only_create
+
 from ..backend import easypost
-from ..unit.import_synchronizer import (EasypostImporter)
-from ..unit.export_synchronizer import (EasypostExporter)
-from ..unit.mapper import eval_false
+from ..unit.backend_adapter import EasypostCRUDAdapter
+from ..unit.export_synchronizer import EasypostExporter
+from ..unit.import_synchronizer import EasypostImporter
+from ..unit.mapper import (
+    eval_false,
+    EasypostExportMapper,
+    EasypostImportMapper,
+)
 
 
 _logger = logging.getLogger(__name__)

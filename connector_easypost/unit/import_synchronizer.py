@@ -17,12 +17,12 @@ import dateutil.parser
 import pytz
 from hashlib import md5
 from json import loads
-from openerp import fields, _
-from openerp.addons.connector.queue.job import job
-from openerp.addons.connector.connector import ConnectorUnit
-from openerp.addons.connector.exception import InvalidDataError
-from openerp.addons.connector.session import ConnectorSession
-from openerp.addons.connector.unit.synchronizer import Importer
+from odoo import fields, _
+from odoo.addons.connector.queue.job import job
+from odoo.addons.connector.connector import ConnectorUnit
+from odoo.addons.connector.exception import InvalidDataError
+from odoo.addons.connector.session import ConnectorSession
+from odoo.addons.connector.unit.synchronizer import Importer
 from .object_dict import ObjectDict
 from ..backend import easypost
 from ..connector import get_environment, add_checkpoint
