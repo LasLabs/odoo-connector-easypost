@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-# Copyright 2016 LasLabs Inc.
+# Copyright 2016-2017 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from json import loads, dumps
-from openerp import http, SUPERUSER_ID
-from openerp.http import request
-from openerp.addons.connector_easypost.unit.import_synchronizer import (
+from odoo import http, SUPERUSER_ID
+from odoo.http import request
+from odoo.addons.connector_easypost.unit.import_synchronizer import (
     create_connector_session,
     import_data,
 )

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-# Copyright 2016 LasLabs Inc.
+# Copyright 2016-2017 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 """
 Helpers usable in the tests
 """
-from openerp.addons.connector_easypost.connector import get_environment
-from openerp.addons.connector_easypost.unit.import_synchronizer import (
+from odoo.addons.connector_easypost.connector import get_environment
+from odoo.addons.connector_easypost.unit.import_synchronizer import (
     EasypostImporter,
 )
-from openerp.addons.connector_easypost.unit.object_dict import ObjectDict
-from openerp.addons.connector_easypost.tests.common import (
+from odoo.addons.connector_easypost.unit.object_dict import ObjectDict
+from odoo.addons.connector_easypost.tests.common import (
     mock_api,
     SetUpEasypostBase,
 )

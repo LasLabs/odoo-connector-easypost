@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-# Copyright 2016 LasLabs Inc.
+# Copyright 2016-2017 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
-from openerp import fields, models
-from openerp.addons.connector.unit.mapper import (
+from odoo import fields, models
+from odoo.addons.connector.unit.mapper import (
     mapping,
     only_create,
 )
-from openerp.addons.connector_easypost.backend import easypost
-from openerp.addons.connector_easypost.unit.backend_adapter import (
+from odoo.addons.connector_easypost.backend import easypost
+from odoo.addons.connector_easypost.unit.backend_adapter import (
     EasypostCRUDAdapter,
 )
-from openerp.addons.connector_easypost.unit.import_synchronizer import (
+from odoo.addons.connector_easypost.unit.import_synchronizer import (
     EasypostImporter,
 )
-from openerp.addons.connector_easypost.unit.mapper import (
+from odoo.addons.connector_easypost.unit.mapper import (
     EasypostImportMapper,
     eval_false,
 )
