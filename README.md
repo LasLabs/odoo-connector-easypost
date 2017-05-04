@@ -18,8 +18,8 @@ Available addons
 ----------------
 addon | version | summary
 --- | --- | ---
-[connector_easypost](connector_easypost/) | 9.0.1.0.0 | EasyPost connector core
-[connector_easypost_tracker](connector_easypost/) | 9.0.1.0.0 | EasyPost connector tracking WebHooks module
+[connector_easypost](connector_easypost/) | 10.0.1.0.0 | EasyPost connector core
+[connector_easypost_tracker](connector_easypost/) | 10.0.1.0.0 | EasyPost connector tracking WebHooks module
 
 
 Unported addons
