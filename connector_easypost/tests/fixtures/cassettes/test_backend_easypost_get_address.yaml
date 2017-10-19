@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: !!python/unicode 'address%5Bcity%5D=False&address%5Bcompany%5D=YourCompany&address%5Bemail%5D=False&address%5Bname%5D=The+White+House&address%5Bphone%5D=False&address%5Bstreet1%5D=1600+Pennsylvania&address%5Bstreet2%5D=False&address%5Bzip%5D=20500'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['229']
+      Content-type: [application/x-www-form-urlencoded]
+      User-Agent: [EasyPost/v2 PythonClient/3.6.2]
+      X-Client-User-Agent: ['{"lang": "python", "publisher": "easypost", "uname":
+          "Linux odoo-dev-10 4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18
+          UTC 2017 x86_64 x86_64", "request_lib": "requests", "lang_version": "2.7.12",
+          "openssl_version": "OpenSSL 1.0.2g  1 Mar 2016", "platform": "Linux-4.4.0-97-generic-x86_64-with-Ubuntu-16.04-xenial",
+          "client_version": "3.6.2"}']
+    method: POST
+    uri: https://api.easypost.com/v2/addresses?verify[]=delivery
+  response:
+    body: {string: !!python/unicode '{"id":"adr_c35dfb1fd3704912a08567860f4c34ca","object":"Address","created_at":"2017-11-10T17:55:44Z","updated_at":"2017-11-10T17:55:44Z","name":"THE
+        WHITE HOUSE","company":"YOURCOMPANY","street1":"1600 PENNSYLVANIA AVE NW","street2":"FALSE","city":"WASHINGTON","state":"DC","zip":"20500-0003","country":"US","phone":"","email":"False","mode":"test","carrier_facility":null,"residential":true,"federal_tax_id":null,"state_tax_id":null,"verifications":{"delivery":{"success":true,"errors":[{"code":"E.SECONDARY_INFORMATION.MISSING","field":"street2","message":"Missing
+        secondary information(Apt/Suite#)","suggestion":null}],"details":{"latitude":38.8987,"longitude":-77.0352,"time_zone":"America/New_York"}}}}'}
+    headers:
+      cache-control: ['no-cache, no-store, must-revalidate, private']
+      content-length: ['706']
+      content-type: [application/json; charset=utf-8]
+      expires: ['0']
+      location: [/api/v2/addresses/adr_c35dfb1fd3704912a08567860f4c34ca]
+      pragma: [no-cache]
+      strict-transport-security: [max-age=15768000; includeSubDomains; preload]
+      transfer-encoding: [chunked]
+      x-backend: [easypost]
+      x-content-type-options: [nosniff]
+      x-ep-request-uuid: [ad51a69d-8a83-4bd5-b75f-d52c7533840c]
+      x-frame-options: [SAMEORIGIN]
+      x-node: [web11sj, 42420b5b70, easypost]
+      x-proxied: [intlb2sj 81b12b6948, intlb1wdc 81b12b6948, extlb2wdc 81b12b6948]
+      x-runtime: ['0.108584']
+      x-xss-protection: [1; mode=block]
+    status: {code: 201, message: Created}
+version: 1

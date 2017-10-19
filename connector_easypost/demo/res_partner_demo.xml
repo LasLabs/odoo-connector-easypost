@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2017 LasLabs Inc.
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html). -->
+
+<odoo>
+
+    <record id="res_partner_white_house" model="res.partner">
+        <field name="name">The White House</field>
+        <field name="street">1600 PENNSYLVANIA AVE NW</field>
+        <field name="city">WASHINGTON</field>
+        <field name="zip">20500-0003</field>
+        <field name="state_id" ref="base.state_us_9" />
+        <field name="country_id" ref="base.us" />
+    </record>
+
+</odoo>

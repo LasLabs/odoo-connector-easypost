@@ -8,12 +8,12 @@ from .common import EasypostTrackerHelper
 
 class TestStockPickingTrackingLocation(EasypostTrackerHelper):
 
-    _location_model = 'easypost.stock.picking.tracking.location'
+    _location_model = 'easypost.shipment.tracking.location'
 
     def setUp(self):
         super(TestStockPickingTrackingLocation, self).setUp()
-        group = self.env['easypost.stock.picking.tracking.group'].search([
-            ('easypost_id', '=', self.record.id)
+        group = self.env['easypost.shipment.tracking.group'].search([
+            ('external_id', '=', self.record.id)
         ])
         self.location = group.location_id
         self.data = self.record.tracking_details[0].tracking_location
@@ -73,4 +73,4 @@ class TestStockPickingTrackingLocation(EasypostTrackerHelper):
         importer = self._get_importer(self._location_model)
         importer.easypost_record = test_data
         actual = importer.run()
-        self.assertEquals(actual.easypost_id, expected)
+        self.assertEquals(actual.external_id, expected)

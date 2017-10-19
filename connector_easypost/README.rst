@@ -14,19 +14,13 @@ Installation
 
 To install this module, you need to:
 
-* Install Python dependencies -
-  ``pip install easypost``
-* Install OCA Connector module from https://github.com/OCA/connector
-* Since we are not using OCA/stock-logistics-workflow/9.0, you must clone
-  ``stock-logistics-workflow`` from https://github.com/laslabs/stock-logistics-workflow.git
-  and checkout the ``feature/9.0/LABS-187-migrate-connectoreasypost-to-oca`` branch.
-  You will be able to use OCA stock-logistics-workflow once the following MRs are merged to 9.0:
-  https://github.com/OCA/stock-logistics-workflow/pull/247
-  https://github.com/OCA/stock-logistics-workflow/pull/238
-* Clone OCA/carrier-delivery/9.0 from ``https://github.com/OCA/carrier-delivery.git``
-  and install ``base_delivery_carrier_label``
+* Install Python dependencies - ``pip install easypost``
+* Look at ``oca_dependencies.txt`` in the root of this repo. Modules from
+  these repos and branches are required for this module. The specific modules
+  are listed in ``__manifest__.py``. See `here <https://github.com/OCA/
+  maintainer-quality-tools/blob/master/sample_files/oca_dependencies.txt>`_ for
+  more information regarding the syntax of the ``oca_dependencies.txt`` file.
 * Install Easypost Connector module
-* Restart Odoo (requirement of any new connector to set proper DB triggers)
 
 Configuration
 =============
@@ -34,28 +28,36 @@ Configuration
 To configure this module, you need to:
 
 * Go to ``Connectors => [EasyPost] Backends``
-* Configure one EasyPost backend per company you would like to use with
+* Configure one EasyPost backend per company you would like to use it with
+* Restart Odoo (requirement of any new connector to set proper DB triggers)
+
+If using multiple stock locations, you must make sure to assign the owner of
+all warehouse stock locations (``warehouse.lot_stock_id``) in order for the
+correct outbound address to be used.
+
+Note that the ``weight`` and ``volume`` fields in your products must be accurrate.
+If this is not the case, shipping estimations will be incorrect - particularly during
+the sale phase.
 
 Usage
 =====
 
 Predefined Packages
-===================
-* Predefined packages will automatically be added to Packaging templates upon
- module install
+-------------------
+
+* Predefined packages will automatically be added to Packaging options upon
+  module install
 
 Address Verification
 --------------------
 
-* Edit a partner in backend form view
-* Click ``Validate`` button above street address
-* Click ``Confirm`` button to validate address is correct, or ``Cancel`` to cancel
-
-Note that the address change will be made immediately after hitting ``Confirm``,
-regardless of whether you save the partner or not.
+* Navigate to any partner
+* Click the ``More`` or ``Actions`` menu (depending on Odoo version)
+* Click ``Validate Address`` to trigger the address validation wizard
 
 Rate Purchases
 ---------------
+
 * Put products into a package
 * Assign a packaging template to that package
 * Click the ``Additional Info`` tab under a Stock Picking to view the Rates.
@@ -64,16 +66,18 @@ Rate Purchases
 Note that you can only purchase a rate after you have moved the picking out of
 draft status.
 
-
 Known Issues / Roadmap
 ======================
 
 * Handle validation errors from addresses
-* Some duplicate calls to EasyPost (Address, Shipment) - seems to be just in the tests though
+* Some duplicate calls to EasyPost (Address, Shipment) - seems to be just in
+  the tests though
 * Add a default EasyPost connection to span all companies
 * Mass address verification
-* Label import operates in Shipment context, due to needing selected rate info not within PostageLabel
-
+* Label import operates in Shipment context, due to needing selected rate info
+  not within PostageLabel
+* Only USPS service types are included by default. Everything else is created
+  the first time rates are gathered.
 
 Bug Tracker
 ===========

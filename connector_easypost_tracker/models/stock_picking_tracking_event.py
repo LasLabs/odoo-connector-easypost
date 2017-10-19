@@ -26,9 +26,9 @@ from .stock_picking_tracking_location import (
 _logger = logging.getLogger(__name__)
 
 
-class EasypostStockPickingTrackingEvent(models.Model):
+class EasypostShipmentTrackingEvent(models.Model):
     """ Binding Model for the Easypost StockPickingTrackingEvent"""
-    _name = 'easypost.stock.picking.tracking.event'
+    _name = 'easypost.shipment.tracking.event'
     _inherit = 'easypost.binding'
     _inherits = {'stock.picking.tracking.event': 'odoo_id'}
     _description = 'Easypost StockPickingTrackingEvent'
@@ -41,11 +41,6 @@ class EasypostStockPickingTrackingEvent(models.Model):
         ondelete='cascade',
     )
 
-    _sql_constraints = [
-        ('odoo_uniq', 'unique(backend_id, odoo_id)',
-         'A Easypost binding for this record already exists.'),
-    ]
-
 
 class StockPickingTrackingEvent(models.Model):
     """ Adds the ``one2many`` relation to the Easypost bindings
@@ -54,21 +49,21 @@ class StockPickingTrackingEvent(models.Model):
     _inherit = 'stock.picking.tracking.event'
 
     easypost_bind_ids = fields.One2many(
-        comodel_name='easypost.stock.picking.tracking.event',
+        comodel_name='easypost.shipment.tracking.event',
         inverse_name='odoo_id',
         string='Easypost Bindings',
     )
 
 
 @easypost
-class EasypostStockPickingTrackingEventAdapter(EasypostCRUDAdapter):
-    """ Backend Adapter for the Easypost EasypostStockPicking """
-    _model_name = 'easypost.stock.picking.tracking.event'
+class EasypostShipmentTrackingEventAdapter(EasypostCRUDAdapter):
+    """ Backend Adapter for the Easypost EasypostShipment """
+    _model_name = 'easypost.shipment.tracking.event'
 
 
 @easypost
 class StockPickingTrackingEventImportMapper(EasypostImportMapper):
-    _model_name = 'easypost.stock.picking.tracking.event'
+    _model_name = 'easypost.shipment.tracking.event'
 
     direct = [
         (eval_false('message'), 'message'),
@@ -92,7 +87,7 @@ class StockPickingTrackingEventImportMapper(EasypostImportMapper):
 
 @easypost
 class StockPickingTrackingEventImporter(EasypostImporter):
-    _model_name = ['easypost.stock.picking.tracking.event']
+    _model_name = ['easypost.shipment.tracking.event']
     _base_mapper = StockPickingTrackingEventImportMapper
     _id_prefix = 'det'
     _hashable_attrs = ('message', 'status', 'source', 'datetime')
@@ -102,7 +97,7 @@ class StockPickingTrackingEventImporter(EasypostImporter):
         `location_id` to our easypost_record for mapping """
         importer = self.unit_for(
             StockPickingTrackingLocationImporter,
-            model='easypost.stock.picking.tracking.location'
+            model='easypost.shipment.tracking.location'
         )
         importer.easypost_record = self.easypost_record.tracking_location
         importer.default_easypost_values(

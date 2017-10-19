@@ -13,7 +13,7 @@ from odoo.addons.connector_easypost.unit.import_synchronizer import (
 
 class EasypostWebhookController(http.Controller):
 
-    EVENTS = {'tracker.updated': 'easypost.stock.picking.tracking.group'}
+    EVENTS = {'tracker.updated': 'easypost.shipment.tracking.group'}
 
     def _get_backend(self, env):
         return env['easypost.backend'].sudo().search([

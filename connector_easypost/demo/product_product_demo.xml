@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2017 LasLabs Inc.
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html). -->
+
+<odoo>
+
+    <!-- Apple In-Ear Headphones -->
+    <record id="product.product_product_7" model="product.product">
+        <field name="weight_oz">54</field>
+        <field name="volume_in">144</field>
+    </record>
+
+</odoo>

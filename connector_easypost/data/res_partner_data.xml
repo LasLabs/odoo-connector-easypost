@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2017 LasLabs Inc.
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html). -->
+
+<odoo>
+
+    <record id="res_partner_usps" model="res.partner">
+        <field name="name">USPS</field>
+        <field name="is_carrier" eval="True" />
+        <field name="customer" eval="False" />
+        <field name="supplier" eval="True" />
+    </record>
+
+    <record id="res_partner_ups" model="res.partner">
+        <field name="name">UPS</field>
+        <field name="is_carrier" eval="True" />
+        <field name="customer" eval="False" />
+        <field name="supplier" eval="True" />
+    </record>
+
+    <record id="res_partner_fedex" model="res.partner">
+        <field name="name">FedEx</field>
+        <field name="is_carrier" eval="True" />
+        <field name="customer" eval="False" />
+        <field name="supplier" eval="True" />
+    </record>
+
+</odoo>
