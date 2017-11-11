@@ -1,14 +1,27 @@
 # -*- coding: utf-8 -*-
-# Copyright 2016 LasLabs Inc.
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from . import test_related_action
- 
-from . import test_address
-from . import test_delivery_carrier
-from . import test_easypost_backend
-from . import test_res_partner
-from . import test_shipping_label
-from . import test_stock_picking
-from . import test_stock_picking_rate
-from . import test_stock_quant_package
+# Address
+from . import test_import_address
+
+# Delivery Carrier
+from . import test_common_delivery_carrier
+
+# Easypost Backend
+from . import test_common_easypost_backend
+
+# Parcel
+from . import test_export_parcel
+
+# Rate
+from . import test_common_rate
+from . import test_import_rate
+
+# Res Company
+from . import test_common_res_company
+
+# Sale
+from . import test_export_sale
+
+# Shipment
+from . import test_export_shipment

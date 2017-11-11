@@ -1,0 +1,73 @@
+interactions:
+- request:
+    body: !!python/unicode 'parcel%5Bheight%5D=1.7&parcel%5Blength%5D=1.7&parcel%5Bpredefined_package%5D=SmallFlatRateBox&parcel%5Bweight%5D=3.0&parcel%5Bwidth%5D=5.4'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['138']
+      Content-type: [application/x-www-form-urlencoded]
+      User-Agent: [EasyPost/v2 PythonClient/3.6.2]
+      X-Client-User-Agent: ['{"lang": "python", "publisher": "easypost", "uname":
+          "Linux odoo-dev-10 4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18
+          UTC 2017 x86_64 x86_64", "request_lib": "requests", "lang_version": "2.7.12",
+          "openssl_version": "OpenSSL 1.0.2g  1 Mar 2016", "platform": "Linux-4.4.0-97-generic-x86_64-with-Ubuntu-16.04-xenial",
+          "client_version": "3.6.2"}']
+    method: POST
+    uri: https://api.easypost.com/v2/parcels
+  response:
+    body: {string: !!python/unicode '{"id":"prcl_e54e17209a064554859b63590ef28c9e","object":"Parcel","created_at":"2017-11-10T17:55:37Z","updated_at":"2017-11-10T17:55:37Z","length":1.7,"width":5.4,"height":1.7,"predefined_package":"SmallFlatRateBox","weight":3.0,"mode":"test"}'}
+    headers:
+      cache-control: ['no-cache, no-store, must-revalidate, private']
+      content-length: ['241']
+      content-type: [application/json; charset=utf-8]
+      expires: ['0']
+      location: [/api/v2/parcels/prcl_e54e17209a064554859b63590ef28c9e]
+      pragma: [no-cache]
+      strict-transport-security: [max-age=15768000; includeSubDomains; preload]
+      transfer-encoding: [chunked]
+      x-backend: [easypost]
+      x-content-type-options: [nosniff]
+      x-ep-request-uuid: [c4698cd3-275d-4b93-a439-0d17e3825fd3]
+      x-frame-options: [SAMEORIGIN]
+      x-node: [web4sj, 42420b5b70, easypost]
+      x-proxied: [intlb2sj 81b12b6948, lb5sj 81b12b6948]
+      x-runtime: ['0.015392']
+      x-xss-protection: [1; mode=block]
+    status: {code: 201, message: Created}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-type: [application/x-www-form-urlencoded]
+      User-Agent: [EasyPost/v2 PythonClient/3.6.2]
+      X-Client-User-Agent: ['{"lang": "python", "publisher": "easypost", "uname":
+          "Linux odoo-dev-10 4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18
+          UTC 2017 x86_64 x86_64", "request_lib": "requests", "lang_version": "2.7.12",
+          "openssl_version": "OpenSSL 1.0.2g  1 Mar 2016", "platform": "Linux-4.4.0-97-generic-x86_64-with-Ubuntu-16.04-xenial",
+          "client_version": "3.6.2"}']
+    method: GET
+    uri: https://api.easypost.com/v2/parcels/prcl_e54e17209a064554859b63590ef28c9e
+  response:
+    body: {string: !!python/unicode '{"id":"prcl_e54e17209a064554859b63590ef28c9e","object":"Parcel","created_at":"2017-11-10T17:55:37Z","updated_at":"2017-11-10T17:55:37Z","length":1.7,"width":5.4,"height":1.7,"predefined_package":"SmallFlatRateBox","weight":3.0,"mode":"test"}'}
+    headers:
+      cache-control: ['no-cache, no-store, must-revalidate, private']
+      content-length: ['241']
+      content-type: [application/json; charset=utf-8]
+      expires: ['0']
+      pragma: [no-cache]
+      strict-transport-security: [max-age=15768000; includeSubDomains; preload]
+      transfer-encoding: [chunked]
+      x-backend: [easypost]
+      x-canary: [direct]
+      x-content-type-options: [nosniff]
+      x-ep-request-uuid: [aa43385c-f667-4725-b6ca-79a25df6be7a]
+      x-frame-options: [SAMEORIGIN]
+      x-node: [web15sj, 42420b5b70, easypost]
+      x-proxied: [intlb1sj 81b12b6948, lb5sj 81b12b6948]
+      x-runtime: ['0.010693']
+      x-xss-protection: [1; mode=block]
+    status: {code: 200, message: OK}
+version: 1

@@ -7,16 +7,16 @@ from .common import EasypostTrackerHelper
 
 class TestStockPickingTrackingGroup(EasypostTrackerHelper):
 
-    def test_easypost_id(self):
+    def test_external_id(self):
         """ It should equal the objects record_id """
-        record = self.env['easypost.stock.picking.tracking.group'].search([
-            ('easypost_id', '=', self.record.id)
+        record = self.env['easypost.shipment.tracking.group'].search([
+            ('external_id', '=', self.record.id)
         ])
         self.assertTrue(len(record) == 1)
 
     def test_ref(self):
         """ It should equal the objects tracking_code """
-        record = self.env['easypost.stock.picking.tracking.group'].search([
-            ('easypost_id', '=', self.record.id)
+        record = self.env['easypost.shipment.tracking.group'].search([
+            ('external_id', '=', self.record.id)
         ])
         self.assertEquals(record.ref, self.record.tracking_code)

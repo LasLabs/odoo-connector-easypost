@@ -25,9 +25,9 @@ from .stock_picking_tracking_event import StockPickingTrackingEventImporter
 _logger = logging.getLogger(__name__)
 
 
-class EasypostStockPickingTrackingGroup(models.Model):
+class EasypostShipmentTrackingGroup(models.Model):
     """ Binding Model for the Easypost StockPickingTrackingGroup"""
-    _name = 'easypost.stock.picking.tracking.group'
+    _name = 'easypost.shipment.tracking.group'
     _inherit = 'easypost.binding'
     _inherits = {'stock.picking.tracking.group': 'odoo_id'}
     _description = 'Easypost StockPickingTrackingGroup'
@@ -40,11 +40,6 @@ class EasypostStockPickingTrackingGroup(models.Model):
         ondelete='cascade',
     )
 
-    _sql_constraints = [
-        ('odoo_uniq', 'unique(backend_id, odoo_id)',
-         'A Easypost binding for this record already exists.'),
-    ]
-
 
 class StockPickingTrackingGroup(models.Model):
     """ Adds the ``one2many`` relation to the Easypost bindings
@@ -53,21 +48,21 @@ class StockPickingTrackingGroup(models.Model):
     _inherit = 'stock.picking.tracking.group'
 
     easypost_bind_ids = fields.One2many(
-        comodel_name='easypost.stock.picking.tracking.group',
+        comodel_name='easypost.shipment.tracking.group',
         inverse_name='odoo_id',
         string='Easypost Bindings',
     )
 
 
 @easypost
-class EasypostStockPickingAdapter(EasypostCRUDAdapter):
-    """ Backend Adapter for the Easypost EasypostStockPicking """
-    _model_name = 'easypost.stock.picking.tracking.group'
+class EasypostShipmentAdapter(EasypostCRUDAdapter):
+    """ Backend Adapter for the Easypost EasypostShipment """
+    _model_name = 'easypost.shipment.tracking.group'
 
 
 @easypost
 class StockPickingTrackingGroupImportMapper(EasypostImportMapper):
-    _model_name = 'easypost.stock.picking.tracking.group'
+    _model_name = 'easypost.shipment.tracking.group'
 
     direct = [
         (eval_false('tracking_code'), 'ref'),
@@ -76,8 +71,8 @@ class StockPickingTrackingGroupImportMapper(EasypostImportMapper):
     @mapping
     @only_create
     def picking_id(self, record):
-        pickings = self.env['easypost.stock.picking'].search([
-            ('easypost_id', '=', record.shipment_id),
+        pickings = self.env['easypost.shipment'].search([
+            ('external_id', '=', record.shipment_id),
         ])
         if pickings:
             return {'picking_id': pickings.odoo_id.id}
@@ -85,13 +80,13 @@ class StockPickingTrackingGroupImportMapper(EasypostImportMapper):
 
 @easypost
 class StockPickingTrackingGroupImporter(EasypostImporter):
-    _model_name = ['easypost.stock.picking.tracking.group']
+    _model_name = ['easypost.shipment.tracking.group']
     _base_mapper = StockPickingTrackingGroupImportMapper
 
     def _after_import(self, record):
         """ Immediately Import Events """
         importer = self.unit_for(StockPickingTrackingEventImporter,
-                                 model='easypost.stock.picking.tracking.event')
+                                 model='easypost.shipment.tracking.event')
         for event in self.easypost_record.tracking_details:
             event.group = record.odoo_id
             importer.easypost_record = event

@@ -1,0 +1,80 @@
+interactions:
+- request:
+    body: !!python/unicode 'address%5Bcity%5D=False&address%5Bcompany%5D=YourCompany&address%5Bemail%5D=False&address%5Bname%5D=The+White+House&address%5Bphone%5D=False&address%5Bstreet1%5D=1600+Pennsylvania&address%5Bstreet2%5D=False&address%5Bzip%5D=20500'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['229']
+      Content-type: [application/x-www-form-urlencoded]
+      User-Agent: [EasyPost/v2 PythonClient/3.6.2]
+      X-Client-User-Agent: ['{"lang": "python", "publisher": "easypost", "uname":
+          "Linux odoo-dev-10 4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18
+          UTC 2017 x86_64 x86_64", "request_lib": "requests", "lang_version": "2.7.12",
+          "openssl_version": "OpenSSL 1.0.2g  1 Mar 2016", "platform": "Linux-4.4.0-97-generic-x86_64-with-Ubuntu-16.04-xenial",
+          "client_version": "3.6.2"}']
+    method: POST
+    uri: https://api.easypost.com/v2/addresses?verify[]=delivery
+  response:
+    body: {string: !!python/unicode '{"id":"adr_d301d128d18e440abd88dfc82edbd58c","object":"Address","created_at":"2017-11-10T17:56:10Z","updated_at":"2017-11-10T17:56:10Z","name":"THE
+        WHITE HOUSE","company":"YOURCOMPANY","street1":"1600 PENNSYLVANIA AVE NW","street2":"FALSE","city":"WASHINGTON","state":"DC","zip":"20500-0003","country":"US","phone":"","email":"False","mode":"test","carrier_facility":null,"residential":true,"federal_tax_id":null,"state_tax_id":null,"verifications":{"delivery":{"success":true,"errors":[{"code":"E.SECONDARY_INFORMATION.MISSING","field":"street2","message":"Missing
+        secondary information(Apt/Suite#)","suggestion":null}],"details":{"latitude":38.8987,"longitude":-77.0352,"time_zone":"America/New_York"}}}}'}
+    headers:
+      cache-control: ['no-cache, no-store, must-revalidate, private']
+      content-length: ['706']
+      content-type: [application/json; charset=utf-8]
+      expires: ['0']
+      location: [/api/v2/addresses/adr_d301d128d18e440abd88dfc82edbd58c]
+      pragma: [no-cache]
+      strict-transport-security: [max-age=15768000; includeSubDomains; preload]
+      transfer-encoding: [chunked]
+      x-backend: [easypost]
+      x-content-type-options: [nosniff]
+      x-ep-request-uuid: [3a1e32fc-7665-4fc8-b4e4-109a288f0534]
+      x-frame-options: [SAMEORIGIN]
+      x-node: [bigweb1sj, 42420b5b70, easypost]
+      x-proxied: [intlb1sj 81b12b6948, intlb2wdc 81b12b6948, extlb2wdc 81b12b6948]
+      x-runtime: ['0.139689']
+      x-xss-protection: [1; mode=block]
+    status: {code: 201, message: Created}
+- request:
+    body: !!python/unicode 'shipment%5Bfrom_address%5D%5Bcity%5D=SCRANTON&shipment%5Bfrom_address%5D%5Bcompany%5D=YourCompany&shipment%5Bfrom_address%5D%5Bcountry%5D=US&shipment%5Bfrom_address%5D%5Bemail%5D=info%40yourcompany.example.com&shipment%5Bfrom_address%5D%5Bname%5D=YourCompany&shipment%5Bfrom_address%5D%5Bphone%5D=%2B1+555+123+8069&shipment%5Bfrom_address%5D%5Bstate%5D=PA&shipment%5Bfrom_address%5D%5Bstreet1%5D=1725+SLOUGH+AVE.&shipment%5Bfrom_address%5D%5Bstreet2%5D=&shipment%5Bfrom_address%5D%5Bzip%5D=18540-0001&shipment%5Bparcel%5D%5Bheight%5D=7.11378660898&shipment%5Bparcel%5D%5Blength%5D=7.11378660898&shipment%5Bparcel%5D%5Bweight%5D=2.0&shipment%5Bparcel%5D%5Bwidth%5D=7.11378660898&shipment%5Bto_address%5D%5Bcity%5D=WASHINGTON&shipment%5Bto_address%5D%5Bcompany%5D=YourCompany&shipment%5Bto_address%5D%5Bcountry%5D=US&shipment%5Bto_address%5D%5Bemail%5D=&shipment%5Bto_address%5D%5Bname%5D=The+White+House&shipment%5Bto_address%5D%5Bphone%5D=&shipment%5Bto_address%5D%5Bstate%5D=DC&shipment%5Bto_address%5D%5Bstreet1%5D=1600+PENNSYLVANIA+AVE+NW&shipment%5Bto_address%5D%5Bstreet2%5D=&shipment%5Bto_address%5D%5Bzip%5D=20500-0003'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['1125']
+      Content-type: [application/x-www-form-urlencoded]
+      User-Agent: [EasyPost/v2 PythonClient/3.6.2]
+      X-Client-User-Agent: ['{"lang": "python", "publisher": "easypost", "uname":
+          "Linux odoo-dev-10 4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18
+          UTC 2017 x86_64 x86_64", "request_lib": "requests", "lang_version": "2.7.12",
+          "openssl_version": "OpenSSL 1.0.2g  1 Mar 2016", "platform": "Linux-4.4.0-97-generic-x86_64-with-Ubuntu-16.04-xenial",
+          "client_version": "3.6.2"}']
+    method: POST
+    uri: https://api.easypost.com/v2/shipments
+  response:
+    body: {string: !!python/unicode '{"created_at":"2017-11-10T17:56:10Z","is_return":false,"messages":[],"mode":"test","options":{"currency":"USD","label_date":null,"date_advance":0},"reference":null,"status":"unknown","tracking_code":null,"updated_at":"2017-11-10T17:56:10Z","batch_id":null,"batch_status":null,"batch_message":null,"customs_info":null,"from_address":{"id":"adr_a7a19a25d1d845e7851a40994ae2491f","object":"Address","created_at":"2017-11-10T17:56:10Z","updated_at":"2017-11-10T17:56:10Z","name":"YourCompany","company":"YourCompany","street1":"1725
+        SLOUGH AVE.","street2":"","city":"SCRANTON","state":"PA","zip":"18540-0001","country":"US","phone":"15551238069","email":"info@yourcompany.example.com","mode":"test","carrier_facility":null,"residential":null,"federal_tax_id":null,"state_tax_id":null,"verifications":{}},"insurance":null,"order_id":null,"parcel":{"id":"prcl_8027ea1178bf4ac2a56e34aa6e0caced","object":"Parcel","created_at":"2017-11-10T17:56:10Z","updated_at":"2017-11-10T17:56:10Z","length":7.11378660898,"width":7.11378660898,"height":7.11378660898,"predefined_package":null,"weight":2.0,"mode":"test"},"postage_label":null,"rates":[{"id":"rate_548843248b4544caa754ffabe79b720a","object":"Rate","created_at":"2017-11-10T17:56:10Z","updated_at":"2017-11-10T17:56:10Z","mode":"test","service":"Express","carrier":"USPS","rate":"21.18","currency":"USD","retail_rate":"23.75","retail_currency":"USD","list_rate":"21.18","list_currency":"USD","delivery_days":null,"delivery_date":null,"delivery_date_guaranteed":false,"est_delivery_days":null,"shipment_id":"shp_afeaf329c5fb4c589ae84396b6551476","carrier_account_id":"ca_af8c059654f5425295d1161dfa0f0290"},{"id":"rate_6277d23119f443b8bb220e710dfd4e7f","object":"Rate","created_at":"2017-11-10T17:56:10Z","updated_at":"2017-11-10T17:56:10Z","mode":"test","service":"First","carrier":"USPS","rate":"2.61","currency":"USD","retail_rate":"3.00","retail_currency":"USD","list_rate":"2.61","list_currency":"USD","delivery_days":2,"delivery_date":null,"delivery_date_guaranteed":false,"est_delivery_days":2,"shipment_id":"shp_afeaf329c5fb4c589ae84396b6551476","carrier_account_id":"ca_af8c059654f5425295d1161dfa0f0290"},{"id":"rate_6dc8ea02d55f4ea2a719be7cbc60bd3f","object":"Rate","created_at":"2017-11-10T17:56:10Z","updated_at":"2017-11-10T17:56:10Z","mode":"test","service":"Priority","carrier":"USPS","rate":"6.26","currency":"USD","retail_rate":"7.10","retail_currency":"USD","list_rate":"6.46","list_currency":"USD","delivery_days":2,"delivery_date":null,"delivery_date_guaranteed":false,"est_delivery_days":2,"shipment_id":"shp_afeaf329c5fb4c589ae84396b6551476","carrier_account_id":"ca_af8c059654f5425295d1161dfa0f0290"},{"id":"rate_57bc5eb6e39e46a1934ac205665042f5","object":"Rate","created_at":"2017-11-10T17:56:10Z","updated_at":"2017-11-10T17:56:10Z","mode":"test","service":"ParcelSelect","carrier":"USPS","rate":"6.46","currency":"USD","retail_rate":"6.46","retail_currency":"USD","list_rate":"6.46","list_currency":"USD","delivery_days":5,"delivery_date":null,"delivery_date_guaranteed":false,"est_delivery_days":5,"shipment_id":"shp_afeaf329c5fb4c589ae84396b6551476","carrier_account_id":"ca_af8c059654f5425295d1161dfa0f0290"}],"refund_status":null,"scan_form":null,"selected_rate":null,"tracker":null,"to_address":{"id":"adr_596a46cde51f48dfa3606bf27d022eea","object":"Address","created_at":"2017-11-10T17:56:10Z","updated_at":"2017-11-10T17:56:10Z","name":"The
+        White House","company":"YourCompany","street1":"1600 PENNSYLVANIA AVE NW","street2":"","city":"WASHINGTON","state":"DC","zip":"20500-0003","country":"US","phone":"","email":"","mode":"test","carrier_facility":null,"residential":null,"federal_tax_id":null,"state_tax_id":null,"verifications":{}},"usps_zone":3,"return_address":{"id":"adr_a7a19a25d1d845e7851a40994ae2491f","object":"Address","created_at":"2017-11-10T17:56:10Z","updated_at":"2017-11-10T17:56:10Z","name":"YourCompany","company":"YourCompany","street1":"1725
+        SLOUGH AVE.","street2":"","city":"SCRANTON","state":"PA","zip":"18540-0001","country":"US","phone":"15551238069","email":"info@yourcompany.example.com","mode":"test","carrier_facility":null,"residential":null,"federal_tax_id":null,"state_tax_id":null,"verifications":{}},"buyer_address":{"id":"adr_596a46cde51f48dfa3606bf27d022eea","object":"Address","created_at":"2017-11-10T17:56:10Z","updated_at":"2017-11-10T17:56:10Z","name":"The
+        White House","company":"YourCompany","street1":"1600 PENNSYLVANIA AVE NW","street2":"","city":"WASHINGTON","state":"DC","zip":"20500-0003","country":"US","phone":"","email":"","mode":"test","carrier_facility":null,"residential":null,"federal_tax_id":null,"state_tax_id":null,"verifications":{}},"forms":[],"fees":[],"id":"shp_afeaf329c5fb4c589ae84396b6551476","object":"Shipment"}'}
+    headers:
+      cache-control: ['no-cache, no-store, must-revalidate, private']
+      content-length: ['4753']
+      content-type: [application/json; charset=utf-8]
+      expires: ['0']
+      location: [/api/v2/shipments/shp_afeaf329c5fb4c589ae84396b6551476]
+      pragma: [no-cache]
+      strict-transport-security: [max-age=15768000; includeSubDomains; preload]
+      transfer-encoding: [chunked]
+      x-backend: [easypost]
+      x-content-type-options: [nosniff]
+      x-ep-request-uuid: [dc9932e4-c5f1-445a-834a-bfc1ea6b1079]
+      x-frame-options: [SAMEORIGIN]
+      x-node: [bigweb1sj, 42420b5b70, easypost]
+      x-proxied: [intlb2sj 81b12b6948, intlb2wdc 81b12b6948, extlb2wdc 81b12b6948]
+      x-runtime: ['0.160573']
+      x-xss-protection: [1; mode=block]
+    status: {code: 201, message: Created}
+version: 1

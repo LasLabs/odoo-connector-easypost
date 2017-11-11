@@ -24,9 +24,9 @@ from odoo.addons.connector_easypost.unit.mapper import (
 _logger = logging.getLogger(__name__)
 
 
-class EasypostStockPickingTrackingLocation(models.Model):
+class EasypostShipmentTrackingLocation(models.Model):
     """ Binding Model for the Easypost StockPickingTrackingLocation"""
-    _name = 'easypost.stock.picking.tracking.location'
+    _name = 'easypost.shipment.tracking.location'
     _inherit = 'easypost.binding'
     _inherits = {'stock.picking.tracking.location': 'odoo_id'}
     _description = 'Easypost StockPickingTrackingLocation'
@@ -39,11 +39,6 @@ class EasypostStockPickingTrackingLocation(models.Model):
         ondelete='cascade',
     )
 
-    _sql_constraints = [
-        ('odoo_uniq', 'unique(backend_id, odoo_id)',
-         'A Easypost binding for this record already exists.'),
-    ]
-
 
 class StockPickingTrackingLocation(models.Model):
     """ Adds the ``one2many`` relation to the Easypost bindings
@@ -52,22 +47,22 @@ class StockPickingTrackingLocation(models.Model):
     _inherit = 'stock.picking.tracking.location'
 
     easypost_bind_ids = fields.One2many(
-        comodel_name='easypost.stock.picking.tracking.location',
+        comodel_name='easypost.shipment.tracking.location',
         inverse_name='odoo_id',
         string='Easypost Bindings',
     )
 
 
 @easypost
-class EasypostStockPickingTrackingLocationAdapter(EasypostCRUDAdapter):
+class EasypostShipmentTrackingLocationAdapter(EasypostCRUDAdapter):
     """ Backend Adapter for the Easypost
-    EasypostStockPickingTrackingLocation """
-    _model_name = 'easypost.stock.picking.tracking.location'
+    EasypostShipmentTrackingLocation """
+    _model_name = 'easypost.shipment.tracking.location'
 
 
 @easypost
 class StockPickingTrackingLocationImportMapper(EasypostImportMapper):
-    _model_name = 'easypost.stock.picking.tracking.location'
+    _model_name = 'easypost.shipment.tracking.location'
 
     direct = [
         (eval_false('city'), 'city'),
@@ -77,8 +72,8 @@ class StockPickingTrackingLocationImportMapper(EasypostImportMapper):
     @mapping
     @only_create
     def odoo_id(self, record):
-        rec = self.env['easypost.stock.picking.tracking.location'].search([
-            ('easypost_id', '=', record.id),
+        rec = self.env['easypost.shipment.tracking.location'].search([
+            ('external_id', '=', record.id),
             ('backend_id', '=', self.backend_record.id),
         ])
         if rec:
@@ -112,7 +107,7 @@ class StockPickingTrackingLocationImportMapper(EasypostImportMapper):
 
 @easypost
 class StockPickingTrackingLocationImporter(EasypostImporter):
-    _model_name = ['easypost.stock.picking.tracking.location']
+    _model_name = ['easypost.shipment.tracking.location']
     _base_mapper = StockPickingTrackingLocationImportMapper
     _id_prefix = 'loc'
     _hashable_attrs = ('city', 'zip', 'state')

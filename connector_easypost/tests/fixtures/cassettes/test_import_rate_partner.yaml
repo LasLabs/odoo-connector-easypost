@@ -1,0 +1,153 @@
+interactions:
+- request:
+    body: !!python/unicode 'address%5Bcity%5D=False&address%5Bcompany%5D=YourCompany&address%5Bemail%5D=False&address%5Bname%5D=The+White+House&address%5Bphone%5D=False&address%5Bstreet1%5D=1600+Pennsylvania&address%5Bstreet2%5D=False&address%5Bzip%5D=20500'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['229']
+      Content-type: [application/x-www-form-urlencoded]
+      User-Agent: [EasyPost/v2 PythonClient/3.6.2]
+      X-Client-User-Agent: ['{"lang": "python", "publisher": "easypost", "uname":
+          "Linux odoo-dev-10 4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18
+          UTC 2017 x86_64 x86_64", "request_lib": "requests", "lang_version": "2.7.12",
+          "openssl_version": "OpenSSL 1.0.2g  1 Mar 2016", "platform": "Linux-4.4.0-97-generic-x86_64-with-Ubuntu-16.04-xenial",
+          "client_version": "3.6.2"}']
+    method: POST
+    uri: https://api.easypost.com/v2/addresses?verify[]=delivery
+  response:
+    body: {string: !!python/unicode '{"id":"adr_cf1a3f1e50484138a57523c3122f9c4c","object":"Address","created_at":"2017-11-10T17:59:16Z","updated_at":"2017-11-10T17:59:16Z","name":"THE
+        WHITE HOUSE","company":"YOURCOMPANY","street1":"1600 PENNSYLVANIA AVE NW","street2":"FALSE","city":"WASHINGTON","state":"DC","zip":"20500-0003","country":"US","phone":"","email":"False","mode":"test","carrier_facility":null,"residential":true,"federal_tax_id":null,"state_tax_id":null,"verifications":{"delivery":{"success":true,"errors":[{"code":"E.SECONDARY_INFORMATION.MISSING","field":"street2","message":"Missing
+        secondary information(Apt/Suite#)","suggestion":null}],"details":{"latitude":38.8987,"longitude":-77.0352,"time_zone":"America/New_York"}}}}'}
+    headers:
+      cache-control: ['no-cache, no-store, must-revalidate, private']
+      content-length: ['706']
+      content-type: [application/json; charset=utf-8]
+      expires: ['0']
+      location: [/api/v2/addresses/adr_cf1a3f1e50484138a57523c3122f9c4c]
+      pragma: [no-cache]
+      strict-transport-security: [max-age=15768000; includeSubDomains; preload]
+      transfer-encoding: [chunked]
+      x-backend: [easypost]
+      x-content-type-options: [nosniff]
+      x-ep-request-uuid: [6991995b-2f19-4995-853d-d3456b45c242]
+      x-frame-options: [SAMEORIGIN]
+      x-node: [web5sj, 42420b5b70, easypost]
+      x-proxied: [intlb2sj 81b12b6948, lb5sj 81b12b6948]
+      x-runtime: ['0.151296']
+      x-xss-protection: [1; mode=block]
+    status: {code: 201, message: Created}
+- request:
+    body: !!python/unicode 'address%5Bcity%5D=False&address%5Bcompany%5D=YourCompany&address%5Bemail%5D=False&address%5Bname%5D=Twitter&address%5Bphone%5D=False&address%5Bstreet1%5D=1355+Market+Street+%23900&address%5Bstreet2%5D=False&address%5Bzip%5D=94103'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['229']
+      Content-type: [application/x-www-form-urlencoded]
+      User-Agent: [EasyPost/v2 PythonClient/3.6.2]
+      X-Client-User-Agent: ['{"lang": "python", "publisher": "easypost", "uname":
+          "Linux odoo-dev-10 4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18
+          UTC 2017 x86_64 x86_64", "request_lib": "requests", "lang_version": "2.7.12",
+          "openssl_version": "OpenSSL 1.0.2g  1 Mar 2016", "platform": "Linux-4.4.0-97-generic-x86_64-with-Ubuntu-16.04-xenial",
+          "client_version": "3.6.2"}']
+    method: POST
+    uri: https://api.easypost.com/v2/addresses?verify[]=delivery
+  response:
+    body: {string: !!python/unicode '{"id":"adr_92a9c24443cd405c866d8846c44f1ca1","object":"Address","created_at":"2017-11-10T17:59:16Z","updated_at":"2017-11-10T17:59:16Z","name":"TWITTER","company":"YOURCOMPANY","street1":"1355
+        MARKET ST STE 900","street2":"FALSE","city":"SAN FRANCISCO","state":"CA","zip":"94103-1337","country":"US","phone":"","email":"False","mode":"test","carrier_facility":null,"residential":false,"federal_tax_id":null,"state_tax_id":null,"verifications":{"delivery":{"success":true,"errors":[],"details":{"latitude":37.77685,"longitude":-122.41687,"time_zone":"America/Los_Angeles"}}}}'}
+    headers:
+      cache-control: ['no-cache, no-store, must-revalidate, private']
+      content-length: ['574']
+      content-type: [application/json; charset=utf-8]
+      expires: ['0']
+      location: [/api/v2/addresses/adr_92a9c24443cd405c866d8846c44f1ca1]
+      pragma: [no-cache]
+      strict-transport-security: [max-age=15768000; includeSubDomains; preload]
+      transfer-encoding: [chunked]
+      x-backend: [easypost]
+      x-content-type-options: [nosniff]
+      x-ep-request-uuid: [45b32ac4-346e-4e06-802b-1578d44971ee]
+      x-frame-options: [SAMEORIGIN]
+      x-node: [bigweb1sj, 42420b5b70, easypost]
+      x-proxied: [intlb2sj 81b12b6948, lb5sj 81b12b6948]
+      x-runtime: ['0.095088']
+      x-xss-protection: [1; mode=block]
+    status: {code: 201, message: Created}
+- request:
+    body: !!python/unicode 'parcel%5Bheight%5D=1.7&parcel%5Blength%5D=1.7&parcel%5Bpredefined_package%5D=SmallFlatRateBox&parcel%5Bweight%5D=50.0&parcel%5Bwidth%5D=5.4'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['139']
+      Content-type: [application/x-www-form-urlencoded]
+      User-Agent: [EasyPost/v2 PythonClient/3.6.2]
+      X-Client-User-Agent: ['{"lang": "python", "publisher": "easypost", "uname":
+          "Linux odoo-dev-10 4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18
+          UTC 2017 x86_64 x86_64", "request_lib": "requests", "lang_version": "2.7.12",
+          "openssl_version": "OpenSSL 1.0.2g  1 Mar 2016", "platform": "Linux-4.4.0-97-generic-x86_64-with-Ubuntu-16.04-xenial",
+          "client_version": "3.6.2"}']
+    method: POST
+    uri: https://api.easypost.com/v2/parcels
+  response:
+    body: {string: !!python/unicode '{"id":"prcl_0a265caa2c8b46a0a540a18fa1298bd1","object":"Parcel","created_at":"2017-11-10T17:59:16Z","updated_at":"2017-11-10T17:59:16Z","length":1.7,"width":5.4,"height":1.7,"predefined_package":"SmallFlatRateBox","weight":50.0,"mode":"test"}'}
+    headers:
+      cache-control: ['no-cache, no-store, must-revalidate, private']
+      content-length: ['242']
+      content-type: [application/json; charset=utf-8]
+      expires: ['0']
+      location: [/api/v2/parcels/prcl_0a265caa2c8b46a0a540a18fa1298bd1]
+      pragma: [no-cache]
+      strict-transport-security: [max-age=15768000; includeSubDomains; preload]
+      transfer-encoding: [chunked]
+      x-backend: [easypost]
+      x-content-type-options: [nosniff]
+      x-ep-request-uuid: [91680554-1c6d-405a-94c8-305a63982bdb]
+      x-frame-options: [SAMEORIGIN]
+      x-node: [bigweb1sj, 42420b5b70, easypost]
+      x-proxied: [intlb1sj 81b12b6948, lb5sj 81b12b6948]
+      x-runtime: ['0.018379']
+      x-xss-protection: [1; mode=block]
+    status: {code: 201, message: Created}
+- request:
+    body: !!python/unicode 'shipment%5Bfrom_address%5D%5Bcity%5D=SAN+FRANCISCO&shipment%5Bfrom_address%5D%5Bcompany%5D=YourCompany&shipment%5Bfrom_address%5D%5Bcountry%5D=US&shipment%5Bfrom_address%5D%5Bemail%5D=&shipment%5Bfrom_address%5D%5Bname%5D=Twitter&shipment%5Bfrom_address%5D%5Bphone%5D=&shipment%5Bfrom_address%5D%5Bstate%5D=CA&shipment%5Bfrom_address%5D%5Bstreet1%5D=1355+MARKET+ST+STE+900&shipment%5Bfrom_address%5D%5Bstreet2%5D=&shipment%5Bfrom_address%5D%5Bzip%5D=94103-1337&shipment%5Bparcel%5D%5Bid%5D=prcl_0a265caa2c8b46a0a540a18fa1298bd1&shipment%5Bto_address%5D%5Bcity%5D=WASHINGTON&shipment%5Bto_address%5D%5Bcompany%5D=YourCompany&shipment%5Bto_address%5D%5Bcountry%5D=US&shipment%5Bto_address%5D%5Bemail%5D=&shipment%5Bto_address%5D%5Bname%5D=The+White+House&shipment%5Bto_address%5D%5Bphone%5D=&shipment%5Bto_address%5D%5Bstate%5D=DC&shipment%5Bto_address%5D%5Bstreet1%5D=1600+PENNSYLVANIA+AVE+NW&shipment%5Bto_address%5D%5Bstreet2%5D=&shipment%5Bto_address%5D%5Bzip%5D=20500-0003'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['975']
+      Content-type: [application/x-www-form-urlencoded]
+      User-Agent: [EasyPost/v2 PythonClient/3.6.2]
+      X-Client-User-Agent: ['{"lang": "python", "publisher": "easypost", "uname":
+          "Linux odoo-dev-10 4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18
+          UTC 2017 x86_64 x86_64", "request_lib": "requests", "lang_version": "2.7.12",
+          "openssl_version": "OpenSSL 1.0.2g  1 Mar 2016", "platform": "Linux-4.4.0-97-generic-x86_64-with-Ubuntu-16.04-xenial",
+          "client_version": "3.6.2"}']
+    method: POST
+    uri: https://api.easypost.com/v2/shipments
+  response:
+    body: {string: !!python/unicode '{"created_at":"2017-11-10T17:59:17Z","is_return":false,"messages":[],"mode":"test","options":{"currency":"USD","label_date":null,"date_advance":0},"reference":null,"status":"unknown","tracking_code":null,"updated_at":"2017-11-10T17:59:17Z","batch_id":null,"batch_status":null,"batch_message":null,"customs_info":null,"from_address":{"id":"adr_ca10b789501e469c9dec9ca5eee3f51b","object":"Address","created_at":"2017-11-10T17:59:17Z","updated_at":"2017-11-10T17:59:17Z","name":"Twitter","company":"YourCompany","street1":"1355
+        MARKET ST STE 900","street2":"","city":"SAN FRANCISCO","state":"CA","zip":"94103-1337","country":"US","phone":"","email":"","mode":"test","carrier_facility":null,"residential":null,"federal_tax_id":null,"state_tax_id":null,"verifications":{}},"insurance":null,"order_id":null,"parcel":{"id":"prcl_0a265caa2c8b46a0a540a18fa1298bd1","object":"Parcel","created_at":"2017-11-10T17:59:16Z","updated_at":"2017-11-10T17:59:16Z","length":1.7,"width":5.4,"height":1.7,"predefined_package":"SmallFlatRateBox","weight":50.0,"mode":"test"},"postage_label":null,"rates":[{"id":"rate_1e8d9d54bcfa49f19954e3fef62d873d","object":"Rate","created_at":"2017-11-10T17:59:17Z","updated_at":"2017-11-10T17:59:17Z","mode":"test","service":"Priority","carrier":"USPS","rate":"6.25","currency":"USD","retail_rate":"7.15","retail_currency":"USD","list_rate":"6.45","list_currency":"USD","delivery_days":2,"delivery_date":null,"delivery_date_guaranteed":false,"est_delivery_days":2,"shipment_id":"shp_825f48139de74a249718e16b8f747293","carrier_account_id":"ca_af8c059654f5425295d1161dfa0f0290"}],"refund_status":null,"scan_form":null,"selected_rate":null,"tracker":null,"to_address":{"id":"adr_0efc7284420040d8a92ee2c0e1017c93","object":"Address","created_at":"2017-11-10T17:59:17Z","updated_at":"2017-11-10T17:59:17Z","name":"The
+        White House","company":"YourCompany","street1":"1600 PENNSYLVANIA AVE NW","street2":"","city":"WASHINGTON","state":"DC","zip":"20500-0003","country":"US","phone":"","email":"","mode":"test","carrier_facility":null,"residential":null,"federal_tax_id":null,"state_tax_id":null,"verifications":{}},"usps_zone":8,"return_address":{"id":"adr_ca10b789501e469c9dec9ca5eee3f51b","object":"Address","created_at":"2017-11-10T17:59:17Z","updated_at":"2017-11-10T17:59:17Z","name":"Twitter","company":"YourCompany","street1":"1355
+        MARKET ST STE 900","street2":"","city":"SAN FRANCISCO","state":"CA","zip":"94103-1337","country":"US","phone":"","email":"","mode":"test","carrier_facility":null,"residential":null,"federal_tax_id":null,"state_tax_id":null,"verifications":{}},"buyer_address":{"id":"adr_0efc7284420040d8a92ee2c0e1017c93","object":"Address","created_at":"2017-11-10T17:59:17Z","updated_at":"2017-11-10T17:59:17Z","name":"The
+        White House","company":"YourCompany","street1":"1600 PENNSYLVANIA AVE NW","street2":"","city":"WASHINGTON","state":"DC","zip":"20500-0003","country":"US","phone":"","email":"","mode":"test","carrier_facility":null,"residential":null,"federal_tax_id":null,"state_tax_id":null,"verifications":{}},"forms":[],"fees":[],"id":"shp_825f48139de74a249718e16b8f747293","object":"Shipment"}'}
+    headers:
+      cache-control: ['no-cache, no-store, must-revalidate, private']
+      content-length: ['3135']
+      content-type: [application/json; charset=utf-8]
+      expires: ['0']
+      location: [/api/v2/shipments/shp_825f48139de74a249718e16b8f747293]
+      pragma: [no-cache]
+      strict-transport-security: [max-age=15768000; includeSubDomains; preload]
+      transfer-encoding: [chunked]
+      x-backend: [easypost]
+      x-content-type-options: [nosniff]
+      x-ep-request-uuid: [a17aa852-0b36-4e5d-a8d9-0a5c1574d45c]
+      x-frame-options: [SAMEORIGIN]
+      x-node: [web4sj, 42420b5b70, easypost]
+      x-proxied: [intlb1sj 81b12b6948, lb5sj 81b12b6948]
+      x-runtime: ['0.098091']
+      x-xss-protection: [1; mode=block]
+    status: {code: 201, message: Created}
+version: 1

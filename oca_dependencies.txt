@@ -1,3 +1,14 @@
-connector https://github.com/LasLabs/connector.git migration-connector-10.0
-stock-logistics-workflow https://github.com/LasLabs/stock-logistics-workflow.git release/10.0/connector-easypost-depends
-carrier-delivery https://github.com/LasLabs/carrier-delivery.git feature/10.0/LABS-376-upgrade-connector_easypost_to_10.0
+# https://github.com/OCA/delivery-carrier/pull/143
+# https://github.com/OCA/delivery-carrier/pull/146
+# https://github.com/OCA/delivery-carrier/pull/147
+delivery-carrier https://github.com/LasLabs/delivery-carrier.git long_term/10.0/easypost
+connector
+# https://github.com/OCA/l10n-usa/pull/18
+l10n-usa https://github.com/LasLabs/l10n-usa.git release/10.0/l10n_us_product
+# https://github.com/OCA/partner-contact/pull/500
+partner-contact https://github.com/LasLabs/partner-contact.git release/10.0/base_partner_address_validate
+queue
+# https://github.com/OCA/server-tools/pull/1033
+server-tools https://github.com/LasLabs/server-tools.git hotfix/10.0/base_external_system-context_stop_create
+# https://github.com/OCA/stock-logistics-workflow/pull/384
+stock-logistics-workflow https://github.com/LasLabs/stock-logistics-workflow.git release/10.0/10.0-mig-stock_package_info

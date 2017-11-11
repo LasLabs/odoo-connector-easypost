@@ -1,204 +1,371 @@
 # -*- coding: utf-8 -*-
-# Copyright 2016 LasLabs Inc.
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+# Copyright 2017 LasLabs Inc.
+# Copyright 2013-2017 Camptocamp SA
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html)
+
+# pylint: disable=missing-manifest-dependency
+# disable warning on 'vcr' missing in manifest: this is only a dependency for
+# dev/tests
 
 """
 Helpers usable in the tests
 """
 
-import importlib
+import xmlrpclib
+import logging
+
 import mock
+import odoo
+
 from contextlib import contextmanager
-import odoo.tests.common as common
-from odoo.addons.connector.session import ConnectorSession
-from ..unit.object_dict import ObjectDict
+from os.path import dirname, join
+from odoo import models
+from odoo.addons.component.tests.common import SavepointComponentCase
+
+from vcr import VCR
+
+logging.getLogger("vcr").setLevel(logging.WARNING)
+
+recorder = VCR(
+    record_mode='once',
+    cassette_library_dir=join(dirname(__file__), 'fixtures/cassettes'),
+    path_transformer=VCR.ensure_suffix('.yaml'),
+    filter_headers=['Authorization'],
+    decode_compressed_response=True,
+)
 
 
-backend_adapter = 'odoo.addons.connector_easypost.unit.backend_adapter'
-inc_id = 0
-asustek_partner_id = 'res_partner_1'
-your_company_id = 'main_company'
+class MockResponseImage(object):
 
+    def __init__(self, resp_data, code=200, msg='OK'):
+        self.resp_data = resp_data
+        self.code = code
+        self.msg = msg
+        self.headers = {'content-type': 'image/jpeg'}
 
-@contextmanager
-def mock_job_delay_to_direct(job_path):
-    """ Replace the .delay() of a job by a direct call
-    job_path is the python path, such as::
-      odoo.addons.easypost.stock_picking.export_picking_done
-    """
-    job_module, job_name = job_path.rsplit('.', 1)
-    module = importlib.import_module(job_module)
-    job_func = getattr(module, job_name, None)
-    assert job_func, "The function %s must exist in %s" % (job_name,
-                                                           job_module)
+    def read(self):
+        # pylint: disable=W8106
+        return self.resp_data
 
-    def clean_args_for_func(*args, **kwargs):
-        # remove the special args reserved to .delay()
-        kwargs.pop('priority', None)
-        kwargs.pop('eta', None)
-        kwargs.pop('model_name', None)
-        kwargs.pop('max_retries', None)
-        kwargs.pop('description', None)
-        job_func(*args, **kwargs)
-
-    with mock.patch(job_path) as patched_job:
-        # call the direct export instead of 'delay()'
-        patched_job.delay.side_effect = clean_args_for_func
-        yield patched_job
+    def getcode(self):
+        return self.code
 
 
 @contextmanager
-def mock_api(models=None, actions=None, ret_val=False):
-    """ Mock the Easypost API """
-    global inc_id
-    if models is None:
-        models = ['Address', 'Parcel', 'Shipment', 'Rate']
-    if actions is None:
-        actions = ['create', 'retrieve']
-    with mock.patch('%s.easypost' % backend_adapter) as API:
-        for model in models:
-            model = getattr(API, model)
-            for action in actions:
-                if action == 'create':
-                    inc_id += 1
-                action = getattr(model, action)()
-                for col in ['created_at', 'updated_at']:
-                    setattr(action, col, ret_val)
-                setattr(action, 'id', inc_id)
-                setattr(action, 'mode', '__TEST__')
-        yield API
+def mock_urlopen_image():
+    with mock.patch('urllib2.urlopen') as urlopen:
+        urlopen.return_value = MockResponseImage('')
+        yield
 
 
-class EasypostHelper(object):
+class EasyPostHelper(object):
 
     def __init__(self, cr, registry, model_name):
         self.cr = cr
         self.model = registry(model_name)
 
+    def get_next_id(self):
+        self.cr.execute("SELECT max(external_id::int) FROM %s " %
+                        self.model._table)
+        result = self.cr.fetchone()
+        if result:
+            return int(result[0] or 0) + 1
+        else:
+            return 1
 
-class SetUpEasypostBase(common.TransactionCase):
-    """ Base class - Test the imports from a Easypost Mock.
-    The data returned by Easypost are those created for the
-    demo version of Easypost on a standard 2 version.
+
+class EasyPostTestCase(SavepointComponentCase):
+    """ Base class - Test the imports from a EasyPost Mock.
+
+    The data returned by EasyPost are those created for the
+    demo version of EasyPost on a standard 1.9 version.
     """
 
     def setUp(self):
-        super(SetUpEasypostBase, self).setUp()
-        self.backend_model = self.env['easypost.backend']
-        self.session = ConnectorSession(
-            self.env.cr, self.env.uid, context=self.env.context,
-        )
-        self.backend = self.get_easypost_backend()
-        self.backend_id = self.backend.id
+        super(EasyPostTestCase, self).setUp()
+        # disable commits when run from pytest/nosetest
+        odoo.tools.config['test_enable'] = True
 
-    def get_easypost_backend(self):
-        domain = [
-            ('company_id', '=', self.env.ref('base.main_company').id),
-            ('is_default', '=', True),
-        ]
-        backends = self.backend_model.search(domain)
-        if len(backends) > 0:
-            return backends[0]
-        else:
-            return self.backend_model.create({
-                'name': 'Test Easypost',
-                'version': '2',
-                'api_key': 'cueqNZUb3ldeWTNX7MU3Mel8UXtaAMUi',
-            })
+        self.backend_model = self.env['easypost.backend']
+        self.warehouse = self.env.ref('stock.warehouse0')
+        self.backend = self.backend_model.create(
+            {'name': 'Test EasyPost',
+             'version': 'v2',
+             'api_key': '',
+             'company_id': self.env.user.company_id.id,
+             'is_default': True,
+             'is_default_address_validator': True,
+             }
+        )
 
     def get_easypost_helper(self, model_name):
-        return EasypostHelper(self.cr, self.registry, model_name)
+        return EasyPostHelper(self.cr, self.registry, model_name)
 
-
-class EasypostDeliveryHelper(SetUpEasypostBase):
-
-    def setUp(self, ship=False):
-        super(EasypostDeliveryHelper, self).setUp()
-        self.pack_cnt = 0
-        self.cm_id = self.env.ref('product.product_uom_cm')
-        self.inch_id = self.env.ref('product.product_uom_inch')
-        self.oz_id = self.env.ref('product.product_uom_oz')
-        self.gram_id = self.env.ref('product.product_uom_gram')
-        self.ep_vals = {
-            'length': 1.0,
-            'height': 2.0,
-            'width': 3.0,
-            'weight': 4.0,
+    def create_binding_no_export(self, model_name, odoo_id, external_id=None,
+                                 **cols):
+        if isinstance(odoo_id, models.BaseModel):
+            odoo_id = odoo_id.id
+        values = {
+            'backend_id': self.backend.id,
+            'odoo_id': odoo_id,
+            'external_id': external_id,
         }
-        self.pack_vals = {
-            'length_uom_id': self.inch_id.id,
-            'height_uom_id': self.inch_id.id,
-            'width_uom_id': self.inch_id.id,
-            'weight_uom_id': self.oz_id.id,
-            'package_type': 'box',
-            'packaging_template_name': 'TestPackTpl',
-        }
-        self.pack_vals.update(self.ep_vals)
-        if ship:
-            company = self.env.ref('base.%s' % your_company_id)
-            product = self.env.ref('product.product_product_6')
-            self.pack_tpl_id = self.create_product_packaging_template()
-            self.ship_vals = {
-                'partner_id': self.env.ref('base.%s' % asustek_partner_id).id,
-                'location_dest_id': self.env['stock.location'].search([
-                    ])[0].id,
-                'location_id': self.env['stock.location'].search([
-                    ('company_id', '=', company.id),
-                    ('name', '=', 'Stock')
-                ])[0].id,
-                'picking_type_id':
-                    self.env['stock.picking.type'].search([])[0].id,
-                'move_lines': [[0, False, {
-                    'name': product.name,
-                    'product_id': product.id,
-                    'product_uom': product.uom_id.id,
-                    'product_uom_qty': '1',
-                    'state': 'draft'
-                }]]
-            }
-            self.rates = [
-                ObjectDict(**{
-                    "carrier": "USPS",
-                    "carrier_account_id":
-                        "ca_ac8c059614f5495295d1161dfa1f0290",
-                    "created_at": "2016-06-07 03:25:48",
-                    "currency": "USD",
-                    "delivery_date": None,
-                    "delivery_date_guaranteed": None,
-                    "delivery_days": 1,
-                    "est_delivery_days": 1,
-                    "id": "rate_912d3f794ded45a9b0963d44d0cccbb7",
-                    "list_currency": "USD",
-                    "list_rate": 36.18,
-                    "mode": "test",
-                    "object": "Rate",
-                    "rate": 36.18,
-                    "retail_currency": None,
-                    "retail_rate": None,
-                    "service": "First",
-                    "shipment_id":
-                        "shp_62e87c088fba4532b80288222771b4fc",
-                    "updated_at": "2016-06-07 03:25:48",
-                }),
+        if cols:
+            values.update(cols)
+        return self.env[model_name].with_context(
+            connector_no_export=True,
+        ).create(values)
+
+    @contextmanager
+    def mock_with_delay(self):
+        with mock.patch(
+                'odoo.addons.queue_job.models.base.DelayableRecordset',
+                name='DelayableRecordset', spec=True
+        ) as delayable_cls:
+            # prepare the mocks
+            delayable = mock.MagicMock(name='DelayableBinding')
+            delayable_cls.return_value = delayable
+            yield delayable_cls, delayable
+
+    def parse_cassette_request(self, body):
+        args, __ = xmlrpclib.loads(body)
+        # the first argument is a hash, we don't mind
+        return args[1:]
+
+    def _get_external(self, external_id):
+        with self.backend.work_on(self.model._name) as work:
+            adapter = work.component(usage='backend.adapter')
+            return adapter.read(external_id)
+
+    def _import_record(self, model_name, easypost_id, cassette=True):
+        assert model_name.startswith('easypost.')
+        table_name = model_name.replace('.', '_')
+        # strip 'easypost_' from the model_name to shorted the filename
+        filename = 'import_%s_%s' % (table_name[8:], str(easypost_id))
+
+        def run_import():
+            with mock_urlopen_image():
+                self.env[model_name].import_record(self.backend, easypost_id)
+
+        if cassette:
+            with recorder.use_cassette(filename):
+                run_import()
+        else:
+            run_import()
+
+        binding = self.env[model_name].search(
+            [('backend_id', '=', self.backend.id),
+             ('external_id', '=', str(easypost_id))]
+        )
+        self.assertEqual(len(binding), 1)
+        return binding
+
+    def assert_records(self, expected_records, records):
+        """ Assert that a recordset matches with expected values.
+
+        The expected records are a list of nametuple, the fields of the
+        namedtuple must have the same name than the recordset's fields.
+
+        The expected values are compared to the recordset and records that
+        differ from the expected ones are show as ``-`` (missing) or ``+``
+        (extra) lines.
+
+        Example::
+
+            ExpectedShop = namedtuple('ExpectedShop',
+                                      'name company_id')
+            expected = [
+                ExpectedShop(
+                    name='MyShop1',
+                    company_id=self.company_ch
+                ),
+                ExpectedShop(
+                    name='MyShop2',
+                    company_id=self.company_ch
+                ),
             ]
+            self.assert_records(expected, shops)
 
-    def create_picking(self):
-        picking = self.env['stock.picking'].create(self.ship_vals)
-        picking.action_confirm()
-        picking.force_assign()
-        for item in picking.pack_operation_product_ids:
-            item.qty_done = 1.0
-        picking.put_in_pack()
-        for item in picking.pack_operation_ids.result_package_id:
-            item.product_pack_tmpl_id = self.pack_tpl_id.id
-        return picking
+        Possible output:
 
-    def create_product_packaging_template(self):
-        self.pack_vals['packaging_template_name'] = '%s_%s' % (
-            self.pack_vals['packaging_template_name'],
-            self.pack_cnt
+         - foo.shop(name: MyShop1, company_id: res.company(2,))
+         - foo.shop(name: MyShop2, company_id: res.company(1,))
+         + foo.shop(name: MyShop3, company_id: res.company(1,))
+
+        :param expected_records: list of namedtuple with matching values
+                                 for the records
+        :param records: the recordset to check
+        :raises: AssertionError if the values do not match
+        """
+        model_name = records._name
+        records = list(records)
+        assert len(expected_records) > 0, "must have > 0 expected record"
+        fields = expected_records[0]._fields
+        not_found = []
+        equals = []
+        for expected in expected_records:
+            for record in records:
+                for field, value in expected._asdict().iteritems():
+                    if not getattr(record, field) == value:
+                        break
+                else:
+                    records.remove(record)
+                    equals.append(record)
+                    break
+            else:
+                not_found.append(expected)
+        message = []
+        for record in equals:
+            # same records
+            message.append(
+                u' ✓ {}({})'.format(
+                    model_name,
+                    u', '.join(u'%s: %s' % (field, getattr(record, field)) for
+                               field in fields)
+                )
+            )
+        for expected in not_found:
+            # missing records
+            message.append(
+                u' - {}({})'.format(
+                    model_name,
+                    u', '.join(u'%s: %s' % (k, v) for
+                               k, v in expected._asdict().iteritems())
+                )
+            )
+        for record in records:
+            # extra records
+            message.append(
+                u' + {}({})'.format(
+                    model_name,
+                    u', '.join(u'%s: %s' % (field, getattr(record, field)) for
+                               field in fields)
+                )
+            )
+        if not_found or records:
+            raise AssertionError(u'Records do not match:\n\n{}'.format(
+                '\n'.join(message)
+            ))
+
+
+class EasyPostSyncTestCase(EasyPostTestCase):
+
+    def setUp(self):
+        super(EasyPostSyncTestCase, self).setUp()
+        self.easypost_carrier = self.env.ref(
+            'connector_easypost.delivery_carrier_usps_priority',
         )
-        self.pack_cnt += 1
-        return self.env['product.packaging.template'].create(
-            self.pack_vals
+        self.product = self.env.ref('product.product_product_7')
+
+    def _create_parcel(self, export=True, dispatch_package=None, vals=None):
+        """Create a parcel and optionally export."""
+
+        if dispatch_package is None:
+            dispatch_package = self.env.ref(
+                'connector_easypost.SmallFlatRateBox',
+            )
+
+        model = self.env['easypost.parcel'].with_context(
+            connector_no_export=True,
         )
+        self.record_vals = {
+            'name': 'Test Parcel',
+            'packaging_id': dispatch_package.id,
+            'shipping_weight': 50,
+        }
+        if vals is not None:
+            self.record_vals.update(vals)
+
+        self.record = model.create(self.record_vals)
+        if export:
+            self.record.export_record()
+        return self.record
+
+    def _create_partner(self, validated=False, name=None, street=None,
+                        zip_code=None):
+        if name is None:
+            name = 'The White House'
+        if street is None:
+            street = '1600 Pennsylvania'
+        if zip_code is None:
+            zip_code = '20500'
+        partner = self.env['res.partner'].create({
+            'name': name,
+            'street': street,
+            'zip': zip_code,
+        })
+        if validated:
+            partner.write(
+                self.backend.easypost_get_address(partner),
+            )
+        return partner
+
+    def _create_quant(self, qty=1, weight=3):
+        """Create a new ``stock.quant`` of ``qty`` and ``weight``."""
+        self.qty = qty
+        self.weight = weight
+        return self.env['stock.quant'].create({
+            'location_id': self.warehouse.lot_stock_id.id,
+            'product_id': self.product.id,
+            'qty': qty,
+            'weight': weight,
+        })
+
+    def _create_shipment(self, export=True, to_partner=None):
+        """Create a shipment and optionally export."""
+
+        if to_partner is None:
+            to_partner = self._create_partner(validated=True)
+
+        model = self.env['easypost.shipment'].with_context(
+            connector_no_export=True,
+        )
+        warehouse = self.warehouse
+        warehouse.partner_id = self._create_partner(
+            True, 'Twitter', '1355 Market Street #900', '94103',
+        )
+        location_dest = self.env.ref('stock.stock_location_3')
+        quant = self._create_quant()
+        parcel = self._create_parcel()
+        self.record_vals = {
+            'location_dest_id': location_dest.id,
+            'location_id': self.warehouse.lot_stock_id.id,
+            'move_type': 'direct',
+            'picking_type_id': warehouse.out_type_id.id,
+            'weight_uom_id': self.env.ref('product.product_uom_inch').id,
+            'partner_id': to_partner.id,
+            'pack_operation_ids': [(0, 0, {
+                'location_dest_id': location_dest.id,
+                'location_id': warehouse.out_type_id.id,
+                'product_id': quant.product_id.id,
+                'product_uom': quant.product_id.uom_id.id,
+                'ordered_qty': quant.qty,
+                'qty_done': quant.qty,
+                'weight_uom_id': parcel.weight_uom_id.id,
+                'result_package_id': parcel.odoo_id.id,
+            })]
+        }
+
+        self.record = model.create(self.record_vals)
+        if export:
+            self.record.export_record()
+        return self.record
+
+    def _create_sale(self, to_partner=None):
+        """Create a sale and optionally export."""
+
+        if to_partner is None:
+            to_partner = self._create_partner(validated=True)
+
+        self.record = self.env['easypost.sale'].create({
+            'partner_id': to_partner.id,
+            'carrier_id': self.easypost_carrier.id,
+            'order_line': [(0, 0, {
+                'product_id': self.product.id,
+                'product_uom_qty': 1,
+                'price_unit': 79.00,
+                'name': self.product.display_name,
+                'customer_lead': 0.00,
+            })]
+        })
+        return self.record

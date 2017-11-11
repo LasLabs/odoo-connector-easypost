@@ -20,7 +20,7 @@ class EasypostTrackerHelper(SetUpEasypostBase):
 
     def setUp(self):
         super(EasypostTrackerHelper, self).setUp()
-        self.model = 'easypost.stock.picking.tracking.group'
+        self.model = 'easypost.shipment.tracking.group'
         self.record = self.new_record()
         rec = self.record
         self.picking = self.create_picking(rec.shipment_id)
@@ -80,15 +80,15 @@ class EasypostTrackerHelper(SetUpEasypostBase):
         }
         picking = self.env['stock.picking'].create(picking_values)
 
-        ep_picking_obj = self.env['easypost.stock.picking']
+        ep_picking_obj = self.env['easypost.shipment']
         ep_obj = ep_picking_obj.search([
             ('odoo_id', '=', picking.id),
         ])
         if not len(ep_obj):
             ep_picking_obj.create({
                 'odoo_id': picking.id,
-                'easypost_id': ship_id,
+                'external_id': ship_id,
             })
         else:
-            ep_obj.write({'easypost_id': ship_id})
+            ep_obj.write({'external_id': ship_id})
         return ep_obj

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2017 LasLabs Inc.
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html). -->
+
+<odoo noupdate="1">
+
+    <!-- USPS -->
+    <record id="delivery_carrier_usps_first" model="delivery.carrier">
+        <field name="name">USPS - First Class</field>
+        <field name="easypost_service">First</field>
+        <field name="partner_id" ref="res_partner_usps" />
+        <field name="delivery_type">easypost</field>
+        <field name="integration_level">rate_and_ship</field>
+        <field name="prod_environment" eval="True" />
+        <field name="active" eval="True" />
+        <field name="product_type">service</field>
+        <field name="product_sale_ok" eval="False"/>
+    </record>
+    <record id="delivery_carrier_usps_priority" model="delivery.carrier">
+        <field name="name">USPS - Priority Mail</field>
+        <field name="easypost_service">Priority</field>
+        <field name="partner_id" ref="res_partner_usps" />
+        <field name="delivery_type">easypost</field>
+        <field name="integration_level">rate_and_ship</field>
+        <field name="prod_environment" eval="True" />
+        <field name="active" eval="True" />
+        <field name="product_type">service</field>
+        <field name="product_sale_ok" eval="False"/>
+    </record>
+    <record id="delivery_carrier_usps_express" model="delivery.carrier">
+        <field name="name">USPS - Express Mail</field>
+        <field name="easypost_service">Express</field>
+        <field name="partner_id" ref="res_partner_usps" />
+        <field name="delivery_type">easypost</field>
+        <field name="integration_level">rate_and_ship</field>
+        <field name="prod_environment" eval="True" />
+        <field name="active" eval="True" />
+        <field name="product_type">service</field>
+        <field name="product_sale_ok" eval="False"/>
+    </record>
+    <record id="delivery_carrier_usps_parcel_select" model="delivery.carrier">
+        <field name="name">USPS - Parcel Select</field>
+        <field name="easypost_service">ParcelSelect</field>
+        <field name="partner_id" ref="res_partner_usps" />
+        <field name="delivery_type">easypost</field>
+        <field name="integration_level">rate_and_ship</field>
+        <field name="prod_environment" eval="True" />
+        <field name="active" eval="True" />
+        <field name="product_type">service</field>
+        <field name="product_sale_ok" eval="False"/>
+    </record>
+    <record id="delivery_carrier_usps_library_mail" model="delivery.carrier">
+        <field name="name">USPS - Library Mail</field>
+        <field name="easypost_service">LibraryMail</field>
+        <field name="partner_id" ref="res_partner_usps" />
+        <field name="delivery_type">easypost</field>
+        <field name="integration_level">rate_and_ship</field>
+        <field name="prod_environment" eval="True" />
+        <field name="active" eval="True" />
+        <field name="product_type">service</field>
+        <field name="product_sale_ok" eval="False"/>
+    </record>
+    <record id="delivery_carrier_usps_media_mail" model="delivery.carrier">
+        <field name="name">USPS - Media Mail</field>
+        <field name="easypost_service">MediaMail</field>
+        <field name="partner_id" ref="res_partner_usps" />
+        <field name="delivery_type">easypost</field>
+        <field name="integration_level">rate_and_ship</field>
+        <field name="prod_environment" eval="True" />
+        <field name="active" eval="True" />
+        <field name="product_type">service</field>
+        <field name="product_sale_ok" eval="False"/>
+    </record>
+    <record id="delivery_carrier_usps_fist_class_mail_international" model="delivery.carrier">
+        <field name="name">USPS - First Class Mail (International)</field>
+        <field name="easypost_service">FirstClassMailInternational</field>
+        <field name="partner_id" ref="res_partner_usps" />
+        <field name="delivery_type">easypost</field>
+        <field name="integration_level">rate_and_ship</field>
+        <field name="prod_environment" eval="True" />
+        <field name="active" eval="True" />
+        <field name="product_type">service</field>
+        <field name="product_sale_ok" eval="False"/>
+    </record>
+    <record id="delivery_carrier_usps_first_class_package_international" model="delivery.carrier">
+        <field name="name">USPS - First Class Package (International)</field>
+        <field name="easypost_service">FirstClassPackageInternationalService</field>
+        <field name="partner_id" ref="res_partner_usps" />
+        <field name="delivery_type">easypost</field>
+        <field name="integration_level">rate_and_ship</field>
+        <field name="prod_environment" eval="True" />
+        <field name="active" eval="True" />
+        <field name="product_type">service</field>
+        <field name="product_sale_ok" eval="False"/>
+    </record>
+    <record id="delivery_carrier_usps_priority_mail_international" model="delivery.carrier">
+        <field name="name">USPS - Priority Mail (International)</field>
+        <field name="easypost_service">PriorityMailInternational</field>
+        <field name="partner_id" ref="res_partner_usps" />
+        <field name="delivery_type">easypost</field>
+        <field name="integration_level">rate_and_ship</field>
+        <field name="prod_environment" eval="True" />
+        <field name="active" eval="True" />
+        <field name="product_type">service</field>
+        <field name="product_sale_ok" eval="False"/>
+    </record>
+    <record id="delivery_carrier_usps_express_mail_international" model="delivery.carrier">
+        <field name="name">USPS - Express Mail International</field>
+        <field name="easypost_service">ExpressMailInternational</field>
+        <field name="partner_id" ref="res_partner_usps" />
+        <field name="delivery_type">easypost</field>
+        <field name="integration_level">rate_and_ship</field>
+        <field name="prod_environment" eval="True" />
+        <field name="active" eval="True" />
+        <field name="product_type">service</field>
+        <field name="product_sale_ok" eval="False"/>
+    </record>
+
+</odoo>

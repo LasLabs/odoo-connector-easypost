@@ -9,8 +9,8 @@ class TestStockPickingTrackingEvent(EasypostTrackerHelper):
 
     def setUp(self):
         super(TestStockPickingTrackingEvent, self).setUp()
-        group = self.env['easypost.stock.picking.tracking.group'].search([
-            ('easypost_id', '=', self.record.id)
+        group = self.env['easypost.shipment.tracking.group'].search([
+            ('external_id', '=', self.record.id)
         ])
         self.event = group.last_event_id
         self.data = self.record.tracking_details[0]

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2017 LasLabs Inc.
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html). -->
+
+<odoo>
+
+    <record id="base.main_company" model="res.company">
+        <field name="street">1725 SLOUGH AVE.</field>
+        <field name="city">SCRANTON</field>
+        <field name="zip">18540-0001</field>
+    </record>
+
+</odoo>
