@@ -22,6 +22,8 @@ class TestImportAddress(EasyPostSyncTestCase):
             'zip': u'20500-0003',
             'country_id': self.env.ref('base.us').id,
             'is_valid': True,
+            'latitude': 38.8987,
+            'longitude': -77.0352,
             'validation_messages':
                 u'Missing secondary information(Apt/Suite#)',
         }

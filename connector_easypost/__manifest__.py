@@ -5,7 +5,7 @@
 # pylint: disable=C8101
 {
     'name': 'EasyPost Connector',
-    'version': '10.0.1.0.0',
+    'version': '10.0.1.0.1',
     'category': 'Connector, Delivery, Stock',
     'author': "LasLabs",
     'license': 'AGPL-3',

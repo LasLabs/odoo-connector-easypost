@@ -37,5 +37,7 @@ class AddressValidate(models.Model):
             'state_id': wizard.state_id.id,
             'country_id': wizard.country_id.id,
             'validation_messages': wizard.validation_messages,
+            'latitude': wizard.latitude,
+            'longitude': wizard.longitude,
             'is_valid': wizard.is_valid,
         }
