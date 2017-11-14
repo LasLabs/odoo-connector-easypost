@@ -57,6 +57,13 @@ class EasypostAddressImportMapper(Component):
                 }
 
     @mapping
+    def latitude_longitude(self, record):
+        return {
+            'latitude': record.verifications.delivery.details.latitude,
+            'longitude': record.verifications.delivery.details.longitude,
+        }
+
+    @mapping
     def validation_messages(self, record):
         messages = []
         for e in record.verifications.delivery.errors:
